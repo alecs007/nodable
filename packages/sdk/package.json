@@ -15,9 +15,11 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@nodable/engine": "workspace:*"
+    "@nodable/engine": "workspace:*",
+    "d3-hierarchy": "^3.1.2"
   },
   "devDependencies": {
+    "@types/d3-hierarchy": "^3.1.7",
     "typescript": "^6.0.3",
     "vitest": "^5.0.5"
   }

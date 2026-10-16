@@ -34,8 +34,12 @@ The SDK is the only module the interface imports from. It wraps the engine in a 
 and owns the concepts the interface works with.
 
 - **Sessions**: one formula, its build steps, its diagnostics and its per-node layout offsets.
+- **Layout**: the geometry of the tree, computed with `d3-hierarchy`.
 - **Exporters**: SVG, PNG, JSON, LaTeX and plain text.
 - **Workspaces**: several sessions, serialized and deserialized as JSON.
+
+Layout lives here rather than in the interface so that the rendered tree and the exported SVG place
+nodes identically. The SDK computes positions; `apps/web` renders them as Svelte SVG.
 
 The SDK is storage-agnostic. Persistence goes through an adapter interface that the web app
 implements, so the SDK never touches IndexedDB or `localStorage` itself.

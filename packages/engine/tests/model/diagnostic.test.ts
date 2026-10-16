@@ -8,6 +8,7 @@ const ERROR_CODES: readonly DiagnosticCode[] = [
   'NDB004',
   'NDB005',
   'NDB006',
+  'NDB008',
 ]
 
 describe('diagnostics', () => {

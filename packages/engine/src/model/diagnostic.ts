@@ -1,7 +1,7 @@
 import { type SourceRange } from './source-range'
 
 export type DiagnosticCode =
-  'NDB001' | 'NDB002' | 'NDB003' | 'NDB004' | 'NDB005' | 'NDB006' | 'NDB007'
+  'NDB001' | 'NDB002' | 'NDB003' | 'NDB004' | 'NDB005' | 'NDB006' | 'NDB007' | 'NDB008'
 
 export type DiagnosticSeverity = 'error' | 'warning'
 
@@ -27,6 +27,7 @@ const DIAGNOSTIC_DEFINITIONS: Record<DiagnosticCode, DiagnosticDefinition> = {
   NDB005: { severity: 'error', messageKey: 'diagnostic.ndb005' },
   NDB006: { severity: 'error', messageKey: 'diagnostic.ndb006' },
   NDB007: { severity: 'warning', messageKey: 'diagnostic.ndb007' },
+  NDB008: { severity: 'error', messageKey: 'diagnostic.ndb008' },
 }
 
 export function createDiagnostic(code: DiagnosticCode, range: SourceRange): Diagnostic {

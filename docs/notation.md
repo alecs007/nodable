@@ -106,6 +106,17 @@ a translation key. Messages are never hard-coded in the engine.
 | `NDB006` | error    | Connective missing a left operand                         |
 | `NDB007` | warning  | Formula incomplete: an unclosed `(` or empty slots remain |
 
+### Workspace diagnostics
+
+One further code is reported by the SDK rather than by the formula rules, because reading a stored
+workspace can fail in a way that has nothing to do with a formula.
+
+| Code     | Severity | Condition                        |
+| -------- | -------- | -------------------------------- |
+| `NDB008` | error    | Workspace data could not be read |
+
+### Behavior
+
 An incomplete formula while typing is normal: it is shown with dotted slots and a warning, never as
 an error. On the first error the builder stops applying tokens, keeps the last valid tree, and marks
 the offending range in the input.
