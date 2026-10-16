@@ -42,7 +42,7 @@ test('keeps several formulas and switches between them', async ({ page }) => {
   const field = page.getByRole('textbox', { name: 'Formula', exact: true })
   await field.fill('(p ∧ q)')
   await page.getByRole('textbox', { name: 'Formula name' }).fill('Seminar one')
-  await page.getByRole('button', { name: 'Add formula' }).click()
+  await page.getByRole('button', { name: 'New formula' }).click()
   await field.fill('(r → s)')
 
   await page.getByRole('button', { name: /(r → s)/ }).click()
@@ -54,7 +54,7 @@ test('keeps several formulas and switches between them', async ({ page }) => {
 test('deletes the active formula', async ({ page }) => {
   const field = page.getByRole('textbox', { name: 'Formula', exact: true })
   await field.fill('(p ∧ q)')
-  await page.getByRole('button', { name: 'Add formula' }).click()
+  await page.getByRole('button', { name: 'New formula' }).click()
   await field.fill('(r → s)')
 
   await page.getByRole('button', { name: 'Save and load' }).click()

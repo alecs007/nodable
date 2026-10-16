@@ -14,8 +14,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Continuous integration and GitHub Pages deployment workflows.
 - Community documentation: readme, contributing guide, code of conduct, security policy, issue and
   pull request templates.
-- Engine: immutable tree model, tokenizer with ASCII alias normalization, builder implementing the
-  course placement rules with per-token build steps, and a validator producing diagnostics
+- Engine: immutable tree model, tokenizer with ASCII alias normalization and case-sensitive
+  variable names, builder implementing the course placement rules with per-token build steps, and a validator producing diagnostics
   `NDB001` to `NDB007` and allowed-next hints.
 - SDK: sessions, tree layout, exporters for SVG, PNG, JSON, LaTeX and plain text, workspace
   serialization, and a storage adapter interface.

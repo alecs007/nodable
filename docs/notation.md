@@ -42,17 +42,18 @@ the interface stops drawing the arrow and marks the root instead.
 
 ## Placement rules
 
-| Token     | Precondition                                                                  | Effect                                                                                                                            | Cursor                             |
-| --------- | ----------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------- |
-| `(`       | Cursor on a `slot`                                                            | The slot becomes a `group` with its arity undecided, and a first child `slot` is created                                          | Moves **down** to the first child  |
-| variable  | Cursor on a `slot`                                                            | The slot becomes a `leaf`. If the parent is a `group` with no label yet, the parent stays pending until the next token decides it | Moves **up** one level             |
-| `¬`       | Cursor on the first child `slot` of a `group`, directly after `(`             | The parent `group` resolves to `unary` and is labeled `¬`. The symbol is placed one level **up**                                  | Stays on the single child slot     |
-| `∧ ∨ → ↔` | Cursor on a `group` whose first child is complete                             | The group resolves to `binary` and is labeled with the connective, and a second child `slot` is created                           | Moves **down** to the second child |
-| `)`       | Cursor on a `group`, `unary` or `binary` node whose children are all complete | The node is closed                                                                                                                | Moves **up** one level             |
+| Token     | Precondition                                                         | Effect                                                                                                                            | Cursor                             |
+| --------- | -------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------- |
+| `(`       | Cursor on a `slot`                                                   | The slot becomes a `group` with its arity undecided, and a first child `slot` is created                                          | Moves **down** to the first child  |
+| variable  | Cursor on a `slot`                                                   | The slot becomes a `leaf`. If the parent is a `group` with no label yet, the parent stays pending until the next token decides it | Moves **up** one level             |
+| `¬`       | Cursor on the first child `slot` of a `group`, directly after `(`    | The parent `group` resolves to `unary` and is labeled `¬`. The symbol is placed one level **up**                                  | Stays on the single child slot     |
+| `∧ ∨ → ↔` | Cursor on a `group` whose first child is complete                    | The group resolves to `binary` and is labeled with the connective, and a second child `slot` is created                           | Moves **down** to the second child |
+| `)`       | Cursor on a `unary` or `binary` node whose children are all complete | The node is closed                                                                                                                | Moves **up** one level             |
 
 In the words used in class:
 
 - A variable or `)` moves **up**.
+- A group cannot be closed before it has become a single or a double node, so `(p)` is rejected.
 - `(` moves **down** and opens the choice between a double and a single node.
 - A variable after `(` produces a **double node**; a negation after `(` produces a **single node**.
 - A negation is placed **up**, on the parent.

@@ -187,9 +187,9 @@ describe('buildTree', () => {
     })
   })
 
-  it('accepts a group closed around a single operand', () => {
-    expect(nodeAt('(p)', 'root')).toMatchObject({ kind: 'group', isClosed: true })
-    expect(cursorOf('(p)')).toEqual({ kind: 'above-root' })
+  it('rejects a close parenthesis while the group is still undecided', () => {
+    expect(codes('(p)')).toEqual(['NDB002'])
+    expect(codes('((p ∧ q))')).toEqual(['NDB002'])
   })
 
   it('builds a deeply nested formula', () => {

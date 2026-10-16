@@ -15,6 +15,8 @@
   const MIN_SCALE = 0.02
   const MAX_SCALE = 3
   const MARGIN = 24
+  const KEEP_RATIO = 0.35
+  const KEEP_MIN = 80
 
   type Size = { readonly width: number; readonly height: number }
 
@@ -43,9 +45,11 @@
   }
 
   function clampOffset(next: number, view: number, content: number): number {
-    const room = view - content
+    const keep = Math.max(KEEP_MIN, Math.min(content, view) * KEEP_RATIO)
+    const lowest = keep - content
+    const highest = view - keep
 
-    return Math.min(Math.max(0, room), Math.max(Math.min(0, room), next))
+    return Math.min(Math.max(lowest, highest), Math.max(Math.min(lowest, highest), next))
   }
 
   function applyBounds(): void {
@@ -133,11 +137,8 @@
     zoomAt(event.deltaY < 0 ? 1.12 : 1 / 1.12, point.x, point.y)
   }
 
-  function onPointerDown(event: PointerEvent & { currentTarget: HTMLDivElement }): void {
-    event.preventDefault()
+  function onPointerDown(event: PointerEvent): void {
     pointers.set(event.pointerId, { x: event.clientX, y: event.clientY })
-    event.currentTarget.setPointerCapture(event.pointerId)
-    isGesturing = true
   }
 
   function pinchState(): { readonly distance: number; readonly x: number; readonly y: number } {
@@ -164,6 +165,8 @@
     pointers.set(event.pointerId, { x: event.clientX, y: event.clientY })
 
     if (pointers.size >= 2) {
+      isGesturing = true
+
       const pinch = pinchState()
 
       if (pinchDistance > 0 && pinch.distance > 0) {
@@ -176,6 +179,19 @@
       return
     }
 
+    const moved = Math.hypot(event.clientX - previous.x, event.clientY - previous.y)
+
+    if (!isGesturing && moved < 3) {
+      pointers.set(event.pointerId, previous)
+
+      return
+    }
+
+    if (!isGesturing) {
+      isGesturing = true
+      frame?.setPointerCapture(event.pointerId)
+    }
+
     isFollowing = false
     offsetX += event.clientX - previous.x
     offsetY += event.clientY - previous.y
@@ -185,7 +201,10 @@
   function onPointerUp(event: PointerEvent): void {
     pointers.delete(event.pointerId)
     pinchDistance = 0
-    isGesturing = pointers.size > 0
+
+    if (pointers.size === 0) {
+      isGesturing = false
+    }
   }
 
   $effect(() => {
@@ -286,12 +305,6 @@
 
   .ready .surface {
     opacity: 1;
-    transition:
-      opacity var(--duration-medium) var(--ease),
-      transform var(--duration-medium) var(--ease);
-  }
-
-  .gesturing .surface {
-    transition: none;
+    transition: opacity var(--duration-medium) var(--ease);
   }
 </style>

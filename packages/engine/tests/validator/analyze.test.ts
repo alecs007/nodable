@@ -93,7 +93,7 @@ describe('analyzeFormula', () => {
     })
 
     it('allows a connective or a close parenthesis once the first operand is complete', () => {
-      expect(analyzeFormula('(p').allowedNext).toEqual(['close-paren', 'connective'])
+      expect(analyzeFormula('(p').allowedNext).toEqual(['connective'])
     })
 
     it('allows a close parenthesis once both operands of a double node are complete', () => {
@@ -122,13 +122,13 @@ describe('analyzeFormula', () => {
     })
 
     it('tracks how many parentheses are open at each step', () => {
-      expect(analyzeFormula('((p ∧ q))').steps.map((step) => step.openDepth)).toEqual([
-        0, 1, 2, 2, 2, 2, 1, 0,
+      expect(analyzeFormula('((p ∧ q) ∨ r)').steps.map((step) => step.openDepth)).toEqual([
+        0, 1, 2, 2, 2, 2, 1, 1, 1, 0,
       ])
     })
   })
 
   it('keeps the tokens it read', () => {
-    expect(analyzeFormula('(p)').tokens).toHaveLength(3)
+    expect(analyzeFormula('(p ∧ q)').tokens).toHaveLength(5)
   })
 })

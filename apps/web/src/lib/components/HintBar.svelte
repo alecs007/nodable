@@ -53,9 +53,6 @@
   aria-live="polite"
 >
   {#if message !== ''}
-    {#if error !== undefined}
-      <span class="code">{error.code}</span>
-    {/if}
     <span>{message}</span>
   {/if}
 </p>
@@ -82,14 +79,5 @@
 
   .hint.error {
     color: var(--color-error);
-  }
-
-  .code {
-    padding: 1px var(--space-2);
-    border-radius: var(--radius-pill);
-    background: var(--color-error-soft);
-    font-family: var(--font-mono);
-    font-size: 0.6875rem;
-    font-weight: 600;
   }
 </style>

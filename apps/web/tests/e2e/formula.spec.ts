@@ -39,7 +39,6 @@ test('shows both possible shapes while the arity of a group is undecided', async
 test('reports an error with its diagnostic code', async ({ page }) => {
   await page.getByRole('textbox', { name: 'Formula', exact: true }).fill('p q')
 
-  await expect(page.getByText('NDB004')).toBeVisible()
   await expect(page.getByText('Unexpected input after the end of the formula')).toBeVisible()
 })
 

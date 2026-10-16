@@ -120,7 +120,9 @@ function closeNode(state: BuildState, node: TreeNode, range: SourceRange): Place
     return reject('NDB003', range)
   }
 
-  if (node.kind === 'slot' || node.kind === 'leaf' || !areChildrenComplete(node)) {
+  const isResolved = node.kind === 'unary' || node.kind === 'binary'
+
+  if (!isResolved || !areChildrenComplete(node)) {
     return reject('NDB002', range)
   }
 

@@ -16,7 +16,10 @@
 
   const duration = $derived(prefersReducedMotion.current ? 0 : 160)
 
+  const SEARCH_THRESHOLD = 10
+
   let open = $state(false)
+  let query = $state('')
   let container: HTMLDivElement | undefined = $state()
 
   const active = $derived(sessions.find((session) => session.id === activeId))
@@ -29,9 +32,16 @@
   }
 
   const label = $derived(active === undefined ? locale.t('workspace.empty') : titleOf(active))
+  const hasSearch = $derived(sessions.length > SEARCH_THRESHOLD)
+  const shown = $derived(
+    hasSearch && query !== ''
+      ? sessions.filter((session) => titleOf(session).toLowerCase().includes(query.toLowerCase()))
+      : sessions,
+  )
 
   function close(): void {
     open = false
+    query = ''
   }
 
   function choose(id: string): void {
@@ -80,7 +90,22 @@
       aria-label={locale.t('workspace.label')}
       transition:fly={{ y: -6, duration }}
     >
-      {#each sessions as session (session.id)}
+      {#if hasSearch}
+        <li class="search" role="none">
+          <input
+            type="search"
+            autocomplete="off"
+            aria-label={locale.t('workspace.search')}
+            placeholder={locale.t('workspace.search')}
+            value={query}
+            oninput={(event) => {
+              query = event.currentTarget.value
+            }}
+          />
+        </li>
+      {/if}
+
+      {#each shown as session (session.id)}
         <li class="entry" role="option" aria-selected={session.id === activeId}>
           <button
             type="button"
@@ -181,6 +206,29 @@
     background: var(--color-surface-raised);
     list-style: none;
     overflow-y: auto;
+  }
+
+  .search {
+    position: sticky;
+    inset-block-start: 0;
+    padding-block-end: var(--space-1);
+    background: var(--color-surface-raised);
+  }
+
+  .search input {
+    inline-size: 100%;
+    padding: var(--space-2) var(--space-3);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-pill);
+    background: var(--color-surface);
+    color: var(--color-text);
+    font-family: var(--font-sans);
+    font-size: 0.8125rem;
+  }
+
+  .search input:focus {
+    border-color: var(--color-accent);
+    outline: none;
   }
 
   .entry {

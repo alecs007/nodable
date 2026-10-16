@@ -3,6 +3,7 @@
   import { prefersReducedMotion } from 'svelte/motion'
   import { fade } from 'svelte/transition'
   import { locale } from '../state/locale.svelte'
+  import NodeCard from './NodeCard.svelte'
   import TreeNodeShape from './TreeNodeShape.svelte'
 
   type Props = {
@@ -18,10 +19,31 @@
     snapshot.cursor.kind === 'node' ? snapshot.cursor.nodeId : undefined,
   )
 
+  let selectedId = $state<NodeId | undefined>()
+
+  const selected = $derived(layout.nodes.find((entry) => entry.id === selectedId))
+
+  function clearSelection(): void {
+    selectedId = undefined
+  }
+
+  function toggle(id: NodeId): void {
+    selectedId = selectedId === id ? undefined : id
+  }
+
   const arrow = $derived(
     `M ${String(layout.cursor.anchor.x)} ${String(layout.cursor.anchor.y)} l 11 -7 v 4 h 13 v 6 h -13 v 4 z`,
   )
 </script>
+
+<svelte:window
+  onpointerdown={clearSelection}
+  onkeydown={(event: KeyboardEvent) => {
+    if (event.key === 'Escape') {
+      clearSelection()
+    }
+  }}
+/>
 
 <svg
   class="canvas"
@@ -46,13 +68,30 @@
   {/each}
 
   {#each layout.nodes as entry (entry.id)}
-    <g class="node" transform="translate({entry.center.x}, {entry.center.y})">
+    <g
+      class="node"
+      class:selected={entry.id === selectedId}
+      transform="translate({entry.center.x}, {entry.center.y})"
+      role="button"
+      tabindex="0"
+      aria-pressed={entry.id === selectedId}
+      onclick={() => {
+        toggle(entry.id)
+      }}
+      onkeydown={(event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault()
+          toggle(entry.id)
+        }
+      }}
+    >
       <g in:fade={{ duration }}>
         <TreeNodeShape
           {entry}
           options={layout.options}
           isCursor={entry.id === cursorNodeId}
           isComplete={snapshot.isComplete && entry.depth === 0}
+          isSelected={entry.id === selectedId}
           hasLabel={!unlabelled.includes(entry.id)}
         />
       </g>
@@ -61,6 +100,10 @@
 
   {#if !snapshot.isComplete}
     <path class="cursor" d={arrow} in:fade={{ duration }} />
+  {/if}
+
+  {#if selected !== undefined}
+    <NodeCard entry={selected} options={layout.options} />
   {/if}
 </svg>
 
@@ -75,6 +118,19 @@
   .edge {
     stroke: var(--color-border-strong);
     stroke-width: 1.5;
+  }
+
+  .node {
+    cursor: pointer;
+  }
+
+  .node:focus {
+    outline: none;
+  }
+
+  .node:focus-visible:not(.selected) {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 4px;
   }
 
   .cursor {
