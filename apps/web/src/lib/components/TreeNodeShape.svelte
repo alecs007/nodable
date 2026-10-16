@@ -1,20 +1,34 @@
 <script lang="ts">
-  import { type LayoutNode, type LayoutOptions, nodeLabel } from '@nodable/sdk'
+  import { type LayoutNode, type LayoutOptions, type NodeKind, nodeLabel } from '@nodable/sdk'
+  import type { MessageKey } from '../i18n/messages'
   import { locale } from '../state/locale.svelte'
 
   type Props = {
     entry: LayoutNode
     options: LayoutOptions
     isCursor: boolean
+    isComplete: boolean
     isHighlighted: boolean
   }
 
-  const { entry, options, isCursor, isHighlighted }: Props = $props()
+  const { entry, options, isCursor, isComplete, isHighlighted }: Props = $props()
+
+  const KIND_KEYS: Record<NodeKind, MessageKey> = {
+    slot: 'node.slot',
+    group: 'node.group',
+    unary: 'node.unary',
+    binary: 'node.binary',
+    leaf: 'node.leaf',
+  }
 
   const left = $derived(-options.nodeWidth / 2)
   const top = $derived(-options.nodeHeight / 2)
   const label = $derived(nodeLabel(entry.node))
-  const description = $derived(`${entry.node.kind} ${label}`)
+  const description = $derived(
+    entry.node.kind === 'slot' || entry.node.kind === 'group'
+      ? locale.t(KIND_KEYS[entry.node.kind])
+      : `${locale.t(KIND_KEYS[entry.node.kind])} ${label}`,
+  )
 </script>
 
 <g class="shape" role="img" aria-label={description} aria-current={isCursor ? 'true' : undefined}>
@@ -22,36 +36,31 @@
     class="box"
     class:slot={entry.node.kind === 'slot'}
     class:leaf={entry.node.kind === 'leaf'}
+    class:pending={entry.node.kind === 'group'}
     class:highlighted={isHighlighted}
     class:cursor={isCursor}
+    class:done={isComplete}
     x={left}
     y={top}
     width={options.nodeWidth}
     height={options.nodeHeight}
-    rx="8"
+    rx="11"
   />
 
-  {#if entry.node.kind === 'group'}
-    <line class="divider" x1="0" y1={top} x2="0" y2={top + options.nodeHeight} />
-    <text class="choice" x={left + options.nodeWidth / 4} y="6">A</text>
-    <text class="choice" x={-left - options.nodeWidth / 4} y="6">B</text>
-  {:else if entry.node.kind !== 'slot'}
+  {#if entry.node.kind !== 'slot' && entry.node.kind !== 'group'}
     <text class="label" x="0" y="7">{label}</text>
-  {/if}
-
-  {#if entry.node.kind === 'group'}
-    <title>{locale.t('toolbar.label')}</title>
   {/if}
 </g>
 
 <style>
   .box {
-    fill: var(--color-surface);
+    fill: var(--color-surface-raised);
     stroke: var(--color-border-strong);
     stroke-width: 1.5;
     transition:
-      fill var(--duration-short) ease,
-      stroke var(--duration-short) ease;
+      fill var(--duration-medium) ease,
+      stroke var(--duration-medium) ease,
+      stroke-width var(--duration-medium) ease;
   }
 
   .box.leaf {
@@ -64,6 +73,10 @@
     stroke-dasharray: 5 5;
   }
 
+  .box.pending {
+    stroke-dasharray: 5 5;
+  }
+
   .box.highlighted {
     fill: var(--color-accent-soft);
     stroke: var(--color-accent);
@@ -72,12 +85,11 @@
   .box.cursor {
     stroke: var(--color-cursor);
     stroke-width: 2.5;
+    stroke-dasharray: none;
   }
 
-  .divider {
-    stroke: var(--color-border);
-    stroke-width: 1;
-    stroke-dasharray: 4 4;
+  .box.done {
+    stroke: var(--color-accent);
   }
 
   .label {
@@ -85,13 +97,6 @@
     font-family: var(--font-sans);
     font-size: 1.125rem;
     font-weight: 600;
-    text-anchor: middle;
-  }
-
-  .choice {
-    fill: var(--color-text-muted);
-    font-family: var(--font-sans);
-    font-size: 0.8125rem;
     text-anchor: middle;
   }
 </style>

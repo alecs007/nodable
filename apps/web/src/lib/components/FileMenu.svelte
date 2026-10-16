@@ -63,6 +63,20 @@
       labelKey: 'file.copy',
       run: () => copyExport(exportSession(workspace.active, 'text')),
     },
+    {
+      id: 'reset',
+      labelKey: 'workspace.resetpositions',
+      run: () => {
+        workspace.clearPositions()
+      },
+    },
+    {
+      id: 'remove',
+      labelKey: 'workspace.remove',
+      run: () => {
+        workspace.removeActive()
+      },
+    },
     { id: 'export', labelKey: 'file.export', run: exportWorkspace },
     { id: 'import', labelKey: 'file.import', run: importWorkspace },
     { id: 'clear', labelKey: 'file.clear', run: () => persistence.clear() },

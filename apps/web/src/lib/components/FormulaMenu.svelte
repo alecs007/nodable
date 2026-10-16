@@ -15,7 +15,7 @@
 
   const active = $derived(sessions.find((session) => session.id === activeId))
   const label = $derived(
-    active === undefined || active.input === '' ? locale.t('input.placeholder') : active.input,
+    active === undefined || active.input === '' ? locale.t('workspace.empty') : active.input,
   )
 
   function close(): void {
@@ -73,7 +73,7 @@
               choose(session.id)
             }}
           >
-            {session.input === '' ? locale.t('input.placeholder') : session.input}
+            {session.input === '' ? locale.t('workspace.empty') : session.input}
           </button>
         </li>
       {/each}

@@ -93,8 +93,8 @@ describe('tokenize', () => {
     ])
   })
 
-  it('reports an uppercase letter as an unknown character', () => {
-    expect(tokenize('P').diagnostics[0]?.code).toBe('NDB001')
+  it('reads an uppercase letter as a variable', () => {
+    expect(only('P1')).toEqual({ kind: 'variable', name: 'P1', range: { start: 0, end: 2 } })
   })
 
   it('reports a digit without a preceding letter as an unknown character', () => {

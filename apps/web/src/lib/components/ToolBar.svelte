@@ -95,29 +95,6 @@
     >
       <Icon name="add" />
     </button>
-    <button
-      type="button"
-      class="key"
-      disabled={workspace.sessions.length < 2}
-      title={locale.t('workspace.remove')}
-      aria-label={locale.t('workspace.remove')}
-      onclick={() => {
-        workspace.removeActive()
-      }}
-    >
-      <Icon name="remove" />
-    </button>
-    <button
-      type="button"
-      class="key"
-      title={locale.t('workspace.resetpositions')}
-      aria-label={locale.t('workspace.resetpositions')}
-      onclick={() => {
-        workspace.clearPositions()
-      }}
-    >
-      <Icon name="reset" />
-    </button>
   </div>
 
   <div class="cluster">

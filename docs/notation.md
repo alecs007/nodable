@@ -5,18 +5,19 @@ conventions of the Computational Logic course.
 
 ## Symbols
 
-| Kind              | Canonical                                                                | Accepted input aliases |
-| ----------------- | ------------------------------------------------------------------------ | ---------------------- |
-| Negation          | `¬`                                                                      | `!`, `~`               |
-| Conjunction       | `∧`                                                                      | `&`, `/\`              |
-| Disjunction       | `∨`                                                                      | `\|`, `\/`             |
-| Implication       | `→`                                                                      | `->`, `=>`             |
-| Equivalence       | `↔`                                                                      | `<->`, `<=>`           |
-| Open parenthesis  | `(`                                                                      |                        |
-| Close parenthesis | `)`                                                                      |                        |
-| Variable          | a lowercase letter optionally followed by digits, such as `p`, `q`, `r1` |                        |
+| Kind              | Canonical                                                            | Accepted input aliases |
+| ----------------- | -------------------------------------------------------------------- | ---------------------- |
+| Negation          | `¬`                                                                  | `!`, `~`               |
+| Conjunction       | `∧`                                                                  | `&`, `/\`              |
+| Disjunction       | `∨`                                                                  | `\|`, `\/`             |
+| Implication       | `→`                                                                  | `->`, `=>`             |
+| Equivalence       | `↔`                                                                  | `<->`, `<=>`           |
+| Open parenthesis  | `(`                                                                  |                        |
+| Close parenthesis | `)`                                                                  |                        |
+| Variable          | a letter optionally followed by digits, such as `p`, `q`, `r1`, `P2` |                        |
 
-Whitespace is ignored. The input bar replaces aliases with canonical symbols as you type.
+Whitespace is ignored, variable names are case sensitive, and the input bar replaces aliases with
+canonical symbols as you type.
 
 Formulas are **fully parenthesized**: every binary connective and every negation is wrapped in its
 own parentheses. `(p ∧ q)`, `(¬p)` and `((¬p) ∨ (p → q))` are well formed. A single bare variable
@@ -25,24 +26,25 @@ such as `p` is also a well-formed formula. Formulas that rely on operator preced
 
 ## Node states
 
-| State    | Meaning                                                  | Visual                                                    |
-| -------- | -------------------------------------------------------- | --------------------------------------------------------- |
-| `slot`   | An empty position that must still be filled              | Dotted, empty box                                         |
-| `group`  | Opened by `(`, arity not yet known                       | Box showing two options, **A** (binary) and **B** (unary) |
-| `unary`  | A resolved single node, labeled `¬`                      | Solid box with one child                                  |
-| `binary` | A resolved double node, labeled with a binary connective | Solid box with two children                               |
-| `leaf`   | A variable                                               | Solid box, leaf style                                     |
+| State    | Meaning                                                  | Visual                                                          |
+| -------- | -------------------------------------------------------- | --------------------------------------------------------------- |
+| `slot`   | An empty position that must still be filled              | Dotted, empty box                                               |
+| `group`  | Opened by `(`, arity not yet known                       | Dashed box; the two possible outcomes are shown beside the tree |
+| `unary`  | A resolved single node, labeled `¬`                      | Solid box with one child                                        |
+| `binary` | A resolved double node, labeled with a binary connective | Solid box with two children                                     |
+| `leaf`   | A variable                                               | Solid box, leaf style                                           |
 
 ## Cursor
 
-The cursor, drawn as an arrow, points at the node where the next token applies. It starts on the
-`root` slot. When it moves above the root, the formula is complete.
+The cursor, drawn as an arrow to the right of a node, points at the node where the next token
+applies. It starts on the `root` slot. When it moves above the root the formula is complete, and
+the interface stops drawing the arrow and marks the root instead.
 
 ## Placement rules
 
 | Token     | Precondition                                                                  | Effect                                                                                                                            | Cursor                             |
 | --------- | ----------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------- |
-| `(`       | Cursor on a `slot`                                                            | The slot becomes a `group` with the A/B choice pending, and a first child `slot` is created                                       | Moves **down** to the first child  |
+| `(`       | Cursor on a `slot`                                                            | The slot becomes a `group` with its arity undecided, and a first child `slot` is created                                          | Moves **down** to the first child  |
 | variable  | Cursor on a `slot`                                                            | The slot becomes a `leaf`. If the parent is a `group` with no label yet, the parent stays pending until the next token decides it | Moves **up** one level             |
 | `¬`       | Cursor on the first child `slot` of a `group`, directly after `(`             | The parent `group` resolves to `unary` and is labeled `¬`. The symbol is placed one level **up**                                  | Stays on the single child slot     |
 | `∧ ∨ → ↔` | Cursor on a `group` whose first child is complete                             | The group resolves to `binary` and is labeled with the connective, and a second child `slot` is created                           | Moves **down** to the second child |
@@ -51,7 +53,7 @@ The cursor, drawn as an arrow, points at the node where the next token applies. 
 In the words used in class:
 
 - A variable or `)` moves **up**.
-- `(` moves **down** and shows the A/B choice.
+- `(` moves **down** and opens the choice between a double and a single node.
 - A variable after `(` produces a **double node**; a negation after `(` produces a **single node**.
 - A negation is placed **up**, on the parent.
 - A connective moves **down**.

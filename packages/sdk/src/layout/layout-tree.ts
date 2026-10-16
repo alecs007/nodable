@@ -99,6 +99,21 @@ function translationOf(placed: readonly PlacedNode[], options: LayoutOptions): P
   return { x: options.padding - left, y: options.padding + options.verticalGap - top }
 }
 
+function clipToBox(from: Point, to: Point, options: LayoutOptions): Point {
+  const dx = to.x - from.x
+  const dy = to.y - from.y
+
+  if (dx === 0 && dy === 0) {
+    return from
+  }
+
+  const horizontal = dx === 0 ? Number.POSITIVE_INFINITY : options.nodeWidth / 2 / Math.abs(dx)
+  const vertical = dy === 0 ? Number.POSITIVE_INFINITY : options.nodeHeight / 2 / Math.abs(dy)
+  const ratio = Math.min(horizontal, vertical, 1)
+
+  return { x: from.x + dx * ratio, y: from.y + dy * ratio }
+}
+
 function sizeOf(points: readonly Point[], cursor: LayoutCursor, options: LayoutOptions): Point {
   const right = Math.max(
     ...points.map((point) => point.x + options.nodeWidth / 2),
@@ -157,7 +172,17 @@ export function layoutTree(
     const from = node.parentId === undefined ? undefined : centers.get(node.parentId)
     const to = centers.get(node.id)
 
-    return from === undefined || to === undefined ? [] : [{ id: node.id, from, to }]
+    if (from === undefined || to === undefined) {
+      return []
+    }
+
+    return [
+      {
+        id: node.id,
+        from: clipToBox(from, to, options),
+        to: clipToBox(to, from, options),
+      },
+    ]
   })
 
   const anchored = placed.map((node) => ({

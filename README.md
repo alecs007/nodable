@@ -17,7 +17,7 @@ conventions taught in the Computational Logic course.
 
 - Live tree construction: the tree is rebuilt on every keystroke.
 - Course placement rules, with a cursor arrow showing where the next token applies.
-- Dotted placeholder slots and an A/B indicator for groups whose arity is not yet decided.
+- Dotted placeholder slots, and a preview of the two possible outcomes while a group is undecided.
 - Clear diagnostics with stable codes and inline underlining of the offending range.
 - Step replay: move through every intermediate state of the build.
 - Drag and reposition nodes, with offsets kept per node.
@@ -64,8 +64,8 @@ also a valid formula.
 | Implication | `→`       | `->`, `=>`   |
 | Equivalence | `↔`       | `<->`, `<=>` |
 
-Aliases are replaced with canonical symbols as you type. Variables are a lowercase letter optionally
-followed by digits, such as `p`, `q` or `r1`. Whitespace is ignored.
+Aliases are replaced with canonical symbols as you type. A variable is a letter optionally followed
+by digits, such as `p`, `q`, `r1` or `P2`; names are case sensitive. Whitespace is ignored.
 
 ### Keyboard shortcuts
 

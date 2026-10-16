@@ -9,7 +9,7 @@
     toText,
   } from '@nodable/sdk'
   import { prefersReducedMotion } from 'svelte/motion'
-  import { scale } from 'svelte/transition'
+  import { fade, scale } from 'svelte/transition'
   import { locale } from '../state/locale.svelte'
   import TreeNodeShape from './TreeNodeShape.svelte'
 
@@ -47,13 +47,9 @@
     return rendered === 0 ? 1 : rendered / layout.width
   }
 
-  const arrow = $derived.by(() => {
-    const { anchor, direction } = layout.cursor
-    const body =
-      direction === 'left' ? 'l 11 -7 v 4 h 13 v 6 h -13 v 4 z' : 'l -7 11 h 4 v 13 h 6 v -13 h 4 z'
-
-    return `M ${String(anchor.x)} ${String(anchor.y)} ${body}`
-  })
+  const arrow = $derived(
+    `M ${String(layout.cursor.anchor.x)} ${String(layout.cursor.anchor.y)} l 11 -7 v 4 h 13 v 6 h -13 v 4 z`,
+  )
 
   function startDrag(event: PointerEvent, entry: LayoutNode, handle: SVGGElement): void {
     if (!interactive) {
@@ -125,6 +121,7 @@
         {entry}
         options={layout.options}
         isCursor={entry.id === cursorNodeId}
+        isComplete={snapshot.isComplete && entry.depth === 0}
         isHighlighted={highlightLeaves && entry.node.kind === 'leaf'}
       />
     </g>
@@ -160,7 +157,9 @@
     {/if}
   {/each}
 
-  <path class="cursor" d={arrow} />
+  {#if !snapshot.isComplete}
+    <path class="cursor" d={arrow} transition:fade={{ duration }} />
+  {/if}
 </svg>
 
 <style>

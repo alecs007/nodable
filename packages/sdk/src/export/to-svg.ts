@@ -42,11 +42,21 @@ function renderNode(entry: LayoutNode, layout: TreeLayout): readonly string[] {
   const box = `<rect class="${boxClass(entry.node)}" x="${String(x)}" y="${String(y)}" width="${String(nodeWidth)}" height="${String(nodeHeight)}" />`
 
   if (entry.node.kind === 'group') {
+    const double = entry.center.x - 17
+    const single = entry.center.x + 17
+    const upper = entry.center.y - 6
+    const lower = entry.center.y + 8
+
     return [
       box,
-      `<line class="nodable-divider" x1="${String(entry.center.x)}" y1="${String(y)}" x2="${String(entry.center.x)}" y2="${String(y + nodeHeight)}" />`,
-      `<text class="nodable-choice" x="${String(x + nodeWidth / 4)}" y="${String(entry.center.y + 5)}">A</text>`,
-      `<text class="nodable-choice" x="${String(x + (nodeWidth * 3) / 4)}" y="${String(entry.center.y + 5)}">B</text>`,
+      `<line class="nodable-divider" x1="${String(entry.center.x)}" y1="${String(y + 9)}" x2="${String(entry.center.x)}" y2="${String(y + nodeHeight - 9)}" />`,
+      `<path class="nodable-link" d="M ${String(double)} ${String(upper)} L ${String(double - 7)} ${String(lower)} M ${String(double)} ${String(upper)} L ${String(double + 7)} ${String(lower)}" />`,
+      `<circle class="nodable-dot" cx="${String(double)}" cy="${String(upper)}" r="2.4" />`,
+      `<circle class="nodable-dot" cx="${String(double - 7)}" cy="${String(lower)}" r="2.4" />`,
+      `<circle class="nodable-dot" cx="${String(double + 7)}" cy="${String(lower)}" r="2.4" />`,
+      `<path class="nodable-link" d="M ${String(single)} ${String(upper)} L ${String(single)} ${String(lower)}" />`,
+      `<circle class="nodable-dot" cx="${String(single)}" cy="${String(upper)}" r="2.4" />`,
+      `<circle class="nodable-dot" cx="${String(single)}" cy="${String(lower)}" r="2.4" />`,
     ]
   }
 

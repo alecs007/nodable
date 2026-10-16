@@ -25,7 +25,8 @@
           onselect(session.id)
         }}
       >
-        <span class="formula">{session.input === '' ? locale.t('input.label') : session.input}</span
+        <span class="formula"
+          >{session.input === '' ? locale.t('workspace.empty') : session.input}</span
         >
         <TreeCanvas snapshot={getTree(session)} {highlightLeaves} />
       </button>

@@ -1,8 +1,10 @@
 <script lang="ts">
   import './app.css'
+  import { collectNodes } from '@nodable/sdk'
   import BrandMark from './lib/components/BrandMark.svelte'
   import HintBar from './lib/components/HintBar.svelte'
   import InputBar from './lib/components/InputBar.svelte'
+  import OutcomePreview from './lib/components/OutcomePreview.svelte'
   import StepSlider from './lib/components/StepSlider.svelte'
   import ToolBar from './lib/components/ToolBar.svelte'
   import TreeCanvas from './lib/components/TreeCanvas.svelte'
@@ -16,6 +18,10 @@
   const hasError = $derived(
     session.analysis.diagnostics.some((diagnostic) => diagnostic.severity === 'error'),
   )
+  const hasPendingGroup = $derived(
+    workspace.view === 'single' &&
+      collectNodes(workspace.snapshot.root).some((node) => node.kind === 'group' && !node.isClosed),
+  )
 
   $effect(() => theme.start())
 
@@ -24,10 +30,10 @@
   })
 
   $effect(() => {
-    const snapshot = workspace.asWorkspace()
+    const saved = workspace.asWorkspace()
 
     if (persistence.isReady) {
-      persistence.schedule(snapshot)
+      persistence.schedule(saved)
     }
   })
 
@@ -59,43 +65,47 @@
     {/if}
   </main>
 
-  <div class="islands">
-    <section class="island composer" aria-label={locale.t('input.label')}>
-      <div class="caption">
-        <BrandMark />
-        <HintBar
-          diagnostics={session.analysis.diagnostics}
-          allowedNext={session.analysis.allowedNext}
-          isComplete={session.analysis.isComplete}
-          isEmpty={session.input.length === 0}
-        />
-      </div>
-      <InputBar
-        value={session.input}
-        {hasError}
+  <header class="composer island" aria-label={locale.t('input.label')}>
+    <div class="caption">
+      <BrandMark />
+      <HintBar
+        diagnostics={session.analysis.diagnostics}
         allowedNext={session.analysis.allowedNext}
-        onchange={(value: string) => {
-          workspace.setInput(value)
-        }}
-        onsubmit={() => {
-          workspace.addFormula()
+        isComplete={session.analysis.isComplete}
+        isEmpty={session.input.length === 0}
+      />
+    </div>
+    <InputBar
+      value={session.input}
+      {hasError}
+      allowedNext={session.analysis.allowedNext}
+      onchange={(value: string) => {
+        workspace.setInput(value)
+      }}
+      onsubmit={() => {
+        workspace.addFormula()
+      }}
+    />
+  </header>
+
+  {#if hasPendingGroup}
+    <div class="hintbox">
+      <OutcomePreview />
+    </div>
+  {/if}
+
+  <nav class="dock island" aria-label={locale.t('view.label')}>
+    {#if workspace.lastStepIndex > 0}
+      <StepSlider
+        steps={session.analysis.steps}
+        index={workspace.stepIndex}
+        onselect={(index: number) => {
+          workspace.showStep(index)
         }}
       />
-    </section>
-
-    <section class="island tools" aria-label={locale.t('view.label')}>
-      <ToolBar />
-      {#if workspace.lastStepIndex > 0}
-        <StepSlider
-          steps={session.analysis.steps}
-          index={workspace.stepIndex}
-          onselect={(index: number) => {
-            workspace.showStep(index)
-          }}
-        />
-      {/if}
-    </section>
-  </div>
+    {/if}
+    <ToolBar />
+  </nav>
 </div>
 
 <style>
@@ -109,7 +119,7 @@
     place-items: start center;
     inline-size: 100%;
     block-size: 100%;
-    padding: clamp(12rem, 28vh, 16rem) var(--space-5) var(--space-6);
+    padding: clamp(9rem, 22vh, 12rem) var(--space-5) clamp(7rem, 16vh, 9rem);
     overflow: auto;
   }
 
@@ -117,30 +127,22 @@
     place-items: stretch;
   }
 
-  .islands {
-    position: absolute;
-    inset-block-start: 0;
-    inset-inline: 0;
-    display: grid;
-    gap: var(--space-3);
-    justify-items: center;
-    padding: var(--space-4);
-    pointer-events: none;
-  }
-
   .island {
-    inline-size: min(100%, 44rem);
-    padding: var(--space-3);
+    position: absolute;
     border: 1px solid var(--color-glass-border);
     border-radius: var(--radius-4);
     background: var(--color-glass);
     backdrop-filter: var(--glass-blur);
-    pointer-events: auto;
   }
 
   .composer {
+    inset-block-start: var(--space-4);
+    inset-inline-start: 50%;
     display: grid;
     gap: var(--space-2);
+    inline-size: min(calc(100% - var(--space-5)), 42rem);
+    padding: var(--space-3);
+    transform: translateX(-50%);
   }
 
   .caption {
@@ -152,44 +154,47 @@
     padding-inline: var(--space-2);
   }
 
-  .tools {
+  .dock {
+    inset-block-end: var(--space-4);
+    inset-inline-start: 50%;
     display: flex;
     flex-wrap: wrap;
-    gap: var(--space-4);
+    gap: var(--space-3);
     align-items: center;
     justify-content: center;
-    inline-size: auto;
-    max-inline-size: min(100%, 44rem);
-    padding-inline: var(--space-4);
+    max-inline-size: calc(100% - var(--space-5));
+    padding: var(--space-2) var(--space-3);
+    transform: translateX(-50%);
+  }
+
+  .hintbox {
+    position: absolute;
+    inset-block-end: clamp(6.5rem, 15vh, 8rem);
+    inset-inline-start: var(--space-4);
   }
 
   @media (width <= 48rem) {
-    .stage {
-      display: flex;
-      flex-direction: column;
+    .workspace {
+      padding: 11rem var(--space-2) 7rem;
     }
 
-    .islands {
-      position: static;
-      order: -1;
-      padding: var(--space-2);
-    }
-
-    .island {
-      inline-size: 100%;
-      max-inline-size: none;
+    .composer {
+      inset-block-start: var(--space-2);
+      inline-size: calc(100% - var(--space-4));
       border-radius: var(--radius-3);
     }
 
-    .tools {
-      justify-content: flex-start;
-      padding-inline: var(--space-2);
+    .dock {
+      inset-block-end: var(--space-2);
+      max-inline-size: calc(100% - var(--space-4));
+      border-radius: var(--radius-3);
     }
 
-    .workspace {
-      flex: 1;
-      min-block-size: 0;
-      padding: var(--space-4) var(--space-2) var(--space-5);
+    .hintbox {
+      inset-block-end: 6.5rem;
+      inset-inline-start: var(--space-2);
+      transform: scale(0.85);
+      transform-origin: bottom left;
     }
   }
 </style>

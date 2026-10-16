@@ -10,7 +10,7 @@ import {
 import { type Token } from '../model/token'
 
 const WHITESPACE = /\s/
-const VARIABLE_START = /[a-z]/
+const VARIABLE_START = /[A-Za-z]/
 const DIGIT = /[0-9]/
 
 export type TokenizeResult = {
