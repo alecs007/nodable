@@ -16,7 +16,7 @@ describe('pendingVariants', () => {
     const variants = variantsOf('(')
 
     expect(variants.map((variant) => variant.kind)).toEqual(['double', 'single'])
-    expect(variants[0]?.workingId).toBe('root')
+    expect(variants[0]?.pending).toEqual(['root'])
   })
 
   it('gives the double shape a second operand slot', () => {
@@ -42,7 +42,37 @@ describe('pendingVariants', () => {
   it('keeps the nodes that were already built', () => {
     const [double] = variantsOf('((¬p) ∨ (')
 
-    expect(double?.workingId).toBe('root.1')
+    expect(double?.pending).toEqual(['root.1'])
     expect(double?.snapshot.root).toMatchObject({ kind: 'binary', symbol: '∨' })
+  })
+
+  it('puts the cursor on the node that would take the negation', () => {
+    const [double, single] = variantsOf('(')
+
+    expect(double?.snapshot.cursor).toEqual({ kind: 'node', nodeId: 'root.0' })
+    expect(single?.snapshot.cursor).toEqual({ kind: 'node', nodeId: 'root' })
+  })
+
+  it('settles every group that can only become a double node', () => {
+    const variants = variantsOf('(((')
+
+    expect(variants).toHaveLength(2)
+    expect(variants[0]?.pending).toEqual(['root', 'root.0', 'root.0.0'])
+    expect(variants[0]?.snapshot.root).toMatchObject({
+      kind: 'binary',
+      right: { kind: 'slot', id: 'root.1' },
+      left: { kind: 'binary', right: { kind: 'slot', id: 'root.0.1' } },
+    })
+  })
+
+  it('offers the two shapes for the innermost group only', () => {
+    const [double, single] = variantsOf('(((')
+
+    expect(double?.snapshot.root).toMatchObject({
+      left: { left: { kind: 'binary', id: 'root.0.0' } },
+    })
+    expect(single?.snapshot.root).toMatchObject({
+      left: { left: { kind: 'unary', id: 'root.0.0' } },
+    })
   })
 })

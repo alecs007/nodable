@@ -1,5 +1,6 @@
 import {
   CONJUNCTION,
+  cursorAt,
   type GroupNode,
   NEGATION,
   type NodeId,
@@ -16,23 +17,17 @@ export type VariantKind = 'double' | 'single'
 export type FormulaVariant = {
   readonly kind: VariantKind
   readonly snapshot: TreeSnapshot
-  readonly workingId: NodeId
+  readonly pending: readonly NodeId[]
 }
 
-function pendingGroupOf(root: TreeNode): GroupNode | undefined {
-  return collectNodes(root).find(
+function pendingGroups(root: TreeNode): readonly GroupNode[] {
+  return collectNodes(root).filter(
     (node): node is GroupNode => node.kind === 'group' && !node.isClosed,
   )
 }
 
-export function pendingVariants(snapshot: TreeSnapshot): readonly FormulaVariant[] {
-  const group = pendingGroupOf(snapshot.root)
-
-  if (group === undefined) {
-    return []
-  }
-
-  const asDouble: TreeNode = {
+function asDouble(group: GroupNode): TreeNode {
+  return {
     kind: 'binary',
     id: group.id,
     symbol: CONJUNCTION,
@@ -40,31 +35,50 @@ export function pendingVariants(snapshot: TreeSnapshot): readonly FormulaVariant
     left: group.first,
     right: createSlot(secondChildId(group.id)),
   }
+}
 
-  const asSingle: TreeNode = {
+function asSingle(group: GroupNode): TreeNode {
+  return {
     kind: 'unary',
     id: group.id,
     symbol: NEGATION,
     isClosed: false,
     child: group.first,
   }
+}
 
-  const double: FormulaVariant = {
-    kind: 'double',
-    snapshot: { ...snapshot, root: replaceNode(snapshot.root, group.id, asDouble) },
-    workingId: group.id,
+export function pendingVariants(snapshot: TreeSnapshot): readonly FormulaVariant[] {
+  const groups = pendingGroups(snapshot.root)
+
+  if (groups.length === 0) {
+    return []
   }
 
-  if (group.first.kind !== 'slot') {
-    return [double]
+  const undecided = groups.find((group) => group.first.kind === 'slot')
+  const pending = groups.map((group) => group.id)
+
+  const settled = groups
+    .filter((group) => group.first.kind !== 'slot')
+    .reduce<TreeNode>((tree, group) => replaceNode(tree, group.id, asDouble(group)), snapshot.root)
+
+  if (undecided === undefined) {
+    return [{ kind: 'double', snapshot: { ...snapshot, root: settled }, pending }]
   }
 
   return [
-    double,
+    {
+      kind: 'double',
+      snapshot: { ...snapshot, root: replaceNode(settled, undecided.id, asDouble(undecided)) },
+      pending,
+    },
     {
       kind: 'single',
-      snapshot: { ...snapshot, root: replaceNode(snapshot.root, group.id, asSingle) },
-      workingId: group.id,
+      snapshot: {
+        ...snapshot,
+        root: replaceNode(settled, undecided.id, asSingle(undecided)),
+        cursor: cursorAt(undecided.id),
+      },
+      pending,
     },
   ]
 }

@@ -7,10 +7,10 @@
 
   type Props = {
     snapshot: TreeSnapshot
-    hideLabelFor?: NodeId | undefined
+    unlabelled?: readonly NodeId[]
   }
 
-  const { snapshot, hideLabelFor }: Props = $props()
+  const { snapshot, unlabelled = [] }: Props = $props()
 
   const layout: TreeLayout = $derived(layoutTree(snapshot))
   const duration = $derived(prefersReducedMotion.current ? 0 : 200)
@@ -53,7 +53,7 @@
           options={layout.options}
           isCursor={entry.id === cursorNodeId}
           isComplete={snapshot.isComplete && entry.depth === 0}
-          hasLabel={entry.id !== hideLabelFor}
+          hasLabel={!unlabelled.includes(entry.id)}
         />
       </g>
     </g>

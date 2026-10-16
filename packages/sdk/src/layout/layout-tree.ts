@@ -91,12 +91,16 @@ function placeNodes(root: TreeNode, options: LayoutOptions): PlacedNode[] {
     )
 }
 
+function arrowSpace(options: LayoutOptions): number {
+  return options.cursorGap + options.cursorLength
+}
+
 function translationOf(placed: readonly PlacedNode[], options: LayoutOptions): Point {
   const halfWidth = options.nodeWidth / 2
   const left = Math.min(...placed.map((node) => node.x - halfWidth))
   const top = Math.min(...placed.map((node) => node.y - options.nodeHeight / 2))
 
-  return { x: options.padding - left, y: options.padding - top }
+  return { x: options.padding + arrowSpace(options) - left, y: options.padding - top }
 }
 
 function clipToBox(from: Point, to: Point, options: LayoutOptions): Point {
@@ -114,14 +118,11 @@ function clipToBox(from: Point, to: Point, options: LayoutOptions): Point {
   return { x: from.x + dx * ratio, y: from.y + dy * ratio }
 }
 
-function sizeOf(points: readonly Point[], cursor: LayoutCursor, options: LayoutOptions): Point {
-  const right = Math.max(
-    ...points.map((point) => point.x + options.nodeWidth / 2),
-    cursor.anchor.x + (cursor.direction === 'left' ? options.cursorLength : 0),
-  )
+function sizeOf(points: readonly Point[], options: LayoutOptions): Point {
+  const right = Math.max(...points.map((point) => point.x + options.nodeWidth / 2))
   const bottom = Math.max(...points.map((point) => point.y + options.nodeHeight / 2))
 
-  return { x: right + options.padding, y: bottom + options.padding }
+  return { x: right + arrowSpace(options) + options.padding, y: bottom + options.padding }
 }
 
 function cursorOf(
@@ -190,7 +191,7 @@ export function layoutTree(
     y: node.y + translation.y,
   }))
   const cursor = cursorOf(nodes, snapshot.cursor, options)
-  const size = sizeOf([...anchored, ...nodes.map((node) => node.center)], cursor, options)
+  const size = sizeOf([...anchored, ...nodes.map((node) => node.center)], options)
 
   return {
     nodes,

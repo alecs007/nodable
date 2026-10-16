@@ -70,7 +70,7 @@
       {:else}
         <TreeCanvas
           snapshot={variants[0]?.snapshot ?? workspace.snapshot}
-          hideLabelFor={variants[0]?.workingId}
+          unlabelled={variants[0]?.pending ?? []}
         />
       {/if}
     </Viewport>

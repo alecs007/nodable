@@ -136,14 +136,16 @@ full snapshot with the working node already expanded.
 type FormulaVariant = {
   readonly kind: 'double' | 'single'
   readonly snapshot: TreeSnapshot
-  readonly workingId: NodeId
+  readonly pending: readonly NodeId[]
 }
 ```
 
-Directly after an open parenthesis both shapes are possible, so two variants come back: a double
-node and a single node. The symbol of the working node is still unknown in both, so the interface
-draws it without one. Once the first operand is filled only the double node remains and the list
-holds one variant. With no pending group the list is empty.
+A group whose first operand is already filled can only become a double node, so it is settled into
+one in every variant returned. The innermost group, the one whose first operand is still an empty
+slot, is the only one that can still go either way: it produces the double and the single shape.
+With nothing undecided the list holds the single settled tree, and with no pending group at all it
+is empty. lists the groups whose symbol is not known yet, so the interface can draw them
+without one.
 
 ## Exporters
 

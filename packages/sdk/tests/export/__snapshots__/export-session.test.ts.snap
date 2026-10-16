@@ -20,7 +20,7 @@ exports[`exportSession > plain text > writes an indented tree 1`] = `
 `;
 
 exports[`exportSession > svg > writes a standalone document 1`] = `
-"<svg xmlns="http://www.w3.org/2000/svg" width="252" height="324" viewBox="0 0 252 324">
+"<svg xmlns="http://www.w3.org/2000/svg" width="324" height="324" viewBox="0 0 324 324">
 <style>.nodable-surface { fill: #ffffff }
   .nodable-edge { stroke: #5b6b7c; stroke-width: 1.5; fill: none }
   .nodable-box { fill: #ffffff; stroke: #1f2933; stroke-width: 1.5; rx: 8 }
@@ -31,16 +31,16 @@ exports[`exportSession > svg > writes a standalone document 1`] = `
   .nodable-choice { font: 500 11px system-ui, sans-serif; fill: #5b6b7c; text-anchor: middle }
   .nodable-cursor { fill: #c1452b }</style>
 <rect class="nodable-surface" width="100%" height="100%" />
-<line class="nodable-edge" x1="115" y1="84" x2="87" y2="140" />
-<line class="nodable-edge" x1="76" y1="184" x2="76" y2="240" />
-<line class="nodable-edge" x1="137" y1="84" x2="165" y2="140" />
-<rect class="nodable-box" x="90" y="40" width="72" height="44" />
-<text class="nodable-label" x="126" y="68">∨</text>
-<rect class="nodable-box" x="40" y="140" width="72" height="44" />
-<text class="nodable-label" x="76" y="168">¬</text>
-<rect class="nodable-box nodable-box-leaf" x="40" y="240" width="72" height="44" />
-<text class="nodable-label" x="76" y="268">p</text>
-<rect class="nodable-box nodable-box-leaf" x="140" y="140" width="72" height="44" />
-<text class="nodable-label" x="176" y="168">q</text>
+<line class="nodable-edge" x1="151" y1="84" x2="123" y2="140" />
+<line class="nodable-edge" x1="112" y1="184" x2="112" y2="240" />
+<line class="nodable-edge" x1="173" y1="84" x2="201" y2="140" />
+<rect class="nodable-box" x="126" y="40" width="72" height="44" />
+<text class="nodable-label" x="162" y="68">∨</text>
+<rect class="nodable-box" x="76" y="140" width="72" height="44" />
+<text class="nodable-label" x="112" y="168">¬</text>
+<rect class="nodable-box nodable-box-leaf" x="76" y="240" width="72" height="44" />
+<text class="nodable-label" x="112" y="268">p</text>
+<rect class="nodable-box nodable-box-leaf" x="176" y="140" width="72" height="44" />
+<text class="nodable-label" x="212" y="168">q</text>
 </svg>"
 `;
