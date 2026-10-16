@@ -9,6 +9,7 @@ const STYLE = `
   .nodable-box-slot { fill: none; stroke-dasharray: 4 4; stroke: #8595a6 }
   .nodable-box-leaf { fill: #eef4fb }
   .nodable-label { font: 500 18px system-ui, sans-serif; fill: #1f2933; text-anchor: middle }
+  .nodable-divider { stroke: #8595a6; stroke-width: 1; stroke-dasharray: 4 4 }
   .nodable-choice { font: 500 11px system-ui, sans-serif; fill: #5b6b7c; text-anchor: middle }
   .nodable-cursor { fill: #c1452b }
 `.trim()
@@ -38,19 +39,24 @@ function renderNode(entry: LayoutNode, layout: TreeLayout): readonly string[] {
   const { nodeWidth, nodeHeight } = layout.options
   const x = entry.center.x - nodeWidth / 2
   const y = entry.center.y - nodeHeight / 2
-  const label = escapeText(nodeLabel(entry.node))
-  const lines = [
-    `<rect class="${boxClass(entry.node)}" x="${String(x)}" y="${String(y)}" width="${String(nodeWidth)}" height="${String(nodeHeight)}" />`,
-    `<text class="nodable-label" x="${String(entry.center.x)}" y="${String(entry.center.y + 6)}">${label}</text>`,
-  ]
+  const box = `<rect class="${boxClass(entry.node)}" x="${String(x)}" y="${String(y)}" width="${String(nodeWidth)}" height="${String(nodeHeight)}" />`
 
-  if (entry.node.kind !== 'group') {
-    return lines
+  if (entry.node.kind === 'group') {
+    return [
+      box,
+      `<line class="nodable-divider" x1="${String(entry.center.x)}" y1="${String(y)}" x2="${String(entry.center.x)}" y2="${String(y + nodeHeight)}" />`,
+      `<text class="nodable-choice" x="${String(x + nodeWidth / 4)}" y="${String(entry.center.y + 5)}">A</text>`,
+      `<text class="nodable-choice" x="${String(x + (nodeWidth * 3) / 4)}" y="${String(entry.center.y + 5)}">B</text>`,
+    ]
+  }
+
+  if (entry.node.kind === 'slot') {
+    return [box]
   }
 
   return [
-    ...lines,
-    `<text class="nodable-choice" x="${String(entry.center.x)}" y="${String(y - 6)}">A | B</text>`,
+    box,
+    `<text class="nodable-label" x="${String(entry.center.x)}" y="${String(entry.center.y + 6)}">${escapeText(nodeLabel(entry.node))}</text>`,
   ]
 }
 

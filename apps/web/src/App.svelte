@@ -3,11 +3,14 @@
   import HintBar from './lib/components/HintBar.svelte'
   import InputBar from './lib/components/InputBar.svelte'
   import SettingsBar from './lib/components/SettingsBar.svelte'
+  import TreeCanvas from './lib/components/TreeCanvas.svelte'
+  import { getTree } from '@nodable/sdk'
   import { locale } from './lib/state/locale.svelte'
   import { workspace } from './lib/state/workspace.svelte'
   import { theme } from './lib/theme/theme.svelte'
 
   const session = $derived(workspace.active)
+  const snapshot = $derived(getTree(session))
 
   $effect(() => theme.start())
 
@@ -43,7 +46,9 @@
       />
     </section>
 
-    <section class="canvas" aria-label={locale.t('app.title')}></section>
+    <section class="canvas" aria-label={locale.t('app.title')}>
+      <TreeCanvas {snapshot} />
+    </section>
   </main>
 </div>
 
@@ -90,6 +95,10 @@
   }
 
   .canvas {
+    display: grid;
+    place-items: start center;
+    overflow: auto;
+    padding: var(--space-3);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-3);
     background: var(--color-surface-raised);

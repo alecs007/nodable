@@ -71,7 +71,7 @@ describe('exportSession', () => {
     })
 
     it('shows the choice between a double and a single node on a pending group', () => {
-      expect(content('svg', '(p')).toContain('A | B')
+      expect(content('svg', '(p')).toContain('nodable-divider')
     })
   })
 
