@@ -202,13 +202,15 @@ for a group whose arity is still pending.
 type Workspace = {
   readonly version: number
   readonly name: string
+  readonly activeId: SessionId
   readonly sessions: readonly Session[]
 }
 ```
 
-### `createWorkspace(name?: string, sessions?: readonly Session[]): Workspace`
+### `createWorkspace(name?, sessions?, activeId?): Workspace`
 
-Creates a workspace. Without sessions it starts with a single empty one.
+Creates a workspace. Without sessions it starts with a single empty one, and without an active
+identifier the first session is the active one.
 
 ### `addSession`, `removeSession`, `replaceSession`
 
@@ -223,12 +225,14 @@ Each returns a new workspace. `replaceSession` matches on the session identifier
 ### `serializeWorkspace(workspace: Workspace): string`
 
 Writes the workspace as indented JSON. Only the identifier, the name, the input and the offsets of
-each session are stored; the analysis is rebuilt on load.
+each session are stored, together with the identifier of the active one; the analysis is rebuilt on
+load.
 
 ### `deserializeWorkspace(data: string): Result<Workspace, Diagnostic>`
 
 Reads a workspace back. Malformed JSON, a missing `sessions` array or a session without an
-identifier or an input all return `NDB008`. Offsets that are not points are dropped rather than
+identifier or an input all return `NDB008`. An active identifier that names no stored session falls
+back to the first one. Offsets that are not points are dropped rather than
 failing the whole load.
 
 ```ts

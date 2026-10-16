@@ -63,8 +63,12 @@
 </script>
 
 <div class="stage" class:ready={persistence.isReady}>
-  <main class="workspace" style:inset="{topInset}px 0 {bottomInset}px">
-    <Viewport resetKey="{workspace.activeId}:{String(variants.length)}">
+  <main class="workspace">
+    <Viewport
+      resetKey="{workspace.activeId}:{String(variants.length)}"
+      safeTop={topInset}
+      safeBottom={bottomInset}
+    >
       {#if variants.length > 1}
         <VariantBoard {variants} />
       {:else}
@@ -133,12 +137,13 @@
 
   .workspace {
     position: absolute;
-    inset: 10rem 0 7rem;
+    inset: 0;
     overflow: hidden;
   }
 
   .island {
     position: absolute;
+    z-index: 1;
     border: 1px solid var(--color-glass-border);
     border-radius: var(--radius-4);
     background: var(--color-glass);

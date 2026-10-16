@@ -113,7 +113,7 @@ function createWorkspaceState(): WorkspaceState {
       pinnedStep = undefined
     },
     asWorkspace() {
-      return createWorkspace(name, sessions)
+      return createWorkspace(name, sessions, activeId)
     },
     restore(workspace: Workspace) {
       if (workspace.sessions.length === 0) {
@@ -123,7 +123,8 @@ function createWorkspaceState(): WorkspaceState {
       pinnedStep = undefined
       name = workspace.name
       sessions = workspace.sessions
-      activeId = workspace.sessions[0]?.id ?? first.id
+      activeId =
+        workspace.activeId === '' ? (workspace.sessions[0]?.id ?? first.id) : workspace.activeId
     },
   }
 }

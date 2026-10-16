@@ -66,6 +66,7 @@ describe('serializeWorkspace', () => {
     expect(data).toEqual({
       version: 1,
       name: 'Seminar 3',
+      activeId: expect.any(String) as unknown,
       sessions: [
         {
           id: expect.any(String) as unknown,
@@ -92,6 +93,23 @@ describe('deserializeWorkspace', () => {
     expect(result.value.sessions.map((session) => session.input)).toEqual(['((¬p) ∨ q)', '(r → s)'])
     expect(result.value.sessions[0]?.offsets).toEqual({ 'root.0': { x: 12, y: -6 } })
     expect(result.value.sessions[0]?.id).toBe(workspace.sessions[0]?.id)
+  })
+
+  it('remembers which formula was active', () => {
+    const workspace = sample()
+    const chosen = workspace.sessions[1]?.id ?? ''
+    const stored = serializeWorkspace({ ...workspace, activeId: chosen })
+    const result = deserializeWorkspace(stored)
+
+    expect(result.ok && result.value.activeId).toBe(chosen)
+  })
+
+  it('falls back to the first formula when the stored one is gone', () => {
+    const result = deserializeWorkspace(
+      '{"sessions":[{"id":"a","input":"p"}],"activeId":"missing"}',
+    )
+
+    expect(result.ok && result.value.activeId).toBe('a')
   })
 
   it('keeps the name of every session', () => {

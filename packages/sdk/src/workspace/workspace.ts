@@ -8,6 +8,7 @@ export const WORKSPACE_VERSION = 1
 export type Workspace = {
   readonly version: number
   readonly name: string
+  readonly activeId: SessionId
   readonly sessions: readonly Session[]
 }
 
@@ -21,14 +22,22 @@ type SerializedSession = {
 type SerializedWorkspace = {
   readonly version: number
   readonly name: string
+  readonly activeId: SessionId
   readonly sessions: readonly SerializedSession[]
 }
 
-export function createWorkspace(name = 'Workspace', sessions?: readonly Session[]): Workspace {
+export function createWorkspace(
+  name = 'Workspace',
+  sessions?: readonly Session[],
+  activeId?: SessionId,
+): Workspace {
+  const members = sessions ?? [createSession()]
+
   return {
     version: WORKSPACE_VERSION,
     name,
-    sessions: sessions ?? [createSession()],
+    activeId: activeId ?? members[0]?.id ?? '',
+    sessions: members,
   }
 }
 
@@ -51,6 +60,7 @@ export function serializeWorkspace(workspace: Workspace): string {
   const data: SerializedWorkspace = {
     version: WORKSPACE_VERSION,
     name: workspace.name,
+    activeId: workspace.activeId,
     sessions: workspace.sessions.map((session) => ({
       id: session.id,
       name: session.name,
@@ -128,10 +138,14 @@ export function deserializeWorkspace(data: string): Result<Workspace, Diagnostic
   }
 
   const name = typeof parsed['name'] === 'string' ? parsed['name'] : 'Workspace'
+  const members = sessions.filter((session) => session !== undefined)
+  const stored = parsed['activeId']
+  const known = members.some((session) => session.id === stored)
 
   return ok({
     version: WORKSPACE_VERSION,
     name,
-    sessions: sessions.filter((session) => session !== undefined),
+    activeId: known && typeof stored === 'string' ? stored : (members[0]?.id ?? ''),
+    sessions: members,
   })
 }

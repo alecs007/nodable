@@ -29,6 +29,9 @@
         onselect={(id: string) => {
           workspace.select(id)
         }}
+        ondelete={(id: string) => {
+          workspace.remove(id)
+        }}
       />
     </div>
   {/if}

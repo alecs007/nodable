@@ -5,10 +5,12 @@
 
   type Props = {
     resetKey: string
+    safeTop?: number
+    safeBottom?: number
     children: Snippet
   }
 
-  const { resetKey, children }: Props = $props()
+  const { resetKey, safeTop = 0, safeBottom = 0, children }: Props = $props()
 
   const MIN_SCALE = 0.02
   const MAX_SCALE = 3
@@ -67,10 +69,8 @@
       return
     }
 
-    const room = {
-      width: Math.max(1, measured.view.width - MARGIN * 2),
-      height: Math.max(1, measured.view.height - MARGIN * 2),
-    }
+    const band = Math.max(1, measured.view.height - safeTop - safeBottom - MARGIN * 2)
+    const room = { width: Math.max(1, measured.view.width - MARGIN * 2), height: band }
 
     const next = Math.min(
       1,
@@ -82,7 +82,7 @@
 
     scale = next
     offsetX = (measured.view.width - measured.content.width * next) / 2
-    offsetY = (measured.view.height - measured.content.height * next) / 2
+    offsetY = safeTop + (band + MARGIN * 2 - measured.content.height * next) / 2
   }
 
   function fitScale(): number {
@@ -97,7 +97,8 @@
       Math.min(
         1,
         (measured.view.width - MARGIN * 2) / measured.content.width,
-        (measured.view.height - MARGIN * 2) / measured.content.height,
+        Math.max(1, measured.view.height - safeTop - safeBottom - MARGIN * 2) /
+          measured.content.height,
       ),
     )
   }
@@ -208,6 +209,16 @@
     return () => {
       observer.disconnect()
     }
+  })
+
+  $effect(() => {
+    const bounds = [safeTop, safeBottom]
+
+    untrack(() => {
+      if (bounds.length > 0 && isFollowing) {
+        fit()
+      }
+    })
   })
 
   $effect(() => {
