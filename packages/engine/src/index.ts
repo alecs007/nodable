@@ -69,3 +69,12 @@ export {
 } from './model/tree'
 export { type TokenizeResult, tokenize } from './tokenizer/tokenize'
 export { normalizeFormula } from './tokenizer/normalize'
+export {
+  type BuildResult,
+  type BuildState,
+  type BuildStep,
+  type Placement,
+  createBuildState,
+} from './builder/build-state'
+export { applyToken } from './builder/apply-token'
+export { buildTree } from './builder/build-tree'
