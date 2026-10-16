@@ -1,0 +1,67 @@
+name: Bug report
+description: Report incorrect behavior in the tree builder or the interface
+labels: ['bug']
+body:
+  - type: markdown
+    attributes:
+      value: Thank you for taking the time to file a report. Please fill in the fields below.
+
+  - type: input
+    id: formula
+    attributes:
+      label: Formula
+      description: The exact input typed into the input bar, if the problem involves one.
+      placeholder: ((¬p) ∨ q)
+    validations:
+      required: false
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: What should have happened, according to the course rules?
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: What happened instead? Include any diagnostic code such as NDB002.
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      value: |
+        1.
+        2.
+        3.
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: The release or commit you are using.
+    validations:
+      required: true
+
+  - type: input
+    id: environment
+    attributes:
+      label: Browser and operating system
+      placeholder: Firefox 142 on Windows 11
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checks
+      options:
+        - label: I searched the existing issues and this is not a duplicate.
+          required: true
