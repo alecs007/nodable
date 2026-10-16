@@ -3,6 +3,7 @@
   import { locale } from '../state/locale.svelte'
   import { workspace } from '../state/workspace.svelte'
   import { THEME_PREFERENCES, type ThemePreference, theme } from '../theme/theme.svelte'
+  import FileMenu from './FileMenu.svelte'
   import FormulaMenu from './FormulaMenu.svelte'
   import Icon, { type IconName } from './Icon.svelte'
 
@@ -143,6 +144,7 @@
       <Icon name="language" />
       <span class="code">{locale.current}</span>
     </button>
+    <FileMenu />
   </div>
 </div>
 

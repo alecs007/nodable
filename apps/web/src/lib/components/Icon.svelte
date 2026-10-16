@@ -11,6 +11,7 @@
     | 'system'
     | 'language'
     | 'clear'
+    | 'save'
 
   type Circle = { readonly cx: number; readonly cy: number; readonly r: number }
 
@@ -59,6 +60,10 @@
       circles: [{ cx: 12, cy: 12, r: 8.8 }],
     },
     clear: { paths: ['M7 7l10 10', 'M17 7 7 17'], circles: [] },
+    save: {
+      paths: ['M12 3.5v11', 'M8 11l4 4 4-4', 'M4.5 16.5v2a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2v-2'],
+      circles: [],
+    },
   }
 </script>
 

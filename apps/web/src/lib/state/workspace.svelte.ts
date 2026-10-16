@@ -4,8 +4,10 @@ import {
   type Session,
   type SessionId,
   type TreeSnapshot,
+  type Workspace,
   addPoints,
   createSession,
+  createWorkspace,
   getStepTree,
   getTree,
   moveNode,
@@ -36,6 +38,8 @@ export type WorkspaceState = {
   clearPositions: () => void
   setView: (next: WorkspaceView) => void
   toggleHighlightLeaves: () => void
+  asWorkspace: () => Workspace
+  restore: (workspace: Workspace) => void
 }
 
 function createWorkspaceState(): WorkspaceState {
@@ -46,6 +50,7 @@ function createWorkspaceState(): WorkspaceState {
   let pinnedStep = $state<number | undefined>(undefined)
   let view = $state<WorkspaceView>('single')
   let highlightLeaves = $state(false)
+  let name = $state('Workspace')
 
   const active = $derived(sessions.find((session) => session.id === activeId) ?? first)
   const lastStepIndex = $derived(active.analysis.steps.length - 1)
@@ -129,6 +134,19 @@ function createWorkspaceState(): WorkspaceState {
     },
     toggleHighlightLeaves() {
       highlightLeaves = !highlightLeaves
+    },
+    asWorkspace() {
+      return createWorkspace(name, sessions)
+    },
+    restore(workspace: Workspace) {
+      if (workspace.sessions.length === 0) {
+        return
+      }
+
+      pinnedStep = undefined
+      name = workspace.name
+      sessions = workspace.sessions
+      activeId = workspace.sessions[0]?.id ?? first.id
     },
   }
 }

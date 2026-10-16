@@ -45,6 +45,14 @@ pnpm add -Dw prettier
 TypeScript is pinned to the 6.0 line because `typescript-eslint` does not yet support the 7.x
 compiler. Raise the pin once type-aware linting supports it.
 
+## Browser storage
+
+The web app implements the SDK storage adapter on top of IndexedDB, in
+`src/lib/storage/indexeddb-adapter.ts`. Settings such as the theme and the language use
+`localStorage` instead, through `src/lib/storage/settings.ts`. Saving is debounced by 500 ms and
+never blocks the interface; a failed write is reported through the persistence state rather than
+thrown.
+
 ## Testing
 
 Unit tests run on Vitest and live in a `tests/` folder next to `src/`, mirroring its structure, with

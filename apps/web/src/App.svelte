@@ -8,6 +8,7 @@
   import TreeCanvas from './lib/components/TreeCanvas.svelte'
   import TreeGallery from './lib/components/TreeGallery.svelte'
   import { locale } from './lib/state/locale.svelte'
+  import { persistence } from './lib/state/persistence.svelte'
   import { workspace } from './lib/state/workspace.svelte'
   import { theme } from './lib/theme/theme.svelte'
 
@@ -17,6 +18,18 @@
   )
 
   $effect(() => theme.start())
+
+  $effect(() => {
+    void persistence.start(workspace.restore)
+  })
+
+  $effect(() => {
+    const snapshot = workspace.asWorkspace()
+
+    if (persistence.isReady) {
+      persistence.schedule(snapshot)
+    }
+  })
 
   $effect(() => {
     document.documentElement.lang = locale.current

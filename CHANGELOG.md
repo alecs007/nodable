@@ -24,3 +24,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Web: tree canvas with the cursor arrow, dotted slots, the A and B choice, and short transitions.
 - Web: node dragging with keyboard nudging, build-step replay, a view of all trees at once, and a
   toggle that highlights variables.
+- Web: fullscreen tree workspace with floating glass control islands, an icon toolbar, custom
+  dropdowns, and a single column layout on small screens.
+- Web: debounced automatic saving to IndexedDB, workspace import and export as JSON, a clear saved
+  data action, and downloads for SVG, PNG, LaTeX and plain text.
