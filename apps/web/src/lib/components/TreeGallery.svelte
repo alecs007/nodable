@@ -72,8 +72,8 @@
     background: var(--color-glass);
     backdrop-filter: var(--glass-blur);
     transition:
-      border-color var(--duration-medium) ease,
-      background var(--duration-medium) ease;
+      border-color var(--duration-medium) var(--ease),
+      background var(--duration-medium) var(--ease);
   }
 
   .cell.active {
@@ -117,8 +117,8 @@
     color: var(--color-text-muted);
     cursor: pointer;
     transition:
-      background var(--duration-short) ease,
-      color var(--duration-short) ease;
+      background var(--duration-short) var(--ease),
+      color var(--duration-short) var(--ease);
   }
 
   .delete:hover {

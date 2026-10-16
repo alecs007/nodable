@@ -142,7 +142,7 @@
     stroke-width: 1.8;
     stroke-linecap: round;
     stroke-linejoin: round;
-    transition: transform var(--duration-short) ease;
+    transition: transform var(--duration-short) var(--ease);
   }
 
   .chevron.up {

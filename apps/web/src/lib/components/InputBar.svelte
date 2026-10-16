@@ -148,7 +148,7 @@
     border: 1px solid var(--color-border);
     border-radius: var(--radius-pill);
     background: var(--color-surface-raised);
-    transition: border-color var(--duration-short) ease;
+    transition: border-color var(--duration-short) var(--ease);
   }
 
   .field:focus-within {
@@ -204,8 +204,13 @@
   }
 
   .key {
-    min-inline-size: 2.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: 2.25rem;
     block-size: 2.25rem;
+    padding: 0;
+    line-height: 1;
     border: 1px solid transparent;
     border-radius: var(--radius-pill);
     background: var(--color-surface-sunken);
@@ -214,8 +219,8 @@
     font-size: 1.0625rem;
     cursor: pointer;
     transition:
-      background var(--duration-short) ease,
-      color var(--duration-short) ease;
+      background var(--duration-short) var(--ease),
+      color var(--duration-short) var(--ease);
   }
 
   .key:hover {

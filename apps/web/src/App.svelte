@@ -70,10 +70,6 @@
           snapshot={variants[0]?.snapshot ?? workspace.snapshot}
           hideLabelFor={variants[0]?.workingId}
           highlightLeaves={workspace.highlightLeaves}
-          interactive
-          onmovenode={(nodeId: string, delta: { x: number; y: number }) => {
-            workspace.nudgeNode(nodeId, delta)
-          }}
         />
       {/if}
     </div>
@@ -145,7 +141,7 @@
   .zoom {
     inline-size: 100%;
     transform-origin: top center;
-    transition: transform var(--duration-medium) ease;
+    transition: transform var(--duration-medium) var(--ease);
   }
 
   .island {

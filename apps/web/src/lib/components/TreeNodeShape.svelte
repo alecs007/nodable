@@ -47,7 +47,7 @@
   />
 
   {#if isLabelled}
-    <text class="label" x="0" y="7">{label}</text>
+    <text class="label" x="0" y="0">{label}</text>
   {/if}
 </g>
 
@@ -57,9 +57,9 @@
     stroke: var(--color-border-strong);
     stroke-width: 1.5;
     transition:
-      fill var(--duration-medium) ease,
-      stroke var(--duration-medium) ease,
-      stroke-width var(--duration-medium) ease;
+      fill var(--duration-medium) var(--ease),
+      stroke var(--duration-medium) var(--ease),
+      stroke-width var(--duration-medium) var(--ease);
   }
 
   .box.leaf {
@@ -92,6 +92,7 @@
   }
 
   .label {
+    dominant-baseline: central;
     fill: var(--color-text);
     font-family: var(--font-sans);
     font-size: 1.125rem;

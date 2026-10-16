@@ -33,8 +33,8 @@
     font-family: var(--font-sans);
     font-size: 0.9375rem;
     transition:
-      background var(--duration-short) ease,
-      border-color var(--duration-short) ease;
+      background var(--duration-short) var(--ease),
+      border-color var(--duration-short) var(--ease);
   }
 
   .name:hover {

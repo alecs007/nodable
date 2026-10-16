@@ -28,7 +28,7 @@
     }
 
     if (isEmpty) {
-      return locale.t('hint.empty')
+      return ''
     }
 
     if (isComplete) {
@@ -46,10 +46,12 @@
 </script>
 
 <p class="hint" class:error={error !== undefined} id="formula-hint" aria-live="polite">
-  {#if error !== undefined}
-    <span class="code">{error.code}</span>
+  {#if message !== ''}
+    {#if error !== undefined}
+      <span class="code">{error.code}</span>
+    {/if}
+    <span>{message}</span>
   {/if}
-  <span>{message}</span>
 </p>
 
 <style>

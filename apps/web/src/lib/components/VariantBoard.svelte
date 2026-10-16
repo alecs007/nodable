@@ -40,7 +40,7 @@
     padding: var(--space-3);
     border: 1px dashed var(--color-border);
     border-radius: var(--radius-3);
-    transition: border-color var(--duration-medium) ease;
+    transition: border-color var(--duration-medium) var(--ease);
   }
 
   .caption {

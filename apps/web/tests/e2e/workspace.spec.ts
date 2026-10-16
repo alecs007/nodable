@@ -77,18 +77,3 @@ test('zooms the workspace in and out', async ({ page }) => {
 
   await expect(page.getByRole('button', { name: 'Reset the zoom' })).toHaveText('100%')
 })
-
-test('moves a node with the keyboard', async ({ page }) => {
-  await page.getByRole('textbox', { name: 'Formula', exact: true }).fill('(p ∧ q)')
-
-  const node = page.getByRole('button', { name: 'Move this node' }).nth(1)
-  const before = await node.boundingBox()
-
-  await node.focus()
-  await node.press('ArrowRight')
-  await node.press('ArrowRight')
-
-  const after = await node.boundingBox()
-
-  expect(after?.x ?? 0).toBeGreaterThan(before?.x ?? 0)
-})

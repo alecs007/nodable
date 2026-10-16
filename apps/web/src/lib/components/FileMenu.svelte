@@ -68,13 +68,6 @@
       run: () => copyExport(exportSession(workspace.active, 'text')),
     },
     {
-      id: 'reset',
-      labelKey: 'workspace.resetpositions',
-      run: () => {
-        workspace.clearPositions()
-      },
-    },
-    {
       id: 'remove',
       labelKey: 'workspace.remove',
       run: () => {

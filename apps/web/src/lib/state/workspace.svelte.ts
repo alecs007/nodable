@@ -1,19 +1,14 @@
 import {
-  type NodeId,
-  type Point,
   type Session,
   type SessionId,
   type TreeSnapshot,
   type Workspace,
-  addPoints,
   createSession,
   createWorkspace,
   getStepTree,
   getTree,
-  moveNode,
   normalizeFormula,
   renameSession,
-  resetOffsets,
   updateInput,
 } from '@nodable/sdk'
 
@@ -40,8 +35,6 @@ export type WorkspaceState = {
   resetZoom: () => void
   showStep: (index: number) => void
   showLatestStep: () => void
-  nudgeNode: (nodeId: NodeId, delta: Point) => void
-  clearPositions: () => void
   setView: (next: WorkspaceView) => void
   toggleHighlightLeaves: () => void
   asWorkspace: () => Workspace
@@ -145,14 +138,6 @@ function createWorkspaceState(): WorkspaceState {
     },
     showLatestStep() {
       pinnedStep = undefined
-    },
-    nudgeNode(nodeId: NodeId, delta: Point) {
-      const current = active.offsets[nodeId] ?? { x: 0, y: 0 }
-
-      replace(moveNode(active, nodeId, addPoints(current, delta)))
-    },
-    clearPositions() {
-      replace(resetOffsets(active))
     },
     setView(next: WorkspaceView) {
       view = next

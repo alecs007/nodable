@@ -54,7 +54,7 @@ The web app is a thin presentation layer.
 - Components are small and single-purpose.
 - State lives in Svelte runes-based stores under `src/lib/state`.
 - It implements the storage adapter, themes, internationalization and all interaction such as
-  dragging, highlighting and animation.
+  zooming, highlighting and animation.
 
 ## Data flow
 
@@ -91,7 +91,7 @@ step slider can render any earlier one.
 ### Stable node identifiers
 
 A node's identifier is derived from its path in the tree: `root`, `root.0`, `root.1.0`. Because the
-identifier does not depend on build order, animations and drag offsets survive a rebuild.
+identifier does not depend on build order, animations and per-node offsets survive a rebuild.
 
 ### Result types instead of exceptions
 

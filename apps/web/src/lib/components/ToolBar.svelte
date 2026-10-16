@@ -191,8 +191,8 @@
     color: var(--color-text-muted);
     cursor: pointer;
     transition:
-      background var(--duration-short) ease,
-      color var(--duration-short) ease;
+      background var(--duration-short) var(--ease),
+      color var(--duration-short) var(--ease);
   }
 
   .key:hover:not(:disabled) {
