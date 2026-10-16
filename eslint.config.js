@@ -75,6 +75,9 @@ export default tseslint.config(
   },
   {
     files: ['**/*.svelte', '**/*.svelte.ts'],
+    rules: {
+      '@typescript-eslint/no-confusing-void-expression': 'off',
+    },
     languageOptions: {
       globals: { ...globals.browser },
       parser: svelteParser,

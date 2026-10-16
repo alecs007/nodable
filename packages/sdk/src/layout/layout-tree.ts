@@ -59,7 +59,7 @@ function offsetOf(offsets: NodeOffsets, id: NodeId): Point {
   return offsets[id] ?? { x: 0, y: 0 }
 }
 
-function placeNodes(root: TreeNode, offsets: NodeOffsets, options: LayoutOptions): PlacedNode[] {
+function placeNodes(root: TreeNode, options: LayoutOptions): PlacedNode[] {
   const roots = hierarchy<TreeNode>(root, (node) => [...childrenOf(node)])
   const layout = tree<TreeNode>().nodeSize([
     options.nodeWidth + options.horizontalGap,
@@ -70,18 +70,14 @@ function placeNodes(root: TreeNode, offsets: NodeOffsets, options: LayoutOptions
 
   return layout(roots)
     .descendants()
-    .map((point) => {
-      const shift = offsetOf(offsets, point.data.id)
-
-      return {
-        id: point.data.id,
-        node: point.data,
-        depth: point.depth,
-        x: point.x + shift.x,
-        y: point.y + shift.y,
-        parentId: point.parent?.data.id,
-      }
-    })
+    .map((point) => ({
+      id: point.data.id,
+      node: point.data,
+      depth: point.depth,
+      x: point.x,
+      y: point.y,
+      parentId: point.parent?.data.id,
+    }))
     .toSorted(
       (left, right) => (documentOrder.get(left.id) ?? 0) - (documentOrder.get(right.id) ?? 0),
     )
@@ -95,9 +91,9 @@ function translationOf(placed: readonly PlacedNode[], options: LayoutOptions): P
   return { x: options.padding - left, y: options.padding + options.verticalGap - top }
 }
 
-function sizeOf(nodes: readonly LayoutNode[], options: LayoutOptions): Point {
-  const right = Math.max(...nodes.map((node) => node.center.x + options.nodeWidth / 2))
-  const bottom = Math.max(...nodes.map((node) => node.center.y + options.nodeHeight / 2))
+function sizeOf(points: readonly Point[], options: LayoutOptions): Point {
+  const right = Math.max(...points.map((point) => point.x + options.nodeWidth / 2))
+  const bottom = Math.max(...points.map((point) => point.y + options.nodeHeight / 2))
 
   return { x: right + options.padding, y: bottom + options.padding }
 }
@@ -125,12 +121,13 @@ export function layoutTree(
   snapshot: TreeSnapshot,
   options: LayoutOptions = DEFAULT_LAYOUT_OPTIONS,
 ): TreeLayout {
-  const placed = placeNodes(snapshot.root, snapshot.offsets, options)
+  const placed = placeNodes(snapshot.root, options)
   const translation = translationOf(placed, options)
   const centers = new Map<NodeId, Point>()
 
   const nodes: LayoutNode[] = placed.map((node) => {
-    const center = { x: node.x + translation.x, y: node.y + translation.y }
+    const shift = offsetOf(snapshot.offsets, node.id)
+    const center = { x: node.x + translation.x + shift.x, y: node.y + translation.y + shift.y }
     centers.set(node.id, center)
 
     return { id: node.id, node: node.node, depth: node.depth, center }
@@ -143,7 +140,11 @@ export function layoutTree(
     return from === undefined || to === undefined ? [] : [{ id: node.id, from, to }]
   })
 
-  const size = sizeOf(nodes, options)
+  const anchored = placed.map((node) => ({
+    x: node.x + translation.x,
+    y: node.y + translation.y,
+  }))
+  const size = sizeOf([...anchored, ...nodes.map((node) => node.center)], options)
 
   return {
     nodes,

@@ -45,6 +45,24 @@ describe('layoutTree', () => {
     const after = layoutTree(getTree(moved)).nodes[2]
 
     expect((after?.center.x ?? 0) - (before?.center.x ?? 0)).toBe(30)
+    expect((after?.center.y ?? 0) - (before?.center.y ?? 0)).toBe(10)
+  })
+
+  it('leaves the other nodes where they were when one node is moved', () => {
+    const session = createSession('(p ∧ q)')
+    const moved = moveNode(session, 'root.0', { x: -120, y: -40 })
+    const before = layoutTree(getTree(session))
+    const after = layoutTree(getTree(moved))
+
+    expect(after.nodes[0]?.center).toEqual(before.nodes[0]?.center)
+    expect(after.nodes[2]?.center).toEqual(before.nodes[2]?.center)
+  })
+
+  it('never shrinks below the size of the untouched layout', () => {
+    const session = createSession('(p ∧ q)')
+    const moved = moveNode(session, 'root.1', { x: -200, y: -80 })
+
+    expect(layoutTree(getTree(moved)).width).toBe(layoutTree(getTree(session)).width)
   })
 
   it('points the cursor at the node it is on', () => {

@@ -69,6 +69,11 @@ holds the tree, the cursor and the number of open parentheses after one more tok
 
 Returns one step, or `undefined` when the index is out of range.
 
+### `getStepTree(session: Session, index: number): TreeSnapshot | undefined`
+
+Returns the snapshot of one step, for replaying the build. The current offsets are kept, so a node
+the user moved stays where they put it while stepping through.
+
 ### `getDiagnostics(session: Session): readonly Diagnostic[]`
 
 Returns the diagnostics of the current input: at most one error, or the `NDB007` warning when the
@@ -105,7 +110,9 @@ type TreeLayout = {
 }
 ```
 
-Nodes come back in document order, each with its center point and depth. Edges connect a parent
+Nodes come back in document order, each with its center point and depth. Positions are anchored on
+the layout computed without offsets, so moving one node leaves every other node where it was, and
+the reported size never shrinks below the untouched layout. Edges connect a parent
 center to a child center. The cursor carries the point the arrow should mark and whether it sits
 above the root, which means the formula is complete. `width` and `height` are the size of the whole
 drawing including padding.

@@ -19,3 +19,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   `NDB001` to `NDB007` and allowed-next hints.
 - SDK: sessions, tree layout, exporters for SVG, PNG, JSON, LaTeX and plain text, workspace
   serialization, and a storage adapter interface.
+- Web: application shell with the formula bar, connective toolbar, hints and diagnostics, light,
+  dark and system themes, and English and Romanian translations.
+- Web: tree canvas with the cursor arrow, dotted slots, the A and B choice, and short transitions.
+- Web: node dragging with keyboard nudging, build-step replay, a view of all trees at once, and a
+  toggle that highlights variables.

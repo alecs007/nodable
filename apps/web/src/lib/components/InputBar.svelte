@@ -8,9 +8,10 @@
     diagnostics: readonly Diagnostic[]
     allowedNext: readonly TokenKind[]
     onchange: (value: string) => void
+    onsubmit?: () => void
   }
 
-  const { value, diagnostics, allowedNext, onchange }: Props = $props()
+  const { value, diagnostics, allowedNext, onchange, onsubmit }: Props = $props()
 
   let field: HTMLInputElement | undefined = $state()
 
@@ -41,6 +42,20 @@
     field?.focus()
   }
 
+  function onKeyDown(event: KeyboardEvent): void {
+    if (event.key === 'Enter') {
+      event.preventDefault()
+      onsubmit?.()
+
+      return
+    }
+
+    if (event.key === 'Escape') {
+      event.preventDefault()
+      clear()
+    }
+  }
+
   function clear(): void {
     setValue('', 0)
     field?.focus()
@@ -64,6 +79,7 @@
       placeholder={locale.t('input.placeholder')}
       {value}
       oninput={onInput}
+      onkeydown={onKeyDown}
     />
   </label>
 

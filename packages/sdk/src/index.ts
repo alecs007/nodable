@@ -44,6 +44,7 @@ export {
   getAllowedNext,
   getDiagnostics,
   getStep,
+  getStepTree,
   getSteps,
   getTree,
   moveNode,

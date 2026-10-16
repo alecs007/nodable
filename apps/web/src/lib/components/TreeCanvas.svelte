@@ -1,5 +1,13 @@
 <script lang="ts">
-  import { type NodeId, type TreeLayout, type TreeSnapshot, layoutTree, toText } from '@nodable/sdk'
+  import {
+    type LayoutNode,
+    type NodeId,
+    type Point,
+    type TreeLayout,
+    type TreeSnapshot,
+    layoutTree,
+    toText,
+  } from '@nodable/sdk'
   import { prefersReducedMotion } from 'svelte/motion'
   import { scale } from 'svelte/transition'
   import { locale } from '../state/locale.svelte'
@@ -7,10 +15,25 @@
 
   type Props = {
     snapshot: TreeSnapshot
-    highlightedLeaves?: boolean
+    highlightLeaves?: boolean
+    interactive?: boolean
+    onmovenode?: (nodeId: NodeId, delta: Point) => void
   }
 
-  const { snapshot, highlightedLeaves = false }: Props = $props()
+  const { snapshot, highlightLeaves = false, interactive = false, onmovenode }: Props = $props()
+
+  const KEYBOARD_STEP = 8
+
+  const KEYBOARD_DELTAS: Record<string, Point> = {
+    ArrowUp: { x: 0, y: -KEYBOARD_STEP },
+    ArrowDown: { x: 0, y: KEYBOARD_STEP },
+    ArrowLeft: { x: -KEYBOARD_STEP, y: 0 },
+    ArrowRight: { x: KEYBOARD_STEP, y: 0 },
+  }
+
+  let surface: SVGSVGElement | undefined = $state()
+  let dragged: NodeId | undefined = $state()
+  let origin: Point = { x: 0, y: 0 }
 
   const layout: TreeLayout = $derived(layoutTree(snapshot))
   const duration = $derived(prefersReducedMotion.current ? 0 : 180)
@@ -18,14 +41,61 @@
     snapshot.cursor.kind === 'node' ? snapshot.cursor.nodeId : undefined,
   )
 
+  function pixelsPerUnit(): number {
+    const rendered = surface?.getBoundingClientRect().width ?? layout.width
+
+    return rendered === 0 ? 1 : rendered / layout.width
+  }
+
   function arrowPath(x: number, y: number, height: number): string {
     const tip = y - height / 2 - 10
 
     return `M ${String(x)} ${String(tip)} l -9 -13 h 5 v -15 h 8 v 15 h 5 z`
   }
+
+  function startDrag(event: PointerEvent, entry: LayoutNode, handle: SVGGElement): void {
+    if (!interactive) {
+      return
+    }
+
+    dragged = entry.id
+    origin = { x: event.clientX, y: event.clientY }
+    handle.setPointerCapture(event.pointerId)
+  }
+
+  function continueDrag(event: PointerEvent, entry: LayoutNode): void {
+    if (dragged !== entry.id) {
+      return
+    }
+
+    const ratio = pixelsPerUnit()
+
+    onmovenode?.(entry.id, {
+      x: (event.clientX - origin.x) / ratio,
+      y: (event.clientY - origin.y) / ratio,
+    })
+
+    origin = { x: event.clientX, y: event.clientY }
+  }
+
+  function endDrag(): void {
+    dragged = undefined
+  }
+
+  function onNodeKeyDown(event: KeyboardEvent, entry: LayoutNode): void {
+    const delta = KEYBOARD_DELTAS[event.key]
+
+    if (!interactive || delta === undefined) {
+      return
+    }
+
+    event.preventDefault()
+    onmovenode?.(entry.id, delta)
+  }
 </script>
 
 <svg
+  bind:this={surface}
   class="canvas"
   width={layout.width}
   height={layout.height}
@@ -47,17 +117,45 @@
     />
   {/each}
 
-  {#each layout.nodes as entry (entry.id)}
-    <g class="node" transform="translate({entry.center.x}, {entry.center.y})">
-      <g transition:scale={{ duration, start: 0.85 }}>
-        <TreeNodeShape
-          {entry}
-          options={layout.options}
-          isCursor={entry.id === cursorNodeId}
-          isHighlighted={highlightedLeaves && entry.node.kind === 'leaf'}
-        />
-      </g>
+  {#snippet shape(entry: LayoutNode)}
+    <g transition:scale={{ duration, start: 0.85 }}>
+      <TreeNodeShape
+        {entry}
+        options={layout.options}
+        isCursor={entry.id === cursorNodeId}
+        isHighlighted={highlightLeaves && entry.node.kind === 'leaf'}
+      />
     </g>
+  {/snippet}
+
+  {#each layout.nodes as entry (entry.id)}
+    {#if interactive}
+      <g
+        class="node draggable"
+        class:dragging={dragged === entry.id}
+        transform="translate({entry.center.x}, {entry.center.y})"
+        role="button"
+        tabindex="0"
+        aria-label={locale.t('canvas.movenode')}
+        onpointerdown={(event) => {
+          startDrag(event, entry, event.currentTarget)
+        }}
+        onpointermove={(event) => {
+          continueDrag(event, entry)
+        }}
+        onpointerup={endDrag}
+        onpointercancel={endDrag}
+        onkeydown={(event) => {
+          onNodeKeyDown(event, entry)
+        }}
+      >
+        {@render shape(entry)}
+      </g>
+    {:else}
+      <g class="node" transform="translate({entry.center.x}, {entry.center.y})">
+        {@render shape(entry)}
+      </g>
+    {/if}
   {/each}
 
   <path
@@ -71,6 +169,7 @@
     display: block;
     max-inline-size: 100%;
     block-size: auto;
+    touch-action: none;
   }
 
   .edge {
@@ -85,6 +184,15 @@
 
   .node {
     transition: transform var(--duration-medium) ease;
+  }
+
+  .node.draggable {
+    cursor: grab;
+  }
+
+  .node.dragging {
+    cursor: grabbing;
+    transition: none;
   }
 
   .cursor {

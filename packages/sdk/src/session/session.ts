@@ -7,6 +7,7 @@ import {
   type TokenKind,
   type TreeNode,
   analyzeFormula,
+  isComplete,
   normalizeFormula,
 } from '@nodable/engine'
 import { type NodeOffsets, type Point, isOrigin } from './point'
@@ -62,6 +63,21 @@ export function getSteps(session: Session): readonly BuildStep[] {
 
 export function getStep(session: Session, index: number): BuildStep | undefined {
   return session.analysis.steps[index]
+}
+
+export function getStepTree(session: Session, index: number): TreeSnapshot | undefined {
+  const step = session.analysis.steps[index]
+
+  if (step === undefined) {
+    return undefined
+  }
+
+  return {
+    root: step.tree,
+    cursor: step.cursor,
+    offsets: session.offsets,
+    isComplete: isComplete(step.cursor),
+  }
 }
 
 export function getDiagnostics(session: Session): readonly Diagnostic[] {
