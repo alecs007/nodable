@@ -1,0 +1,34 @@
+{
+  "name": "nodable",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Syntax tree builder for propositional logic formulas",
+  "license": "MIT",
+  "packageManager": "pnpm@11.10.0",
+  "engines": {
+    "node": ">=24.0.0"
+  },
+  "scripts": {
+    "dev": "pnpm --filter @nodable/web dev",
+    "build": "pnpm --recursive build",
+    "test": "pnpm --recursive test",
+    "test:e2e": "pnpm --filter @nodable/web test:e2e",
+    "lint": "eslint . --max-warnings 0",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "typecheck": "pnpm --recursive typecheck",
+    "check": "pnpm lint && pnpm format:check && pnpm typecheck && pnpm test"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.12.0",
+    "eslint-plugin-svelte": "^3.23.1",
+    "globals": "^17.13.0",
+    "prettier": "^3.9.10",
+    "prettier-plugin-svelte": "^4.1.1",
+    "svelte-eslint-parser": "^1.9.0",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.71.2"
+  }
+}
