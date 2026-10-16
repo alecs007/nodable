@@ -5,7 +5,7 @@ import { type BuildResult, type BuildState, type BuildStep, createBuildState } f
 
 export function buildTree(tokens: readonly Token[]): BuildResult {
   let state: BuildState = createBuildState()
-  const steps: BuildStep[] = [{ index: 0, token: null, tree: state.tree, cursor: state.cursor }]
+  const steps: BuildStep[] = [{ index: 0, token: null, ...state }]
   const diagnostics: Diagnostic[] = []
 
   for (const token of tokens) {
@@ -17,8 +17,8 @@ export function buildTree(tokens: readonly Token[]): BuildResult {
     }
 
     state = placement.state
-    steps.push({ index: steps.length, token, tree: state.tree, cursor: state.cursor })
+    steps.push({ index: steps.length, token, ...state })
   }
 
-  return { steps, tree: state.tree, cursor: state.cursor, diagnostics }
+  return { steps, ...state, diagnostics }
 }

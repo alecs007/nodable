@@ -19,12 +19,18 @@ export type BuildStep = {
   readonly token: Token | null
   readonly tree: TreeNode
   readonly cursor: Cursor
+  readonly openDepth: number
+}
+
+export function stateOfStep(step: BuildStep): BuildState {
+  return { tree: step.tree, cursor: step.cursor, openDepth: step.openDepth }
 }
 
 export type BuildResult = {
   readonly steps: readonly BuildStep[]
   readonly tree: TreeNode
   readonly cursor: Cursor
+  readonly openDepth: number
   readonly diagnostics: readonly Diagnostic[]
 }
 

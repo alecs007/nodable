@@ -75,6 +75,9 @@ export {
   type BuildStep,
   type Placement,
   createBuildState,
+  stateOfStep,
 } from './builder/build-state'
 export { applyToken } from './builder/apply-token'
 export { buildTree } from './builder/build-tree'
+export { allowedNextTokens } from './validator/allowed-next'
+export { type Analysis, analyzeFormula } from './validator/analyze'
