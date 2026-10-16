@@ -20,7 +20,13 @@
     variable: 'token.variable',
   }
 
-  const hint = $derived.by(() => {
+  const error = $derived(diagnostics.find((diagnostic) => diagnostic.severity === 'error'))
+
+  const message = $derived.by(() => {
+    if (error !== undefined) {
+      return locale.t(error.messageKey)
+    }
+
     if (isEmpty) {
       return locale.t('hint.empty')
     }
@@ -33,64 +39,39 @@
       return locale.t('hint.blocked')
     }
 
-    const tokens = allowedNext.map((kind) => locale.t(TOKEN_KEYS[kind])).join(', ')
-
-    return locale.t('hint.expected', { tokens })
+    return locale.t('hint.expected', {
+      tokens: allowedNext.map((kind) => locale.t(TOKEN_KEYS[kind])).join(', '),
+    })
   })
 </script>
 
-<div class="hint" id="formula-hint" aria-live="polite">
-  <p class="expected">{hint}</p>
-
-  <ul class="diagnostics">
-    {#each diagnostics as diagnostic (diagnostic.code)}
-      <li class="diagnostic" class:error={diagnostic.severity === 'error'}>
-        <span class="code">{diagnostic.code}</span>
-        <span>{locale.t(diagnostic.messageKey)}</span>
-      </li>
-    {/each}
-  </ul>
-</div>
+<p class="hint" class:error={error !== undefined} id="formula-hint" aria-live="polite">
+  {#if error !== undefined}
+    <span class="code">{error.code}</span>
+  {/if}
+  <span>{message}</span>
+</p>
 
 <style>
   .hint {
-    display: grid;
-    gap: var(--space-2);
-  }
-
-  .expected {
-    margin: 0;
-    color: var(--color-text-muted);
-    font-size: 0.9375rem;
-  }
-
-  .diagnostics {
-    display: grid;
-    gap: var(--space-2);
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-
-  .diagnostic {
     display: flex;
     gap: var(--space-2);
     align-items: baseline;
-    padding: var(--space-2) var(--space-3);
-    border-radius: var(--radius-1);
-    background: var(--color-warning-soft);
-    color: var(--color-warning);
-    font-size: 0.9375rem;
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: 0.875rem;
   }
 
-  .diagnostic.error {
-    background: var(--color-error-soft);
+  .hint.error {
     color: var(--color-error);
   }
 
   .code {
+    padding: 1px var(--space-2);
+    border-radius: var(--radius-pill);
+    background: var(--color-error-soft);
     font-family: var(--font-mono);
-    font-size: 0.8125rem;
-    font-weight: 700;
+    font-size: 0.6875rem;
+    font-weight: 600;
   }
 </style>

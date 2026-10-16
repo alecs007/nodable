@@ -1,7 +1,6 @@
 {
   "app.title": "Nodable",
   "app.tagline": "Arbori de sintaxă pentru formule din logica propozițională",
-  "app.skip": "Sari la formulă",
   "input.label": "Formulă",
   "input.placeholder": "((¬p) ∨ q)",
   "input.clear": "Golește formula",
@@ -36,6 +35,7 @@
   "view.single": "Arborele activ",
   "view.all": "Toți arborii",
   "view.highlightleaves": "Evidențiază variabilele",
+  "workspace.label": "Spațiu de lucru",
   "workspace.add": "Adaugă formulă",
   "workspace.remove": "Șterge formula",
   "workspace.resetpositions": "Resetează pozițiile",

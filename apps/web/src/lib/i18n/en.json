@@ -1,7 +1,6 @@
 {
   "app.title": "Nodable",
   "app.tagline": "Syntax trees for propositional logic formulas",
-  "app.skip": "Skip to the formula",
   "input.label": "Formula",
   "input.placeholder": "((¬p) ∨ q)",
   "input.clear": "Clear the formula",
@@ -36,6 +35,7 @@
   "view.single": "Active tree",
   "view.all": "All trees",
   "view.highlightleaves": "Highlight variables",
+  "workspace.label": "Workspace",
   "workspace.add": "Add formula",
   "workspace.remove": "Remove formula",
   "workspace.resetpositions": "Reset positions",

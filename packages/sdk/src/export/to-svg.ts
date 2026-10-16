@@ -61,9 +61,10 @@ function renderNode(entry: LayoutNode, layout: TreeLayout): readonly string[] {
 }
 
 function renderCursor(layout: TreeLayout): string {
-  const { x, y } = layout.cursor.target
-  const tip = y - layout.options.nodeHeight / 2 - 6
-  const arrow = `M ${String(x)} ${String(tip)} l -8 -12 h 5 v -14 h 6 v 14 h 5 z`
+  const { anchor, direction } = layout.cursor
+  const body =
+    direction === 'left' ? 'l 11 -7 v 4 h 13 v 6 h -13 v 4 z' : 'l -7 11 h 4 v 13 h 6 v -13 h 4 z'
+  const arrow = `M ${String(anchor.x)} ${String(anchor.y)} ${body}`
 
   return `<path class="nodable-cursor" d="${arrow}" />`
 }

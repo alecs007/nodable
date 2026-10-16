@@ -48,9 +48,10 @@
     gap: var(--space-2);
     inline-size: 100%;
     padding: var(--space-3);
-    border: 2px solid var(--color-border);
-    border-radius: var(--radius-2);
-    background: var(--color-surface);
+    border: 1px solid var(--color-glass-border);
+    border-radius: var(--radius-3);
+    background: var(--color-glass);
+    backdrop-filter: var(--glass-blur);
     color: var(--color-text);
     font-family: var(--font-sans);
     text-align: start;

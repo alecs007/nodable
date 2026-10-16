@@ -9,6 +9,8 @@ export type LayoutOptions = {
   readonly horizontalGap: number
   readonly verticalGap: number
   readonly padding: number
+  readonly cursorGap: number
+  readonly cursorLength: number
 }
 
 export const DEFAULT_LAYOUT_OPTIONS: LayoutOptions = {
@@ -17,6 +19,8 @@ export const DEFAULT_LAYOUT_OPTIONS: LayoutOptions = {
   horizontalGap: 28,
   verticalGap: 56,
   padding: 40,
+  cursorGap: 10,
+  cursorLength: 26,
 }
 
 export type LayoutNode = {
@@ -32,9 +36,13 @@ export type LayoutEdge = {
   readonly to: Point
 }
 
+export type CursorDirection = 'left' | 'up'
+
 export type LayoutCursor = {
   readonly isAboveRoot: boolean
-  readonly target: Point
+  readonly direction: CursorDirection
+  readonly pointsAt: Point
+  readonly anchor: Point
 }
 
 export type TreeLayout = {
@@ -91,8 +99,11 @@ function translationOf(placed: readonly PlacedNode[], options: LayoutOptions): P
   return { x: options.padding - left, y: options.padding + options.verticalGap - top }
 }
 
-function sizeOf(points: readonly Point[], options: LayoutOptions): Point {
-  const right = Math.max(...points.map((point) => point.x + options.nodeWidth / 2))
+function sizeOf(points: readonly Point[], cursor: LayoutCursor, options: LayoutOptions): Point {
+  const right = Math.max(
+    ...points.map((point) => point.x + options.nodeWidth / 2),
+    cursor.anchor.x + (cursor.direction === 'left' ? options.cursorLength : 0),
+  )
   const bottom = Math.max(...points.map((point) => point.y + options.nodeHeight / 2))
 
   return { x: right + options.padding, y: bottom + options.padding }
@@ -106,15 +117,24 @@ function cursorOf(
   const rootCenter = nodes[0]?.center ?? { x: options.padding, y: options.padding }
 
   if (cursor.kind === 'above-root') {
+    const above = rootCenter.y - options.nodeHeight / 2 - options.cursorGap
+
     return {
       isAboveRoot: true,
-      target: { x: rootCenter.x, y: rootCenter.y - options.verticalGap },
+      direction: 'up',
+      pointsAt: { x: rootCenter.x, y: above },
+      anchor: { x: rootCenter.x, y: above - options.cursorLength },
     }
   }
 
-  const target = nodes.find((node) => node.id === cursor.nodeId)
+  const center = nodes.find((node) => node.id === cursor.nodeId)?.center ?? rootCenter
 
-  return { isAboveRoot: false, target: target?.center ?? rootCenter }
+  return {
+    isAboveRoot: false,
+    direction: 'left',
+    pointsAt: center,
+    anchor: { x: center.x + options.nodeWidth / 2 + options.cursorGap, y: center.y },
+  }
 }
 
 export function layoutTree(
@@ -144,12 +164,13 @@ export function layoutTree(
     x: node.x + translation.x,
     y: node.y + translation.y,
   }))
-  const size = sizeOf([...anchored, ...nodes.map((node) => node.center)], options)
+  const cursor = cursorOf(nodes, snapshot.cursor, options)
+  const size = sizeOf([...anchored, ...nodes.map((node) => node.center)], cursor, options)
 
   return {
     nodes,
     edges,
-    cursor: cursorOf(nodes, snapshot.cursor, options),
+    cursor,
     width: size.x,
     height: size.y,
     options,

@@ -1,21 +1,46 @@
 <script lang="ts">
-  import { type Diagnostic, type TokenKind, normalizeFormula } from '@nodable/sdk'
+  import {
+    CLOSE_PAREN,
+    CONJUNCTION,
+    DISJUNCTION,
+    EQUIVALENCE,
+    IMPLICATION,
+    NEGATION,
+    OPEN_PAREN,
+    type TokenKind,
+    normalizeFormula,
+  } from '@nodable/sdk'
+  import type { MessageKey } from '../i18n/messages'
   import { locale } from '../state/locale.svelte'
-  import ConnectiveToolbar from './ConnectiveToolbar.svelte'
+  import Icon from './Icon.svelte'
+
+  type SymbolKey = {
+    readonly symbol: string
+    readonly labelKey: MessageKey
+    readonly kind: TokenKind
+  }
 
   type Props = {
     value: string
-    diagnostics: readonly Diagnostic[]
+    hasError: boolean
     allowedNext: readonly TokenKind[]
     onchange: (value: string) => void
     onsubmit?: () => void
   }
 
-  const { value, diagnostics, allowedNext, onchange, onsubmit }: Props = $props()
+  const { value, hasError, allowedNext, onchange, onsubmit }: Props = $props()
+
+  const keys: readonly SymbolKey[] = [
+    { symbol: OPEN_PAREN, labelKey: 'toolbar.openparen', kind: 'open-paren' },
+    { symbol: NEGATION, labelKey: 'toolbar.negation', kind: 'negation' },
+    { symbol: CONJUNCTION, labelKey: 'toolbar.conjunction', kind: 'connective' },
+    { symbol: DISJUNCTION, labelKey: 'toolbar.disjunction', kind: 'connective' },
+    { symbol: IMPLICATION, labelKey: 'toolbar.implication', kind: 'connective' },
+    { symbol: EQUIVALENCE, labelKey: 'toolbar.equivalence', kind: 'connective' },
+    { symbol: CLOSE_PAREN, labelKey: 'toolbar.closeparen', kind: 'close-paren' },
+  ]
 
   let field: HTMLInputElement | undefined = $state()
-
-  const errorRange = $derived(diagnostics.find((diagnostic) => diagnostic.severity === 'error'))
 
   function setValue(next: string, caret: number): void {
     onchange(next)
@@ -36,9 +61,13 @@
 
   function insert(symbol: string): void {
     const caret = field?.selectionStart ?? value.length
-    const next = `${value.slice(0, caret)}${symbol}${value.slice(caret)}`
 
-    setValue(next, caret + symbol.length)
+    setValue(`${value.slice(0, caret)}${symbol}${value.slice(caret)}`, caret + symbol.length)
+    field?.focus()
+  }
+
+  function clear(): void {
+    setValue('', 0)
     field?.focus()
   }
 
@@ -55,97 +84,147 @@
       clear()
     }
   }
-
-  function clear(): void {
-    setValue('', 0)
-    field?.focus()
-  }
 </script>
 
 <div class="bar">
-  <label class="field" for="formula">
-    <span class="caption">{locale.t('input.label')}</span>
+  <div class="field" class:invalid={hasError}>
     <input
       bind:this={field}
       id="formula"
       class="input"
-      class:invalid={errorRange !== undefined}
       type="text"
       autocomplete="off"
       autocapitalize="off"
       spellcheck="false"
-      aria-invalid={errorRange !== undefined}
+      aria-label={locale.t('input.label')}
+      aria-invalid={hasError}
       aria-describedby="formula-hint"
       placeholder={locale.t('input.placeholder')}
       {value}
       oninput={onInput}
       onkeydown={onKeyDown}
     />
-  </label>
-
-  <div class="controls">
-    <ConnectiveToolbar {allowedNext} oninsert={insert} />
-    <button type="button" class="clear" onclick={clear} disabled={value.length === 0}>
-      {locale.t('input.clear')}
+    <button
+      type="button"
+      class="clear"
+      hidden={value.length === 0}
+      title={locale.t('input.clear')}
+      aria-label={locale.t('input.clear')}
+      onclick={clear}
+    >
+      <Icon name="clear" />
     </button>
+  </div>
+
+  <div class="keys" role="group" aria-label={locale.t('toolbar.label')}>
+    {#each keys as key (key.symbol)}
+      <button
+        type="button"
+        class="key"
+        class:suggested={allowedNext.includes(key.kind)}
+        title={locale.t(key.labelKey)}
+        aria-label={locale.t(key.labelKey)}
+        onclick={() => {
+          insert(key.symbol)
+        }}
+      >
+        {key.symbol}
+      </button>
+    {/each}
   </div>
 </div>
 
 <style>
   .bar {
     display: grid;
-    gap: var(--space-3);
+    gap: var(--space-2);
   }
 
   .field {
-    display: grid;
+    display: flex;
     gap: var(--space-1);
-  }
-
-  .caption {
-    color: var(--color-text-muted);
-    font-size: 0.875rem;
-    font-weight: 600;
-    letter-spacing: 0.02em;
-    text-transform: uppercase;
-  }
-
-  .input {
-    inline-size: 100%;
-    padding: var(--space-3) var(--space-4);
+    align-items: center;
+    padding-inline-end: var(--space-2);
     border: 1px solid var(--color-border);
-    border-radius: var(--radius-2);
+    border-radius: var(--radius-pill);
     background: var(--color-surface-raised);
-    color: var(--color-text);
-    font-family: var(--font-mono);
-    font-size: 1.25rem;
+    transition: border-color var(--duration-short) ease;
   }
 
-  .input.invalid {
+  .field:focus-within {
+    border-color: var(--color-accent);
+  }
+
+  .field.invalid {
     border-color: var(--color-error);
   }
 
-  .controls {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-3);
-    align-items: center;
-    justify-content: space-between;
+  .input {
+    flex: 1;
+    min-inline-size: 0;
+    padding: var(--space-3) var(--space-5);
+    border: none;
+    background: transparent;
+    color: var(--color-text);
+    font-family: var(--font-mono);
+    font-size: 1.125rem;
+  }
+
+  .input:focus {
+    outline: none;
   }
 
   .clear {
-    padding: var(--space-2) var(--space-3);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: 1.75rem;
+    block-size: 1.75rem;
+    border: none;
+    border-radius: var(--radius-pill);
     background: transparent;
     color: var(--color-text-muted);
-    font-family: var(--font-sans);
-    font-size: 0.875rem;
     cursor: pointer;
   }
 
-  .clear:disabled {
-    opacity: 0.5;
-    cursor: default;
+  .clear[hidden] {
+    display: none;
+  }
+
+  .clear:hover {
+    background: var(--color-surface-sunken);
+    color: var(--color-text);
+  }
+
+  .keys {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1);
+    padding-inline: var(--space-1);
+  }
+
+  .key {
+    min-inline-size: 2.25rem;
+    block-size: 2.25rem;
+    border: 1px solid transparent;
+    border-radius: var(--radius-pill);
+    background: var(--color-surface-sunken);
+    color: var(--color-text-muted);
+    font-family: var(--font-sans);
+    font-size: 1.0625rem;
+    cursor: pointer;
+    transition:
+      background var(--duration-short) ease,
+      color var(--duration-short) ease;
+  }
+
+  .key:hover {
+    color: var(--color-text);
+  }
+
+  .key.suggested {
+    border-color: var(--color-accent);
+    background: var(--color-accent-soft);
+    color: var(--color-accent);
   }
 </style>

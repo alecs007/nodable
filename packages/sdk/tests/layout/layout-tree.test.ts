@@ -65,12 +65,22 @@ describe('layoutTree', () => {
     expect(layoutTree(getTree(moved)).width).toBe(layoutTree(getTree(session)).width)
   })
 
-  it('points the cursor at the node it is on', () => {
+  it('points the cursor at the node it is on, from its right side', () => {
     const layout = layoutTree(getTree(createSession('(p ∧')))
     const target = layout.nodes.find((entry) => entry.id === 'root.1')
 
     expect(layout.cursor.isAboveRoot).toBe(false)
-    expect(layout.cursor.target).toEqual(target?.center)
+    expect(layout.cursor.direction).toBe('left')
+    expect(layout.cursor.pointsAt).toEqual(target?.center)
+    expect(layout.cursor.anchor.y).toBe(target?.center.y)
+    expect(layout.cursor.anchor.x).toBeGreaterThan(target?.center.x ?? 0)
+  })
+
+  it('keeps the cursor arrow inside the drawing', () => {
+    const layout = layoutTree(getTree(createSession('(p ∧')))
+
+    expect(layout.cursor.anchor.x + layout.options.cursorLength).toBeLessThanOrEqual(layout.width)
+    expect(layout.cursor.anchor.y).toBeGreaterThan(0)
   })
 
   it('points the cursor above the root once the formula is complete', () => {
@@ -78,7 +88,9 @@ describe('layoutTree', () => {
     const [root] = layout.nodes
 
     expect(layout.cursor.isAboveRoot).toBe(true)
-    expect(layout.cursor.target.y).toBeLessThan(root?.center.y ?? 0)
+    expect(layout.cursor.direction).toBe('up')
+    expect(layout.cursor.anchor.y).toBeGreaterThan(0)
+    expect(layout.cursor.anchor.y).toBeLessThan(root?.center.y ?? 0)
   })
 
   it('accepts custom spacing', () => {

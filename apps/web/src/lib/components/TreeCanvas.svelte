@@ -47,11 +47,13 @@
     return rendered === 0 ? 1 : rendered / layout.width
   }
 
-  function arrowPath(x: number, y: number, height: number): string {
-    const tip = y - height / 2 - 10
+  const arrow = $derived.by(() => {
+    const { anchor, direction } = layout.cursor
+    const body =
+      direction === 'left' ? 'l 11 -7 v 4 h 13 v 6 h -13 v 4 z' : 'l -7 11 h 4 v 13 h 6 v -13 h 4 z'
 
-    return `M ${String(x)} ${String(tip)} l -9 -13 h 5 v -15 h 8 v 15 h 5 z`
-  }
+    return `M ${String(anchor.x)} ${String(anchor.y)} ${body}`
+  })
 
   function startDrag(event: PointerEvent, entry: LayoutNode, handle: SVGGElement): void {
     if (!interactive) {
@@ -158,10 +160,7 @@
     {/if}
   {/each}
 
-  <path
-    class="cursor"
-    d={arrowPath(layout.cursor.target.x, layout.cursor.target.y, layout.options.nodeHeight)}
-  />
+  <path class="cursor" d={arrow} />
 </svg>
 
 <style>
