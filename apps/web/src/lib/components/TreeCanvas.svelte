@@ -17,10 +17,17 @@
     snapshot: TreeSnapshot
     highlightLeaves?: boolean
     interactive?: boolean
+    hideLabelFor?: NodeId | undefined
     onmovenode?: (nodeId: NodeId, delta: Point) => void
   }
 
-  const { snapshot, highlightLeaves = false, interactive = false, onmovenode }: Props = $props()
+  const {
+    snapshot,
+    highlightLeaves = false,
+    interactive = false,
+    hideLabelFor,
+    onmovenode,
+  }: Props = $props()
 
   const KEYBOARD_STEP = 8
 
@@ -122,6 +129,7 @@
         options={layout.options}
         isCursor={entry.id === cursorNodeId}
         isComplete={snapshot.isComplete && entry.depth === 0}
+        hasLabel={entry.id !== hideLabelFor}
         isHighlighted={highlightLeaves && entry.node.kind === 'leaf'}
       />
     </g>

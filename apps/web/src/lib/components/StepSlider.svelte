@@ -36,12 +36,16 @@
 <style>
   .replay {
     display: flex;
+    flex: 1 1 8rem;
     gap: var(--space-3);
     align-items: center;
+    min-inline-size: 0;
   }
 
   input {
-    inline-size: 10rem;
+    flex: 1;
+    min-inline-size: 5rem;
+    max-inline-size: 10rem;
     accent-color: var(--color-accent);
   }
 

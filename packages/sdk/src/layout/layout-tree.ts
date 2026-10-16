@@ -96,7 +96,7 @@ function translationOf(placed: readonly PlacedNode[], options: LayoutOptions): P
   const left = Math.min(...placed.map((node) => node.x - halfWidth))
   const top = Math.min(...placed.map((node) => node.y - options.nodeHeight / 2))
 
-  return { x: options.padding - left, y: options.padding + options.verticalGap - top }
+  return { x: options.padding - left, y: options.padding - top }
 }
 
 function clipToBox(from: Point, to: Point, options: LayoutOptions): Point {

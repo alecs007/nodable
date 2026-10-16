@@ -8,6 +8,7 @@ import {
   getTree,
   moveNode,
   normalizeInput,
+  renameSession,
   resetOffsets,
   restoreSession,
   updateInput,
@@ -115,6 +116,21 @@ describe('resetOffsets', () => {
     const moved = moveNode(createSession('(p ∧ q)'), 'root.0', { x: 8, y: 2 })
 
     expect(resetOffsets(moved).offsets).toEqual({})
+  })
+})
+
+describe('renameSession', () => {
+  it('starts without a name and takes one', () => {
+    const session = createSession('p')
+
+    expect(session.name).toBe('')
+    expect(renameSession(session, 'Seminar 1').name).toBe('Seminar 1')
+  })
+
+  it('keeps the formula and the identifier', () => {
+    const session = renameSession(createSession('p'), 'Seminar 1')
+
+    expect(session.input).toBe('p')
   })
 })
 

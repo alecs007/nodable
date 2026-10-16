@@ -9,9 +9,10 @@
     isCursor: boolean
     isComplete: boolean
     isHighlighted: boolean
+    hasLabel?: boolean | undefined
   }
 
-  const { entry, options, isCursor, isComplete, isHighlighted }: Props = $props()
+  const { entry, options, isCursor, isComplete, isHighlighted, hasLabel = true }: Props = $props()
 
   const KIND_KEYS: Record<NodeKind, MessageKey> = {
     slot: 'node.slot',
@@ -24,11 +25,9 @@
   const left = $derived(-options.nodeWidth / 2)
   const top = $derived(-options.nodeHeight / 2)
   const label = $derived(nodeLabel(entry.node))
-  const description = $derived(
-    entry.node.kind === 'slot' || entry.node.kind === 'group'
-      ? locale.t(KIND_KEYS[entry.node.kind])
-      : `${locale.t(KIND_KEYS[entry.node.kind])} ${label}`,
-  )
+  const kindName = $derived(locale.t(KIND_KEYS[entry.node.kind]))
+  const isLabelled = $derived(hasLabel && entry.node.kind !== 'slot' && entry.node.kind !== 'group')
+  const description = $derived(isLabelled ? `${kindName} ${label}` : kindName)
 </script>
 
 <g class="shape" role="img" aria-label={description} aria-current={isCursor ? 'true' : undefined}>
@@ -47,7 +46,7 @@
     rx="11"
   />
 
-  {#if entry.node.kind !== 'slot' && entry.node.kind !== 'group'}
+  {#if isLabelled}
     <text class="label" x="0" y="7">{label}</text>
   {/if}
 </g>

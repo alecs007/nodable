@@ -1,5 +1,7 @@
 <script lang="ts">
   import { type Session } from '@nodable/sdk'
+  import { prefersReducedMotion } from 'svelte/motion'
+  import { fly } from 'svelte/transition'
   import { locale } from '../state/locale.svelte'
 
   type Props = {
@@ -10,13 +12,21 @@
 
   const { sessions, activeId, onselect }: Props = $props()
 
+  const duration = $derived(prefersReducedMotion.current ? 0 : 160)
+
   let open = $state(false)
   let container: HTMLDivElement | undefined = $state()
 
   const active = $derived(sessions.find((session) => session.id === activeId))
-  const label = $derived(
-    active === undefined || active.input === '' ? locale.t('workspace.empty') : active.input,
-  )
+  function titleOf(session: Session): string {
+    if (session.name !== '') {
+      return session.name
+    }
+
+    return session.input === '' ? locale.t('workspace.empty') : session.input
+  }
+
+  const label = $derived(active === undefined ? locale.t('workspace.empty') : titleOf(active))
 
   function close(): void {
     open = false
@@ -62,7 +72,12 @@
   </button>
 
   {#if open}
-    <ul class="list" role="listbox" aria-label={locale.t('workspace.label')}>
+    <ul
+      class="list"
+      role="listbox"
+      aria-label={locale.t('workspace.label')}
+      transition:fly={{ y: -6, duration }}
+    >
       {#each sessions as session (session.id)}
         <li role="option" aria-selected={session.id === activeId}>
           <button
@@ -73,7 +88,7 @@
               choose(session.id)
             }}
           >
-            {session.input === '' ? locale.t('workspace.empty') : session.input}
+            {titleOf(session)}
           </button>
         </li>
       {/each}
@@ -136,13 +151,13 @@
 
   .list {
     position: absolute;
-    inset-block-start: calc(100% + var(--space-2));
+    inset-block-end: calc(100% + var(--space-2));
     inset-inline-start: 0;
     z-index: 2;
     display: grid;
     gap: 2px;
     min-inline-size: 100%;
-    max-block-size: 16rem;
+    max-block-size: min(16rem, 40vh);
     margin: 0;
     padding: var(--space-1);
     border: 1px solid var(--color-glass-border);

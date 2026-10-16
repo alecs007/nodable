@@ -18,22 +18,27 @@ offsets of its nodes.
 ```ts
 type Session = {
   readonly id: SessionId
+  readonly name: string
   readonly input: string
   readonly analysis: Analysis
   readonly offsets: NodeOffsets
 }
 ```
 
-### `createSession(input?: string): Session`
+### `createSession(input?: string, name?: string): Session`
 
-Creates a session with a fresh identifier and analyzes the input, which defaults to the empty
-string.
+Creates a session with a fresh identifier and analyzes the input. Both arguments default to the
+empty string; a session without a name is listed by its formula.
 
 ```ts
 const session = createSession('((¬p) ∨ q)')
 ```
 
-### `restoreSession(id: SessionId, input: string, offsets: NodeOffsets): Session`
+### `renameSession(session: Session, name: string): Session`
+
+Returns a session with a new name. The formula and the identifier are untouched.
+
+### `restoreSession(id: SessionId, input: string, offsets: NodeOffsets, name?: string): Session`
 
 Rebuilds a session that was stored earlier. The analysis is recomputed from the input, so only the
 identifier, the input and the offsets need to be persisted.
@@ -120,6 +125,27 @@ drawing including padding.
 `LayoutOptions` sets `nodeWidth`, `nodeHeight`, `horizontalGap`, `verticalGap` and `padding`;
 `DEFAULT_LAYOUT_OPTIONS` holds the values used by the interface and the exporters.
 
+## Variants
+
+### `pendingVariants(snapshot: TreeSnapshot): readonly FormulaVariant[]`
+
+While a group is waiting for its arity, this returns the shapes the tree can still take, each one a
+full snapshot with the working node already expanded.
+
+```ts
+type FormulaVariant = {
+  readonly kind: 'double' | 'single'
+  readonly snapshot: TreeSnapshot
+  readonly workingId: NodeId
+  readonly isLabelKnown: boolean
+}
+```
+
+Directly after an open parenthesis both shapes are possible, so two variants come back: a double
+node whose connective is not known yet (`isLabelKnown` is false, so the interface draws it without a
+symbol) and a single node labelled with the negation. Once the first operand is filled, only the
+double node remains and the list holds one variant. With no pending group the list is empty.
+
 ## Exporters
 
 ### `exportSession(session: Session, format: ExportFormat, options?: LayoutOptions): ExportResult`
@@ -195,8 +221,8 @@ Each returns a new workspace. `replaceSession` matches on the session identifier
 
 ### `serializeWorkspace(workspace: Workspace): string`
 
-Writes the workspace as indented JSON. Only the identifier, the input and the offsets of each
-session are stored; the analysis is rebuilt on load.
+Writes the workspace as indented JSON. Only the identifier, the name, the input and the offsets of
+each session are stored; the analysis is rebuilt on load.
 
 ### `deserializeWorkspace(data: string): Result<Workspace, Diagnostic>`
 

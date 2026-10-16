@@ -16,6 +16,7 @@ export type SessionId = string
 
 export type Session = {
   readonly id: SessionId
+  readonly name: string
   readonly input: string
   readonly analysis: Analysis
   readonly offsets: NodeOffsets
@@ -32,12 +33,21 @@ export function createSessionId(): SessionId {
   return crypto.randomUUID()
 }
 
-export function createSession(input = ''): Session {
-  return { id: createSessionId(), input, analysis: analyzeFormula(input), offsets: {} }
+export function createSession(input = '', name = ''): Session {
+  return { id: createSessionId(), name, input, analysis: analyzeFormula(input), offsets: {} }
 }
 
-export function restoreSession(id: SessionId, input: string, offsets: NodeOffsets): Session {
-  return { id, input, analysis: analyzeFormula(input), offsets }
+export function restoreSession(
+  id: SessionId,
+  input: string,
+  offsets: NodeOffsets,
+  name = '',
+): Session {
+  return { id, name, input, analysis: analyzeFormula(input), offsets }
+}
+
+export function renameSession(session: Session, name: string): Session {
+  return { ...session, name }
 }
 
 export function updateInput(session: Session, input: string): Session {

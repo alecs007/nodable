@@ -49,10 +49,12 @@ export {
   getTree,
   moveNode,
   normalizeInput,
+  renameSession,
   resetOffsets,
   restoreSession,
   updateInput,
 } from './session/session'
+export { type FormulaVariant, type VariantKind, pendingVariants } from './session/variants'
 export {
   type LayoutCursor,
   type LayoutEdge,

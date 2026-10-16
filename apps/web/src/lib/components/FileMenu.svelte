@@ -7,6 +7,8 @@
   } from '@nodable/sdk'
   import { copyExport, pickTextFile, saveExport } from '../export/files'
   import type { MessageKey } from '../i18n/messages'
+  import { prefersReducedMotion } from 'svelte/motion'
+  import { fly } from 'svelte/transition'
   import { locale } from '../state/locale.svelte'
   import { persistence } from '../state/persistence.svelte'
   import { workspace } from '../state/workspace.svelte'
@@ -17,6 +19,8 @@
     readonly labelKey: MessageKey
     readonly run: () => void | Promise<void>
   }
+
+  const duration = $derived(prefersReducedMotion.current ? 0 : 160)
 
   let open = $state(false)
   let container: HTMLDivElement | undefined = $state()
@@ -115,7 +119,12 @@
   </button>
 
   {#if open}
-    <ul class="list" role="menu" aria-label={locale.t('file.label')}>
+    <ul
+      class="list"
+      role="menu"
+      aria-label={locale.t('file.label')}
+      transition:fly={{ y: -6, duration }}
+    >
       {#each entries as entry (entry.id)}
         <li role="none" class:divided={entry.id === 'export'}>
           <button
@@ -161,7 +170,7 @@
 
   .list {
     position: absolute;
-    inset-block-start: calc(100% + var(--space-2));
+    inset-block-end: calc(100% + var(--space-2));
     inset-inline-end: 0;
     z-index: 2;
     display: grid;

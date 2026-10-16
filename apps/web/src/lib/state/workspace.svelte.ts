@@ -12,6 +12,7 @@ import {
   getTree,
   moveNode,
   normalizeFormula,
+  renameSession,
   resetOffsets,
   updateInput,
 } from '@nodable/sdk'
@@ -28,10 +29,15 @@ export type WorkspaceState = {
   readonly isReplaying: boolean
   readonly view: WorkspaceView
   readonly highlightLeaves: boolean
+  readonly zoom: number
   setInput: (input: string) => void
   select: (id: SessionId) => void
   addFormula: () => void
   removeActive: () => void
+  remove: (id: SessionId) => void
+  rename: (name: string) => void
+  zoomBy: (factor: number) => void
+  resetZoom: () => void
   showStep: (index: number) => void
   showLatestStep: () => void
   nudgeNode: (nodeId: NodeId, delta: Point) => void
@@ -51,6 +57,7 @@ function createWorkspaceState(): WorkspaceState {
   let view = $state<WorkspaceView>('single')
   let highlightLeaves = $state(false)
   let name = $state('Workspace')
+  let zoom = $state(1)
 
   const active = $derived(sessions.find((session) => session.id === activeId) ?? first)
   const lastStepIndex = $derived(active.analysis.steps.length - 1)
@@ -89,6 +96,9 @@ function createWorkspaceState(): WorkspaceState {
     get highlightLeaves() {
       return highlightLeaves
     },
+    get zoom() {
+      return zoom
+    },
     setInput(input: string) {
       pinnedStep = undefined
       replace(updateInput(active, normalizeFormula(input)))
@@ -105,15 +115,30 @@ function createWorkspaceState(): WorkspaceState {
       activeId = created.id
     },
     removeActive() {
+      this.remove(activeId)
+    },
+    remove(id: SessionId) {
       if (sessions.length < 2) {
         return
       }
 
-      const remaining = sessions.filter((session) => session.id !== activeId)
+      const remaining = sessions.filter((session) => session.id !== id)
 
       pinnedStep = undefined
       sessions = remaining
-      activeId = remaining[0]?.id ?? first.id
+
+      if (id === activeId) {
+        activeId = remaining[0]?.id ?? first.id
+      }
+    },
+    rename(next: string) {
+      replace(renameSession(active, next))
+    },
+    zoomBy(factor: number) {
+      zoom = Math.min(2.5, Math.max(0.4, Math.round(zoom * factor * 100) / 100))
+    },
+    resetZoom() {
+      zoom = 1
     },
     showStep(index: number) {
       pinnedStep = index

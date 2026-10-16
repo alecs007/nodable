@@ -13,6 +13,7 @@ export type Workspace = {
 
 type SerializedSession = {
   readonly id: SessionId
+  readonly name: string
   readonly input: string
   readonly offsets: NodeOffsets
 }
@@ -52,6 +53,7 @@ export function serializeWorkspace(workspace: Workspace): string {
     name: workspace.name,
     sessions: workspace.sessions.map((session) => ({
       id: session.id,
+      name: session.name,
       input: session.input,
       offsets: session.offsets,
     })),
@@ -95,7 +97,9 @@ function readSession(value: unknown): Session | undefined {
     return undefined
   }
 
-  return restoreSession(value['id'], value['input'], readOffsets(value['offsets']))
+  const name = typeof value['name'] === 'string' ? value['name'] : ''
+
+  return restoreSession(value['id'], value['input'], readOffsets(value['offsets']), name)
 }
 
 function parseJson(data: string): unknown {

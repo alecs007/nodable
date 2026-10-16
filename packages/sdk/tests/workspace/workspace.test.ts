@@ -13,7 +13,7 @@ import {
 } from '../../src/index'
 
 function sample(): Workspace {
-  const first = moveNode(createSession('((¬p) ∨ q)'), 'root.0', { x: 12, y: -6 })
+  const first = moveNode(createSession('((¬p) ∨ q)', 'First'), 'root.0', { x: 12, y: -6 })
   const second = createSession('(r → s)')
 
   return createWorkspace('Seminar 3', [first, second])
@@ -69,10 +69,11 @@ describe('serializeWorkspace', () => {
       sessions: [
         {
           id: expect.any(String) as unknown,
+          name: 'First',
           input: '((¬p) ∨ q)',
           offsets: { 'root.0': { x: 12, y: -6 } },
         },
-        { id: expect.any(String) as unknown, input: '(r → s)', offsets: {} },
+        { id: expect.any(String) as unknown, name: '', input: '(r → s)', offsets: {} },
       ],
     })
   })
@@ -91,6 +92,12 @@ describe('deserializeWorkspace', () => {
     expect(result.value.sessions.map((session) => session.input)).toEqual(['((¬p) ∨ q)', '(r → s)'])
     expect(result.value.sessions[0]?.offsets).toEqual({ 'root.0': { x: 12, y: -6 } })
     expect(result.value.sessions[0]?.id).toBe(workspace.sessions[0]?.id)
+  })
+
+  it('keeps the name of every session', () => {
+    const result = deserializeWorkspace(serializeWorkspace(sample()))
+
+    expect(result.ok && result.value.sessions[0]?.name).toBe('First')
   })
 
   it('rebuilds the analysis of every session', () => {

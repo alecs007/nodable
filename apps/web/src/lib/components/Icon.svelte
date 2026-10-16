@@ -12,6 +12,9 @@
     | 'language'
     | 'clear'
     | 'save'
+    | 'zoomin'
+    | 'zoomout'
+    | 'trash'
 
   type Circle = { readonly cx: number; readonly cy: number; readonly r: number }
 
@@ -60,6 +63,18 @@
       circles: [{ cx: 12, cy: 12, r: 8.8 }],
     },
     clear: { paths: ['M7 7l10 10', 'M17 7 7 17'], circles: [] },
+    zoomin: {
+      paths: ['M15.5 15.5 21 21', 'M11 7.5v7', 'M7.5 11h7'],
+      circles: [{ cx: 11, cy: 11, r: 6.5 }],
+    },
+    zoomout: {
+      paths: ['M15.5 15.5 21 21', 'M7.5 11h7'],
+      circles: [{ cx: 11, cy: 11, r: 6.5 }],
+    },
+    trash: {
+      paths: ['M4.5 7h15', 'M10 11v6', 'M14 11v6', 'M6.5 7l1 12.5h9L17.5 7', 'M9.5 7V4.5h5V7'],
+      circles: [],
+    },
     save: {
       paths: ['M12 3.5v11', 'M8 11l4 4 4-4', 'M4.5 16.5v2a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2v-2'],
       circles: [],

@@ -55,9 +55,12 @@
 <style>
   .hint {
     display: flex;
+    flex-wrap: wrap;
     gap: var(--space-2);
     align-items: baseline;
+    min-inline-size: 0;
     margin: 0;
+    text-align: end;
     color: var(--color-text-muted);
     font-size: 0.875rem;
   }

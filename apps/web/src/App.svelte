@@ -1,28 +1,25 @@
 <script lang="ts">
   import './app.css'
-  import { collectNodes } from '@nodable/sdk'
+  import { pendingVariants } from '@nodable/sdk'
   import BrandMark from './lib/components/BrandMark.svelte'
   import HintBar from './lib/components/HintBar.svelte'
   import InputBar from './lib/components/InputBar.svelte'
-  import OutcomePreview from './lib/components/OutcomePreview.svelte'
+  import NameField from './lib/components/NameField.svelte'
   import StepSlider from './lib/components/StepSlider.svelte'
   import ToolBar from './lib/components/ToolBar.svelte'
   import TreeCanvas from './lib/components/TreeCanvas.svelte'
   import TreeGallery from './lib/components/TreeGallery.svelte'
+  import VariantBoard from './lib/components/VariantBoard.svelte'
   import { locale } from './lib/state/locale.svelte'
   import { persistence } from './lib/state/persistence.svelte'
   import { workspace } from './lib/state/workspace.svelte'
   import { theme } from './lib/theme/theme.svelte'
 
   const session = $derived(workspace.active)
+  const variants = $derived(pendingVariants(workspace.snapshot))
   const hasError = $derived(
     session.analysis.diagnostics.some((diagnostic) => diagnostic.severity === 'error'),
   )
-  const hasPendingGroup = $derived(
-    workspace.view === 'single' &&
-      collectNodes(workspace.snapshot.root).some((node) => node.kind === 'group' && !node.isClosed),
-  )
-
   $effect(() => theme.start())
 
   $effect(() => {
@@ -43,31 +40,54 @@
 </script>
 
 <div class="stage">
-  <main class="workspace" class:gallery={workspace.view === 'all'}>
-    {#if workspace.view === 'all'}
-      <TreeGallery
-        sessions={workspace.sessions}
-        activeId={workspace.activeId}
-        highlightLeaves={workspace.highlightLeaves}
-        onselect={(id: string) => {
-          workspace.select(id)
-        }}
-      />
-    {:else}
-      <TreeCanvas
-        snapshot={workspace.snapshot}
-        highlightLeaves={workspace.highlightLeaves}
-        interactive
-        onmovenode={(nodeId: string, delta: { x: number; y: number }) => {
-          workspace.nudgeNode(nodeId, delta)
-        }}
-      />
-    {/if}
+  <main
+    class="workspace"
+    class:gallery={workspace.view === 'all'}
+    onwheel={(event: WheelEvent) => {
+      if (event.ctrlKey) {
+        event.preventDefault()
+        workspace.zoomBy(event.deltaY < 0 ? 1.1 : 1 / 1.1)
+      }
+    }}
+  >
+    <div class="zoom" style:transform="scale({workspace.zoom})">
+      {#if workspace.view === 'all'}
+        <TreeGallery
+          sessions={workspace.sessions}
+          activeId={workspace.activeId}
+          highlightLeaves={workspace.highlightLeaves}
+          onselect={(id: string) => {
+            workspace.select(id)
+          }}
+          ondelete={(id: string) => {
+            workspace.remove(id)
+          }}
+        />
+      {:else if variants.length > 1}
+        <VariantBoard {variants} highlightLeaves={workspace.highlightLeaves} />
+      {:else}
+        <TreeCanvas
+          snapshot={variants[0]?.snapshot ?? workspace.snapshot}
+          hideLabelFor={variants[0]?.workingId}
+          highlightLeaves={workspace.highlightLeaves}
+          interactive
+          onmovenode={(nodeId: string, delta: { x: number; y: number }) => {
+            workspace.nudgeNode(nodeId, delta)
+          }}
+        />
+      {/if}
+    </div>
   </main>
 
   <header class="composer island" aria-label={locale.t('input.label')}>
     <div class="caption">
       <BrandMark />
+      <NameField
+        value={session.name}
+        onchange={(value: string) => {
+          workspace.rename(value)
+        }}
+      />
       <HintBar
         diagnostics={session.analysis.diagnostics}
         allowedNext={session.analysis.allowedNext}
@@ -87,12 +107,6 @@
       }}
     />
   </header>
-
-  {#if hasPendingGroup}
-    <div class="hintbox">
-      <OutcomePreview />
-    </div>
-  {/if}
 
   <nav class="dock island" aria-label={locale.t('view.label')}>
     {#if workspace.lastStepIndex > 0}
@@ -121,10 +135,17 @@
     block-size: 100%;
     padding: clamp(9rem, 22vh, 12rem) var(--space-5) clamp(7rem, 16vh, 9rem);
     overflow: auto;
+    scrollbar-gutter: stable both-edges;
   }
 
   .workspace.gallery {
     place-items: stretch;
+  }
+
+  .zoom {
+    inline-size: 100%;
+    transform-origin: top center;
+    transition: transform var(--duration-medium) ease;
   }
 
   .island {
@@ -167,15 +188,15 @@
     transform: translateX(-50%);
   }
 
-  .hintbox {
-    position: absolute;
-    inset-block-end: clamp(6.5rem, 15vh, 8rem);
-    inset-inline-start: var(--space-4);
-  }
-
   @media (width <= 48rem) {
     .workspace {
       padding: 11rem var(--space-2) 7rem;
+    }
+
+    .caption {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: var(--space-1);
     }
 
     .composer {
@@ -186,15 +207,11 @@
 
     .dock {
       inset-block-end: var(--space-2);
-      max-inline-size: calc(100% - var(--space-4));
+      gap: var(--space-2);
+      inline-size: calc(100% - var(--space-4));
+      max-inline-size: none;
+      padding: var(--space-2);
       border-radius: var(--radius-3);
-    }
-
-    .hintbox {
-      inset-block-end: 6.5rem;
-      inset-inline-start: var(--space-2);
-      transform: scale(0.85);
-      transform-origin: bottom left;
     }
   }
 </style>
