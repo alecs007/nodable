@@ -9,6 +9,7 @@
   import ToolBar from './lib/components/ToolBar.svelte'
   import TreeCanvas from './lib/components/TreeCanvas.svelte'
   import TreeGallery from './lib/components/TreeGallery.svelte'
+  import Viewport from './lib/components/Viewport.svelte'
   import VariantBoard from './lib/components/VariantBoard.svelte'
   import { locale } from './lib/state/locale.svelte'
   import { persistence } from './lib/state/persistence.svelte'
@@ -40,18 +41,9 @@
 </script>
 
 <div class="stage">
-  <main
-    class="workspace"
-    class:gallery={workspace.view === 'all'}
-    onwheel={(event: WheelEvent) => {
-      if (event.ctrlKey) {
-        event.preventDefault()
-        workspace.zoomBy(event.deltaY < 0 ? 1.1 : 1 / 1.1)
-      }
-    }}
-  >
-    <div class="zoom" style:transform="scale({workspace.zoom})">
-      {#if workspace.view === 'all'}
+  <main class="workspace" class:gallery={workspace.view === 'all'}>
+    {#if workspace.view === 'all'}
+      <div class="sheet">
         <TreeGallery
           sessions={workspace.sessions}
           activeId={workspace.activeId}
@@ -63,16 +55,20 @@
             workspace.remove(id)
           }}
         />
-      {:else if variants.length > 1}
-        <VariantBoard {variants} highlightLeaves={workspace.highlightLeaves} />
-      {:else}
-        <TreeCanvas
-          snapshot={variants[0]?.snapshot ?? workspace.snapshot}
-          hideLabelFor={variants[0]?.workingId}
-          highlightLeaves={workspace.highlightLeaves}
-        />
-      {/if}
-    </div>
+      </div>
+    {:else}
+      <Viewport resetKey="{workspace.activeId}:{String(variants.length)}">
+        {#if variants.length > 1}
+          <VariantBoard {variants} highlightLeaves={workspace.highlightLeaves} />
+        {:else}
+          <TreeCanvas
+            snapshot={variants[0]?.snapshot ?? workspace.snapshot}
+            hideLabelFor={variants[0]?.workingId}
+            highlightLeaves={workspace.highlightLeaves}
+          />
+        {/if}
+      </Viewport>
+    {/if}
   </main>
 
   <header class="composer island" aria-label={locale.t('input.label')}>
@@ -84,13 +80,13 @@
           workspace.rename(value)
         }}
       />
-      <HintBar
-        diagnostics={session.analysis.diagnostics}
-        allowedNext={session.analysis.allowedNext}
-        isComplete={session.analysis.isComplete}
-        isEmpty={session.input.length === 0}
-      />
     </div>
+    <HintBar
+      diagnostics={session.analysis.diagnostics}
+      allowedNext={session.analysis.allowedNext}
+      isComplete={session.analysis.isComplete}
+      isEmpty={session.input.length === 0}
+    />
     <InputBar
       value={session.input}
       {hasError}
@@ -125,23 +121,18 @@
   }
 
   .workspace {
-    display: grid;
-    place-items: start center;
-    inline-size: 100%;
-    block-size: 100%;
-    padding: clamp(9rem, 22vh, 12rem) var(--space-5) clamp(7rem, 16vh, 9rem);
+    position: absolute;
+    inset: clamp(9rem, 20vh, 11rem) 0 clamp(6.5rem, 14vh, 8rem);
+    overflow: hidden;
+  }
+
+  .workspace.gallery {
     overflow: auto;
     scrollbar-gutter: stable both-edges;
   }
 
-  .workspace.gallery {
-    place-items: stretch;
-  }
-
-  .zoom {
-    inline-size: 100%;
-    transform-origin: top center;
-    transition: transform var(--duration-medium) var(--ease);
+  .sheet {
+    padding: 0 var(--space-5) var(--space-5);
   }
 
   .island {
@@ -156,7 +147,7 @@
     inset-block-start: var(--space-4);
     inset-inline-start: 50%;
     display: grid;
-    gap: var(--space-2);
+    gap: var(--space-1);
     inline-size: min(calc(100% - var(--space-5)), 42rem);
     padding: var(--space-3);
     transform: translateX(-50%);
@@ -164,7 +155,6 @@
 
   .caption {
     display: flex;
-    flex-wrap: wrap;
     gap: var(--space-3);
     align-items: center;
     justify-content: space-between;
@@ -186,13 +176,11 @@
 
   @media (width <= 48rem) {
     .workspace {
-      padding: 11rem var(--space-2) 7rem;
+      inset: 11.5rem 0 6.5rem;
     }
 
-    .caption {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: var(--space-1);
+    .sheet {
+      padding: 0 var(--space-2) var(--space-4);
     }
 
     .composer {

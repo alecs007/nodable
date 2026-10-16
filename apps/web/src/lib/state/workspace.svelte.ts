@@ -24,15 +24,12 @@ export type WorkspaceState = {
   readonly isReplaying: boolean
   readonly view: WorkspaceView
   readonly highlightLeaves: boolean
-  readonly zoom: number
   setInput: (input: string) => void
   select: (id: SessionId) => void
   addFormula: () => void
   removeActive: () => void
   remove: (id: SessionId) => void
   rename: (name: string) => void
-  zoomBy: (factor: number) => void
-  resetZoom: () => void
   showStep: (index: number) => void
   showLatestStep: () => void
   setView: (next: WorkspaceView) => void
@@ -50,7 +47,6 @@ function createWorkspaceState(): WorkspaceState {
   let view = $state<WorkspaceView>('single')
   let highlightLeaves = $state(false)
   let name = $state('Workspace')
-  let zoom = $state(1)
 
   const active = $derived(sessions.find((session) => session.id === activeId) ?? first)
   const lastStepIndex = $derived(active.analysis.steps.length - 1)
@@ -89,9 +85,6 @@ function createWorkspaceState(): WorkspaceState {
     get highlightLeaves() {
       return highlightLeaves
     },
-    get zoom() {
-      return zoom
-    },
     setInput(input: string) {
       pinnedStep = undefined
       replace(updateInput(active, normalizeFormula(input)))
@@ -126,12 +119,6 @@ function createWorkspaceState(): WorkspaceState {
     },
     rename(next: string) {
       replace(renameSession(active, next))
-    },
-    zoomBy(factor: number) {
-      zoom = Math.min(2.5, Math.max(0.4, Math.round(zoom * factor * 100) / 100))
-    },
-    resetZoom() {
-      zoom = 1
     },
     showStep(index: number) {
       pinnedStep = index

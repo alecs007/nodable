@@ -26,9 +26,9 @@
     min-inline-size: 4rem;
     max-inline-size: 12rem;
     padding: var(--space-1) var(--space-2);
-    border: 1px solid transparent;
+    border: 1px solid var(--color-border);
     border-radius: var(--radius-pill);
-    background: transparent;
+    background: var(--color-surface-raised);
     color: var(--color-text);
     font-family: var(--font-sans);
     font-size: 0.9375rem;
@@ -38,7 +38,7 @@
   }
 
   .name:hover {
-    border-color: var(--color-border);
+    border-color: var(--color-border-strong);
   }
 
   .name:focus {

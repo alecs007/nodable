@@ -97,42 +97,6 @@
     </button>
   </div>
 
-  <div class="cluster" role="group" aria-label={locale.t('zoom.reset')}>
-    <button
-      type="button"
-      class="key"
-      title={locale.t('zoom.out')}
-      aria-label={locale.t('zoom.out')}
-      onclick={() => {
-        workspace.zoomBy(1 / 1.2)
-      }}
-    >
-      <Icon name="zoomout" />
-    </button>
-    <button
-      type="button"
-      class="key zoom"
-      title={locale.t('zoom.reset')}
-      aria-label={locale.t('zoom.reset')}
-      onclick={() => {
-        workspace.resetZoom()
-      }}
-    >
-      {Math.round(workspace.zoom * 100)}%
-    </button>
-    <button
-      type="button"
-      class="key"
-      title={locale.t('zoom.in')}
-      aria-label={locale.t('zoom.in')}
-      onclick={() => {
-        workspace.zoomBy(1.2)
-      }}
-    >
-      <Icon name="zoomin" />
-    </button>
-  </div>
-
   <div class="cluster">
     <button
       type="button"
@@ -208,12 +172,6 @@
   .key:disabled {
     opacity: 0.4;
     cursor: default;
-  }
-
-  .zoom {
-    font-family: var(--font-mono);
-    font-size: 0.75rem;
-    font-variant-numeric: tabular-nums;
   }
 
   .wide {

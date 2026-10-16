@@ -25,6 +25,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Web: build-step replay, a view of all trees at once, and a toggle that highlights variables.
 - Web: fullscreen tree workspace with floating glass control islands, an icon toolbar, custom
   dropdowns, and a single column layout on small screens.
-- Web: named formulas, deleting a formula from the gallery, and zooming the workspace.
+- Web: named formulas, deleting a formula from the gallery, and a work area that fits the tree to
+  the window and pans and zooms with the pointer or two fingers.
 - Web: debounced automatic saving to IndexedDB, workspace import and export as JSON, a clear saved
   data action, and downloads for SVG, PNG, LaTeX and plain text.

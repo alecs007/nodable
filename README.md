@@ -20,7 +20,7 @@ conventions taught in the Computational Logic course.
 - Dotted placeholder slots, and a preview of the two possible outcomes while a group is undecided.
 - Clear diagnostics with stable codes and inline underlining of the offending range.
 - Step replay: move through every intermediate state of the build.
-- A symmetric layout that keeps every tree balanced, with pan and zoom.
+- A symmetric layout that keeps every tree balanced, fitted to the window, with pan and zoom.
 - Workspaces with several formulas and a combined view.
 - Export to SVG, PNG, JSON, LaTeX and plain text.
 - Light, dark and system themes; English and Romanian.

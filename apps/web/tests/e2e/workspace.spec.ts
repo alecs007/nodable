@@ -65,15 +65,3 @@ test('names a formula and deletes it from the gallery', async ({ page }) => {
 
   await expect(gallery.getByText('Seminar one')).toBeHidden()
 })
-
-test('zooms the workspace in and out', async ({ page }) => {
-  await page.getByRole('textbox', { name: 'Formula', exact: true }).fill('(p ∧ q)')
-
-  await page.getByRole('button', { name: 'Zoom in' }).click()
-
-  await expect(page.getByRole('button', { name: 'Reset the zoom' })).toHaveText('120%')
-
-  await page.getByRole('button', { name: 'Reset the zoom' }).click()
-
-  await expect(page.getByRole('button', { name: 'Reset the zoom' })).toHaveText('100%')
-})

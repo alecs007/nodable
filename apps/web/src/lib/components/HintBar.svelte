@@ -28,7 +28,7 @@
     }
 
     if (isEmpty) {
-      return ''
+      return locale.t('hint.empty')
     }
 
     if (isComplete) {
@@ -45,7 +45,13 @@
   })
 </script>
 
-<p class="hint" class:error={error !== undefined} id="formula-hint" aria-live="polite">
+<p
+  class="hint"
+  class:error={error !== undefined}
+  class:quiet={message === ''}
+  id="formula-hint"
+  aria-live="polite"
+>
   {#if message !== ''}
     {#if error !== undefined}
       <span class="code">{error.code}</span>
@@ -59,12 +65,19 @@
     display: flex;
     flex-wrap: wrap;
     gap: var(--space-2);
-    align-items: baseline;
-    min-inline-size: 0;
+    align-items: center;
+    min-block-size: 1.75rem;
     margin: 0;
-    text-align: end;
+    padding-inline: var(--space-2);
     color: var(--color-text-muted);
     font-size: 0.875rem;
+    transition:
+      opacity var(--duration-medium) var(--ease),
+      color var(--duration-medium) var(--ease);
+  }
+
+  .hint.quiet {
+    opacity: 0;
   }
 
   .hint.error {
