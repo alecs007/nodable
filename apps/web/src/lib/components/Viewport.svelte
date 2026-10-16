@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { type Snippet } from 'svelte'
+  import { type Snippet, untrack } from 'svelte'
   import { SvelteMap } from 'svelte/reactivity'
   import { locale } from '../state/locale.svelte'
 
@@ -10,7 +10,7 @@
 
   const { resetKey, children }: Props = $props()
 
-  const MIN_SCALE = 0.25
+  const MIN_SCALE = 0.02
   const MAX_SCALE = 3
   const MARGIN = 24
 
@@ -41,9 +41,9 @@
   }
 
   function clampOffset(next: number, view: number, content: number): number {
-    const span = content - view
+    const room = view - content
 
-    return span <= 0 ? -span / 2 : Math.min(0, Math.max(-span, next))
+    return Math.min(Math.max(0, room), Math.max(Math.min(0, room), next))
   }
 
   function applyBounds(): void {
@@ -72,19 +72,38 @@
       height: Math.max(1, measured.view.height - MARGIN * 2),
     }
 
-    scale = Math.min(
+    const next = Math.min(
       1,
       Math.max(
         MIN_SCALE,
         Math.min(room.width / measured.content.width, room.height / measured.content.height),
       ),
     )
-    offsetX = (measured.view.width - measured.content.width * scale) / 2
-    offsetY = (measured.view.height - measured.content.height * scale) / 2
+
+    scale = next
+    offsetX = (measured.view.width - measured.content.width * next) / 2
+    offsetY = (measured.view.height - measured.content.height * next) / 2
+  }
+
+  function fitScale(): number {
+    const measured = sizes()
+
+    if (measured === undefined) {
+      return MIN_SCALE
+    }
+
+    return Math.max(
+      MIN_SCALE,
+      Math.min(
+        1,
+        (measured.view.width - MARGIN * 2) / measured.content.width,
+        (measured.view.height - MARGIN * 2) / measured.content.height,
+      ),
+    )
   }
 
   function zoomAt(factor: number, pointX: number, pointY: number): void {
-    const next = Math.min(MAX_SCALE, Math.max(MIN_SCALE, scale * factor))
+    const next = Math.min(MAX_SCALE, Math.max(fitScale(), scale * factor))
 
     if (next === scale) {
       return
@@ -114,6 +133,7 @@
   }
 
   function onPointerDown(event: PointerEvent & { currentTarget: HTMLDivElement }): void {
+    event.preventDefault()
     pointers.set(event.pointerId, { x: event.clientX, y: event.clientY })
     event.currentTarget.setPointerCapture(event.pointerId)
     isGesturing = true
@@ -191,10 +211,14 @@
   })
 
   $effect(() => {
-    if (resetKey !== '') {
-      isFollowing = true
-      fit()
-    }
+    const key = resetKey
+
+    untrack(() => {
+      if (key !== '') {
+        isFollowing = true
+        fit()
+      }
+    })
   })
 </script>
 
@@ -232,6 +256,8 @@
     overflow: hidden;
     cursor: grab;
     touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
   }
 
   .frame.gesturing {

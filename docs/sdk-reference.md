@@ -137,14 +137,13 @@ type FormulaVariant = {
   readonly kind: 'double' | 'single'
   readonly snapshot: TreeSnapshot
   readonly workingId: NodeId
-  readonly isLabelKnown: boolean
 }
 ```
 
 Directly after an open parenthesis both shapes are possible, so two variants come back: a double
-node whose connective is not known yet (`isLabelKnown` is false, so the interface draws it without a
-symbol) and a single node labelled with the negation. Once the first operand is filled, only the
-double node remains and the list holds one variant. With no pending group the list is empty.
+node and a single node. The symbol of the working node is still unknown in both, so the interface
+draws it without one. Once the first operand is filled only the double node remains and the list
+holds one variant. With no pending group the list is empty.
 
 ## Exporters
 

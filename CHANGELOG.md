@@ -22,7 +22,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Web: application shell with the formula bar, connective toolbar, hints and diagnostics, light,
   dark and system themes, and English and Romanian translations.
 - Web: tree canvas with the cursor arrow, dotted slots, the A and B choice, and short transitions.
-- Web: build-step replay, a view of all trees at once, and a toggle that highlights variables.
+- Web: build-step replay.
 - Web: fullscreen tree workspace with floating glass control islands, an icon toolbar, custom
   dropdowns, and a single column layout on small screens.
 - Web: named formulas, deleting a formula from the gallery, and a work area that fits the tree to

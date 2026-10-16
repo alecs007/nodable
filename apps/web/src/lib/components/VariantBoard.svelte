@@ -5,21 +5,16 @@
 
   type Props = {
     variants: readonly FormulaVariant[]
-    highlightLeaves: boolean
   }
 
-  const { variants, highlightLeaves }: Props = $props()
+  const { variants }: Props = $props()
 </script>
 
 <div class="board" aria-label={locale.t('outcome.label')}>
   {#each variants as variant, index (variant.kind)}
     <section class="variant">
       <h2 class="caption">{locale.t('outcome.variant', { index: String(index + 1) })}</h2>
-      <TreeCanvas
-        snapshot={variant.snapshot}
-        {highlightLeaves}
-        hideLabelFor={variant.isLabelKnown ? undefined : variant.workingId}
-      />
+      <TreeCanvas snapshot={variant.snapshot} hideLabelFor={variant.workingId} />
     </section>
   {/each}
 </div>

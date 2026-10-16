@@ -2,22 +2,14 @@
   import { LOCALES, type Locale, type MessageKey } from '../i18n/messages'
   import { locale } from '../state/locale.svelte'
   import { workspace } from '../state/workspace.svelte'
-  import { THEME_PREFERENCES, type ThemePreference, theme } from '../theme/theme.svelte'
+  import { THEMES, type Theme, theme } from '../theme/theme.svelte'
   import FileMenu from './FileMenu.svelte'
   import FormulaMenu from './FormulaMenu.svelte'
   import Icon, { type IconName } from './Icon.svelte'
 
-  const THEME_ICONS: Record<ThemePreference, IconName> = {
-    light: 'light',
-    dark: 'dark',
-    system: 'system',
-  }
+  const THEME_ICONS: Record<Theme, IconName> = { light: 'light', dark: 'dark' }
 
-  const THEME_KEYS: Record<ThemePreference, MessageKey> = {
-    light: 'theme.light',
-    dark: 'theme.dark',
-    system: 'theme.system',
-  }
+  const THEME_KEYS: Record<Theme, MessageKey> = { light: 'theme.light', dark: 'theme.dark' }
 
   function nextOf<T>(values: readonly T[], current: T): T {
     const index = values.indexOf(current)
@@ -25,78 +17,24 @@
     return values[(index + 1) % values.length] ?? current
   }
 
-  const themeLabel = $derived(
-    `${locale.t('theme.label')}: ${locale.t(THEME_KEYS[theme.preference])}`,
-  )
+  const themeLabel = $derived(`${locale.t('theme.label')}: ${locale.t(THEME_KEYS[theme.current])}`)
 </script>
 
-<div class="bar">
+<div class="row primary">
   {#if workspace.sessions.length > 1}
-    <FormulaMenu
-      sessions={workspace.sessions}
-      activeId={workspace.activeId}
-      onselect={(id: string) => {
-        workspace.select(id)
-      }}
-    />
+    <div class="picker">
+      <FormulaMenu
+        sessions={workspace.sessions}
+        activeId={workspace.activeId}
+        onselect={(id: string) => {
+          workspace.select(id)
+        }}
+      />
+    </div>
   {/if}
+</div>
 
-  <div class="cluster" role="group" aria-label={locale.t('view.label')}>
-    <button
-      type="button"
-      class="key"
-      class:on={workspace.view === 'single'}
-      aria-pressed={workspace.view === 'single'}
-      title={locale.t('view.single')}
-      aria-label={locale.t('view.single')}
-      onclick={() => {
-        workspace.setView('single')
-      }}
-    >
-      <Icon name="single" />
-    </button>
-    <button
-      type="button"
-      class="key"
-      class:on={workspace.view === 'all'}
-      aria-pressed={workspace.view === 'all'}
-      title={locale.t('view.all')}
-      aria-label={locale.t('view.all')}
-      onclick={() => {
-        workspace.setView('all')
-      }}
-    >
-      <Icon name="gallery" />
-    </button>
-    <button
-      type="button"
-      class="key"
-      class:on={workspace.highlightLeaves}
-      aria-pressed={workspace.highlightLeaves}
-      title={locale.t('view.highlightleaves')}
-      aria-label={locale.t('view.highlightleaves')}
-      onclick={() => {
-        workspace.toggleHighlightLeaves()
-      }}
-    >
-      <Icon name="highlight" />
-    </button>
-  </div>
-
-  <div class="cluster" role="group" aria-label={locale.t('workspace.label')}>
-    <button
-      type="button"
-      class="key"
-      title={locale.t('workspace.add')}
-      aria-label={locale.t('workspace.add')}
-      onclick={() => {
-        workspace.addFormula()
-      }}
-    >
-      <Icon name="add" />
-    </button>
-  </div>
-
+<div class="row secondary">
   <div class="cluster">
     <button
       type="button"
@@ -104,10 +42,10 @@
       title={themeLabel}
       aria-label={themeLabel}
       onclick={() => {
-        theme.select(nextOf(THEME_PREFERENCES, theme.preference))
+        theme.select(nextOf<Theme>(THEMES, theme.current))
       }}
     >
-      <Icon name={THEME_ICONS[theme.preference]} />
+      <Icon name={THEME_ICONS[theme.current]} />
     </button>
     <button
       type="button"
@@ -123,13 +61,24 @@
     </button>
     <FileMenu />
   </div>
+
+  <button
+    type="button"
+    class="create"
+    onclick={() => {
+      workspace.addFormula()
+    }}
+  >
+    <Icon name="add" />
+    <span>{locale.t('workspace.add')}</span>
+  </button>
 </div>
 
 <style>
-  .bar {
+  .row {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--space-3);
+    gap: var(--space-2);
     align-items: center;
   }
 
@@ -164,16 +113,6 @@
     color: var(--color-text);
   }
 
-  .key.on {
-    background: var(--color-surface-raised);
-    color: var(--color-accent);
-  }
-
-  .key:disabled {
-    opacity: 0.4;
-    cursor: default;
-  }
-
   .wide {
     padding-inline: var(--space-3);
   }
@@ -181,6 +120,47 @@
   .code {
     font-size: 0.75rem;
     font-weight: 600;
-    text-transform: lowercase;
+  }
+
+  .picker {
+    min-inline-size: 0;
+  }
+
+  .create {
+    display: flex;
+    gap: var(--space-2);
+    align-items: center;
+    block-size: 2.5rem;
+    padding-inline: var(--space-4);
+    border: none;
+    border-radius: var(--radius-pill);
+    background: var(--color-accent);
+    color: var(--color-accent-contrast);
+    font-family: var(--font-sans);
+    font-size: 0.875rem;
+    font-weight: 600;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: opacity var(--duration-short) var(--ease);
+  }
+
+  .create:hover {
+    opacity: 0.88;
+  }
+
+  @media (width <= 48rem) {
+    .row {
+      inline-size: 100%;
+      justify-content: space-between;
+    }
+
+    .picker {
+      flex: 0 0 50%;
+    }
+
+    .create {
+      flex: 1;
+      justify-content: center;
+    }
   }
 </style>

@@ -17,7 +17,6 @@ export type FormulaVariant = {
   readonly kind: VariantKind
   readonly snapshot: TreeSnapshot
   readonly workingId: NodeId
-  readonly isLabelKnown: boolean
 }
 
 function pendingGroupOf(root: TreeNode): GroupNode | undefined {
@@ -54,7 +53,6 @@ export function pendingVariants(snapshot: TreeSnapshot): readonly FormulaVariant
     kind: 'double',
     snapshot: { ...snapshot, root: replaceNode(snapshot.root, group.id, asDouble) },
     workingId: group.id,
-    isLabelKnown: false,
   }
 
   if (group.first.kind !== 'slot') {
@@ -67,7 +65,6 @@ export function pendingVariants(snapshot: TreeSnapshot): readonly FormulaVariant
       kind: 'single',
       snapshot: { ...snapshot, root: replaceNode(snapshot.root, group.id, asSingle) },
       workingId: group.id,
-      isLabelKnown: true,
     },
   ]
 }

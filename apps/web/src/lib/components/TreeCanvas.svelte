@@ -1,17 +1,16 @@
 <script lang="ts">
   import { type NodeId, type TreeLayout, type TreeSnapshot, layoutTree, toText } from '@nodable/sdk'
   import { prefersReducedMotion } from 'svelte/motion'
-  import { fade, scale } from 'svelte/transition'
+  import { fade } from 'svelte/transition'
   import { locale } from '../state/locale.svelte'
   import TreeNodeShape from './TreeNodeShape.svelte'
 
   type Props = {
     snapshot: TreeSnapshot
-    highlightLeaves?: boolean
     hideLabelFor?: NodeId | undefined
   }
 
-  const { snapshot, highlightLeaves = false, hideLabelFor }: Props = $props()
+  const { snapshot, hideLabelFor }: Props = $props()
 
   const layout: TreeLayout = $derived(layoutTree(snapshot))
   const duration = $derived(prefersReducedMotion.current ? 0 : 200)
@@ -42,27 +41,26 @@
       y1={edge.from.y}
       x2={edge.to.x}
       y2={edge.to.y}
-      transition:fade={{ duration }}
+      in:fade={{ duration }}
     />
   {/each}
 
   {#each layout.nodes as entry (entry.id)}
     <g class="node" transform="translate({entry.center.x}, {entry.center.y})">
-      <g transition:scale={{ duration, start: 0.85 }}>
+      <g in:fade={{ duration }}>
         <TreeNodeShape
           {entry}
           options={layout.options}
           isCursor={entry.id === cursorNodeId}
           isComplete={snapshot.isComplete && entry.depth === 0}
           hasLabel={entry.id !== hideLabelFor}
-          isHighlighted={highlightLeaves && entry.node.kind === 'leaf'}
         />
       </g>
     </g>
   {/each}
 
   {#if !snapshot.isComplete}
-    <path class="cursor" d={arrow} transition:fade={{ duration }} />
+    <path class="cursor" d={arrow} in:fade={{ duration }} />
   {/if}
 </svg>
 
@@ -71,24 +69,15 @@
     display: block;
     max-inline-size: 100%;
     block-size: auto;
+    overflow: visible;
   }
 
   .edge {
     stroke: var(--color-border-strong);
     stroke-width: 1.5;
-    transition:
-      x1 var(--duration-medium) var(--ease),
-      y1 var(--duration-medium) var(--ease),
-      x2 var(--duration-medium) var(--ease),
-      y2 var(--duration-medium) var(--ease);
-  }
-
-  .node {
-    transition: transform var(--duration-medium) var(--ease);
   }
 
   .cursor {
     fill: var(--color-cursor);
-    transition: d var(--duration-medium) var(--ease);
   }
 </style>

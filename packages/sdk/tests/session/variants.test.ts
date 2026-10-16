@@ -19,11 +19,6 @@ describe('pendingVariants', () => {
     expect(variants[0]?.workingId).toBe('root')
   })
 
-  it('leaves the connective of the double shape unnamed', () => {
-    expect(variantsOf('(')[0]?.isLabelKnown).toBe(false)
-    expect(variantsOf('(')[1]?.isLabelKnown).toBe(true)
-  })
-
   it('gives the double shape a second operand slot', () => {
     const [double] = variantsOf('(')
 

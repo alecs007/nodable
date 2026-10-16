@@ -8,11 +8,10 @@
     options: LayoutOptions
     isCursor: boolean
     isComplete: boolean
-    isHighlighted: boolean
     hasLabel?: boolean | undefined
   }
 
-  const { entry, options, isCursor, isComplete, isHighlighted, hasLabel = true }: Props = $props()
+  const { entry, options, isCursor, isComplete, hasLabel = true }: Props = $props()
 
   const KIND_KEYS: Record<NodeKind, MessageKey> = {
     slot: 'node.slot',
@@ -36,7 +35,6 @@
     class:slot={entry.node.kind === 'slot'}
     class:leaf={entry.node.kind === 'leaf'}
     class:pending={entry.node.kind === 'group'}
-    class:highlighted={isHighlighted}
     class:cursor={isCursor}
     class:done={isComplete}
     x={left}
@@ -57,9 +55,8 @@
     stroke: var(--color-border-strong);
     stroke-width: 1.5;
     transition:
-      fill var(--duration-medium) var(--ease),
-      stroke var(--duration-medium) var(--ease),
-      stroke-width var(--duration-medium) var(--ease);
+      fill var(--duration-short) var(--ease),
+      stroke var(--duration-short) var(--ease);
   }
 
   .box.leaf {
@@ -76,15 +73,9 @@
     stroke-dasharray: 5 5;
   }
 
-  .box.highlighted {
-    fill: var(--color-accent-soft);
-    stroke: var(--color-accent);
-  }
-
   .box.cursor {
     stroke: var(--color-cursor);
     stroke-width: 2.5;
-    stroke-dasharray: none;
   }
 
   .box.done {

@@ -1,74 +1,46 @@
 import { readSetting, writeSetting } from '../storage/settings'
 
-export const THEME_PREFERENCES = ['light', 'dark', 'system'] as const
+export const THEMES = ['light', 'dark'] as const
 
-export type ThemePreference = (typeof THEME_PREFERENCES)[number]
-
-export type ResolvedTheme = 'light' | 'dark'
+export type Theme = (typeof THEMES)[number]
 
 const STORAGE_KEY = 'nodable.theme'
 const DARK_QUERY = '(prefers-color-scheme: dark)'
 
-function isThemePreference(value: string): value is ThemePreference {
-  return THEME_PREFERENCES.some((preference) => preference === value)
+function isTheme(value: string): value is Theme {
+  return THEMES.some((theme) => theme === value)
 }
 
-function readPreference(): ThemePreference {
+function readTheme(): Theme {
   const stored = readSetting(STORAGE_KEY)
 
-  return stored !== undefined && isThemePreference(stored) ? stored : 'system'
-}
-
-function prefersDark(): boolean {
-  return window.matchMedia(DARK_QUERY).matches
-}
-
-function resolve(preference: ThemePreference): ResolvedTheme {
-  if (preference === 'system') {
-    return prefersDark() ? 'dark' : 'light'
+  if (stored !== undefined && isTheme(stored)) {
+    return stored
   }
 
-  return preference
+  return window.matchMedia(DARK_QUERY).matches ? 'dark' : 'light'
+}
+
+function apply(theme: Theme): void {
+  document.documentElement.dataset['theme'] = theme
 }
 
 function createTheme(): {
-  readonly preference: ThemePreference
-  readonly resolved: ResolvedTheme
-  select: (next: ThemePreference) => void
-  start: () => () => void
+  readonly current: Theme
+  select: (next: Theme) => void
 } {
-  let preference = $state<ThemePreference>(readPreference())
-  let resolved = $state<ResolvedTheme>(resolve(preference))
+  let current = $state<Theme>(readTheme())
 
-  function apply(): void {
-    resolved = resolve(preference)
-    document.documentElement.dataset['theme'] = resolved
-  }
+  apply(current)
 
   return {
-    get preference() {
-      return preference
+    get current() {
+      return current
     },
-    get resolved() {
-      return resolved
-    },
-    select(next: ThemePreference) {
-      preference = next
+    select(next: Theme) {
+      current = next
       writeSetting(STORAGE_KEY, next)
-      apply()
-    },
-    start() {
-      const media = window.matchMedia(DARK_QUERY)
-      const onChange = (): void => {
-        apply()
-      }
-
-      apply()
-      media.addEventListener('change', onChange)
-
-      return () => {
-        media.removeEventListener('change', onChange)
-      }
+      apply(next)
     },
   }
 }

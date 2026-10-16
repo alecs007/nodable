@@ -70,13 +70,15 @@ function renderNode(entry: LayoutNode, layout: TreeLayout): readonly string[] {
   ]
 }
 
-function renderCursor(layout: TreeLayout): string {
-  const { anchor, direction } = layout.cursor
-  const body =
-    direction === 'left' ? 'l 11 -7 v 4 h 13 v 6 h -13 v 4 z' : 'l -7 11 h 4 v 13 h 6 v -13 h 4 z'
-  const arrow = `M ${String(anchor.x)} ${String(anchor.y)} ${body}`
+function renderCursor(layout: TreeLayout): readonly string[] {
+  if (layout.cursor.isAboveRoot) {
+    return []
+  }
 
-  return `<path class="nodable-cursor" d="${arrow}" />`
+  const { anchor } = layout.cursor
+  const arrow = `M ${String(anchor.x)} ${String(anchor.y)} l 11 -7 v 4 h 13 v 6 h -13 v 4 z`
+
+  return [`<path class="nodable-cursor" d="${arrow}" />`]
 }
 
 export function toSvg(layout: TreeLayout): string {
@@ -92,7 +94,7 @@ export function toSvg(layout: TreeLayout): string {
     `<rect class="nodable-surface" width="100%" height="100%" />`,
     ...edges,
     ...nodes,
-    renderCursor(layout),
+    ...renderCursor(layout),
     '</svg>',
   ].join('\n')
 }

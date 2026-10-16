@@ -8,20 +8,42 @@
   import StepSlider from './lib/components/StepSlider.svelte'
   import ToolBar from './lib/components/ToolBar.svelte'
   import TreeCanvas from './lib/components/TreeCanvas.svelte'
-  import TreeGallery from './lib/components/TreeGallery.svelte'
   import Viewport from './lib/components/Viewport.svelte'
   import VariantBoard from './lib/components/VariantBoard.svelte'
   import { locale } from './lib/state/locale.svelte'
   import { persistence } from './lib/state/persistence.svelte'
   import { workspace } from './lib/state/workspace.svelte'
-  import { theme } from './lib/theme/theme.svelte'
+
+  let composer: HTMLElement | undefined = $state()
+  let dock: HTMLElement | undefined = $state()
+  let topInset = $state(0)
+  let bottomInset = $state(0)
 
   const session = $derived(workspace.active)
   const variants = $derived(pendingVariants(workspace.snapshot))
   const hasError = $derived(
     session.analysis.diagnostics.some((diagnostic) => diagnostic.severity === 'error'),
   )
-  $effect(() => theme.start())
+  $effect(() => {
+    const top = composer
+    const bottom = dock
+
+    if (top === undefined || bottom === undefined) {
+      return
+    }
+
+    const observer = new ResizeObserver(() => {
+      topInset = top.offsetHeight + 24
+      bottomInset = bottom.offsetHeight + 24
+    })
+
+    observer.observe(top)
+    observer.observe(bottom)
+
+    return () => {
+      observer.disconnect()
+    }
+  })
 
   $effect(() => {
     void persistence.start(workspace.restore)
@@ -40,38 +62,21 @@
   })
 </script>
 
-<div class="stage">
-  <main class="workspace" class:gallery={workspace.view === 'all'}>
-    {#if workspace.view === 'all'}
-      <div class="sheet">
-        <TreeGallery
-          sessions={workspace.sessions}
-          activeId={workspace.activeId}
-          highlightLeaves={workspace.highlightLeaves}
-          onselect={(id: string) => {
-            workspace.select(id)
-          }}
-          ondelete={(id: string) => {
-            workspace.remove(id)
-          }}
+<div class="stage" class:ready={persistence.isReady}>
+  <main class="workspace" style:inset="{topInset}px 0 {bottomInset}px">
+    <Viewport resetKey="{workspace.activeId}:{String(variants.length)}">
+      {#if variants.length > 1}
+        <VariantBoard {variants} />
+      {:else}
+        <TreeCanvas
+          snapshot={variants[0]?.snapshot ?? workspace.snapshot}
+          hideLabelFor={variants[0]?.workingId}
         />
-      </div>
-    {:else}
-      <Viewport resetKey="{workspace.activeId}:{String(variants.length)}">
-        {#if variants.length > 1}
-          <VariantBoard {variants} highlightLeaves={workspace.highlightLeaves} />
-        {:else}
-          <TreeCanvas
-            snapshot={variants[0]?.snapshot ?? workspace.snapshot}
-            hideLabelFor={variants[0]?.workingId}
-            highlightLeaves={workspace.highlightLeaves}
-          />
-        {/if}
-      </Viewport>
-    {/if}
+      {/if}
+    </Viewport>
   </main>
 
-  <header class="composer island" aria-label={locale.t('input.label')}>
+  <header bind:this={composer} class="composer island" aria-label={locale.t('input.label')}>
     <div class="caption">
       <BrandMark />
       <NameField
@@ -100,7 +105,7 @@
     />
   </header>
 
-  <nav class="dock island" aria-label={locale.t('view.label')}>
+  <nav bind:this={dock} class="dock island" aria-label={locale.t('view.label')}>
     {#if workspace.lastStepIndex > 0}
       <StepSlider
         steps={session.analysis.steps}
@@ -118,21 +123,18 @@
   .stage {
     position: fixed;
     inset: 0;
+    opacity: 0;
+    transition: opacity var(--duration-medium) var(--ease);
+  }
+
+  .stage.ready {
+    opacity: 1;
   }
 
   .workspace {
     position: absolute;
-    inset: clamp(9rem, 20vh, 11rem) 0 clamp(6.5rem, 14vh, 8rem);
+    inset: 10rem 0 7rem;
     overflow: hidden;
-  }
-
-  .workspace.gallery {
-    overflow: auto;
-    scrollbar-gutter: stable both-edges;
-  }
-
-  .sheet {
-    padding: 0 var(--space-5) var(--space-5);
   }
 
   .island {
@@ -174,15 +176,11 @@
     transform: translateX(-50%);
   }
 
+  .dock :global(.row) {
+    flex: 0 1 auto;
+  }
+
   @media (width <= 48rem) {
-    .workspace {
-      inset: 11.5rem 0 6.5rem;
-    }
-
-    .sheet {
-      padding: 0 var(--space-2) var(--space-4);
-    }
-
     .composer {
       inset-block-start: var(--space-2);
       inline-size: calc(100% - var(--space-4));
@@ -196,6 +194,14 @@
       max-inline-size: none;
       padding: var(--space-2);
       border-radius: var(--radius-3);
+    }
+
+    .dock :global(.replay) {
+      flex: 0 0 100%;
+    }
+
+    .dock :global(.replay input) {
+      max-inline-size: none;
     }
   }
 </style>

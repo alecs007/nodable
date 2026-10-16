@@ -12,8 +12,6 @@ import {
   updateInput,
 } from '@nodable/sdk'
 
-export type WorkspaceView = 'single' | 'all'
-
 export type WorkspaceState = {
   readonly sessions: readonly Session[]
   readonly activeId: SessionId
@@ -22,8 +20,6 @@ export type WorkspaceState = {
   readonly stepIndex: number
   readonly lastStepIndex: number
   readonly isReplaying: boolean
-  readonly view: WorkspaceView
-  readonly highlightLeaves: boolean
   setInput: (input: string) => void
   select: (id: SessionId) => void
   addFormula: () => void
@@ -32,8 +28,6 @@ export type WorkspaceState = {
   rename: (name: string) => void
   showStep: (index: number) => void
   showLatestStep: () => void
-  setView: (next: WorkspaceView) => void
-  toggleHighlightLeaves: () => void
   asWorkspace: () => Workspace
   restore: (workspace: Workspace) => void
 }
@@ -44,8 +38,6 @@ function createWorkspaceState(): WorkspaceState {
   let sessions = $state<readonly Session[]>([first])
   let activeId = $state<SessionId>(first.id)
   let pinnedStep = $state<number | undefined>(undefined)
-  let view = $state<WorkspaceView>('single')
-  let highlightLeaves = $state(false)
   let name = $state('Workspace')
 
   const active = $derived(sessions.find((session) => session.id === activeId) ?? first)
@@ -78,12 +70,6 @@ function createWorkspaceState(): WorkspaceState {
     },
     get isReplaying() {
       return pinnedStep !== undefined && pinnedStep < lastStepIndex
-    },
-    get view() {
-      return view
-    },
-    get highlightLeaves() {
-      return highlightLeaves
     },
     setInput(input: string) {
       pinnedStep = undefined
@@ -125,12 +111,6 @@ function createWorkspaceState(): WorkspaceState {
     },
     showLatestStep() {
       pinnedStep = undefined
-    },
-    setView(next: WorkspaceView) {
-      view = next
-    },
-    toggleHighlightLeaves() {
-      highlightLeaves = !highlightLeaves
     },
     asWorkspace() {
       return createWorkspace(name, sessions)

@@ -42,6 +42,5 @@ exports[`exportSession > svg > writes a standalone document 1`] = `
 <text class="nodable-label" x="76" y="268">p</text>
 <rect class="nodable-box nodable-box-leaf" x="140" y="140" width="72" height="44" />
 <text class="nodable-label" x="176" y="168">q</text>
-<path class="nodable-cursor" d="M 126 4 l -7 11 h 4 v 13 h 6 v -13 h 4 z" />
 </svg>"
 `;

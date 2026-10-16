@@ -6,13 +6,16 @@ test.beforeEach(async ({ page }) => {
 
 test('switches the theme and keeps the choice after a reload', async ({ page }) => {
   const root = page.locator('html')
-  await expect(root).toHaveAttribute('data-theme', /light|dark/)
+  const detected = await root.getAttribute('data-theme')
+  const other = detected === 'dark' ? 'light' : 'dark'
+
+  expect(detected === 'light' || detected === 'dark').toBe(true)
 
   await page.getByRole('button', { name: /^Theme/ }).click()
-  await expect(root).toHaveAttribute('data-theme', 'light')
+  await expect(root).toHaveAttribute('data-theme', other)
 
   await page.reload()
-  await expect(root).toHaveAttribute('data-theme', 'light')
+  await expect(root).toHaveAttribute('data-theme', other)
 })
 
 test('switches the language and keeps the choice after a reload', async ({ page }) => {
@@ -35,33 +38,27 @@ test('keeps the formulas of the workspace after a reload', async ({ page }) => {
   )
 })
 
-test('holds several formulas and shows them all at once', async ({ page }) => {
-  const field = page.getByRole('textbox', { name: 'Formula', exact: true })
-  await field.fill('(p ∧ q)')
-  await page.getByRole('button', { name: 'Add formula' }).click()
-  await field.fill('(r → s)')
-
-  await page.getByRole('button', { name: 'All trees' }).click()
-
-  const gallery = page.getByRole('main')
-
-  await expect(gallery.getByRole('button', { name: /\(p ∧ q\)/ })).toBeVisible()
-  await expect(gallery.getByRole('button', { name: /\(r → s\)/ })).toBeVisible()
-})
-
-test('names a formula and deletes it from the gallery', async ({ page }) => {
+test('keeps several formulas and switches between them', async ({ page }) => {
   const field = page.getByRole('textbox', { name: 'Formula', exact: true })
   await field.fill('(p ∧ q)')
   await page.getByRole('textbox', { name: 'Formula name' }).fill('Seminar one')
   await page.getByRole('button', { name: 'Add formula' }).click()
   await field.fill('(r → s)')
 
-  await page.getByRole('button', { name: 'All trees' }).click()
+  await page.getByRole('button', { name: /(r → s)/ }).click()
+  await page.getByRole('button', { name: 'Seminar one' }).click()
 
-  const gallery = page.getByRole('main')
-  await expect(gallery.getByText('Seminar one')).toBeVisible()
+  await expect(field).toHaveValue('(p ∧ q)')
+})
 
-  await gallery.getByRole('button', { name: 'Delete this formula' }).first().click()
+test('deletes the active formula', async ({ page }) => {
+  const field = page.getByRole('textbox', { name: 'Formula', exact: true })
+  await field.fill('(p ∧ q)')
+  await page.getByRole('button', { name: 'Add formula' }).click()
+  await field.fill('(r → s)')
 
-  await expect(gallery.getByText('Seminar one')).toBeHidden()
+  await page.getByRole('button', { name: 'Save and load' }).click()
+  await page.getByRole('menuitem', { name: 'Remove formula' }).click()
+
+  await expect(field).toHaveValue('(p ∧ q)')
 })

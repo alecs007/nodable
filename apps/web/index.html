@@ -12,6 +12,18 @@
     <link rel="shortcut icon" href="./favicon.ico" />
     <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png" />
     <link rel="manifest" href="./site.webmanifest" />
+    <script>
+      ;(() => {
+        try {
+          const stored = localStorage.getItem('nodable.theme')
+          const dark = window.matchMedia('(prefers-color-scheme: dark)').matches
+          document.documentElement.dataset.theme =
+            stored === 'light' || stored === 'dark' ? stored : dark ? 'dark' : 'light'
+        } catch {
+          document.documentElement.dataset.theme = 'light'
+        }
+      })()
+    </script>
   </head>
   <body>
     <div id="app"></div>
