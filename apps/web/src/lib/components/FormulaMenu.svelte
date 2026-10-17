@@ -195,6 +195,7 @@
     inset-inline-start: 0;
     z-index: 2;
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: 2px;
     inline-size: 17rem;
     max-inline-size: calc(100vw - var(--space-6));
@@ -205,6 +206,7 @@
     border-radius: var(--radius-2);
     background: var(--color-surface-raised);
     list-style: none;
+    overflow-x: hidden;
     overflow-y: auto;
   }
 
@@ -235,6 +237,7 @@
     display: flex;
     gap: var(--space-1);
     align-items: center;
+    min-inline-size: 0;
   }
 
   .discard {

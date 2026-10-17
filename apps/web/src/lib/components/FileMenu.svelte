@@ -199,6 +199,7 @@
     inset-inline-end: 0;
     z-index: 2;
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: 2px;
     inline-size: 14rem;
     max-inline-size: calc(100vw - var(--space-5));
