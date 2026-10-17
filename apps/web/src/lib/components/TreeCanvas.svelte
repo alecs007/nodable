@@ -103,7 +103,11 @@
   {/if}
 
   {#if selected !== undefined}
-    <NodeCard entry={selected} options={layout.options} />
+    <NodeCard
+      entry={selected}
+      options={layout.options}
+      hasLabel={!unlabelled.includes(selected.id)}
+    />
   {/if}
 </svg>
 

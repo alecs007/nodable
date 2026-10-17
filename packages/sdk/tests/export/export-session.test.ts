@@ -5,6 +5,7 @@ import {
   deserializeWorkspace,
   exportSession,
   moveNode,
+  renameSession,
 } from '../../src/index'
 
 const FORMULA = '((¬p) ∨ q)'
@@ -30,6 +31,13 @@ describe('exportSession', () => {
     expect(exported('latex').fileName).toBe('nodable-tree.tex')
     expect(exported('json').fileName).toBe('nodable-tree.json')
     expect(exported('png').fileName).toBe('nodable-tree.png')
+  })
+
+  it('names the file after the formula when it has a name', () => {
+    const named = renameSession(createSession(FORMULA), 'Seminar 3: primul arbore')
+
+    expect(exportSession(named, 'svg').fileName).toBe('seminar-3-primul-arbore.svg')
+    expect(exportSession(named, 'png').fileName).toBe('seminar-3-primul-arbore.png')
   })
 
   describe('plain text', () => {

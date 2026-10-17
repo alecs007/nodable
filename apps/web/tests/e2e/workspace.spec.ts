@@ -51,13 +51,24 @@ test('keeps several formulas and switches between them', async ({ page }) => {
   await expect(field).toHaveValue('(p ∧ q)')
 })
 
+test('names the downloaded file after the formula', async ({ page }) => {
+  await page.getByRole('textbox', { name: 'Formula', exact: true }).fill('(p ∧ q)')
+  await page.getByRole('textbox', { name: 'Formula name' }).fill('Seminar one')
+
+  const download = page.waitForEvent('download')
+  await page.getByRole('button', { name: 'Files' }).click()
+  await page.getByRole('menuitem', { name: 'Plain text' }).click()
+
+  expect((await download).suggestedFilename()).toBe('seminar-one.txt')
+})
+
 test('deletes the active formula', async ({ page }) => {
   const field = page.getByRole('textbox', { name: 'Formula', exact: true })
   await field.fill('(p ∧ q)')
   await page.getByRole('button', { name: 'New formula' }).click()
   await field.fill('(r → s)')
 
-  await page.getByRole('button', { name: 'Save and load' }).click()
+  await page.getByRole('button', { name: 'Files' }).click()
   await page.getByRole('menuitem', { name: 'Remove formula' }).click()
 
   await expect(field).toHaveValue('(p ∧ q)')

@@ -98,7 +98,7 @@
 <div class="menu" bind:this={container}>
   <button
     type="button"
-    class="key"
+    class="files"
     class:on={open}
     aria-haspopup="menu"
     aria-expanded={open}
@@ -109,6 +109,7 @@
     }}
   >
     <Icon name="save" />
+    <span>{locale.t('file.label')}</span>
   </button>
 
   {#if open}
@@ -142,23 +143,30 @@
     position: relative;
   }
 
-  .key {
+  .files {
     display: flex;
+    gap: var(--space-2);
     align-items: center;
-    justify-content: center;
-    min-inline-size: 2.25rem;
-    block-size: 2.25rem;
-    border: none;
+    block-size: 2.5rem;
+    padding-inline: var(--space-4);
+    border: 1px solid var(--color-border);
     border-radius: var(--radius-pill);
-    background: transparent;
-    color: var(--color-text-muted);
+    background: var(--color-surface-sunken);
+    color: var(--color-text);
+    font-family: var(--font-sans);
+    font-size: 0.875rem;
+    font-weight: 600;
+    white-space: nowrap;
     cursor: pointer;
+    transition:
+      background var(--duration-short) var(--ease),
+      border-color var(--duration-short) var(--ease);
   }
 
-  .key:hover,
-  .key.on {
-    background: var(--color-surface-raised);
-    color: var(--color-text);
+  .files:hover,
+  .files.on {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
   }
 
   .list {
@@ -168,7 +176,8 @@
     z-index: 2;
     display: grid;
     gap: 2px;
-    min-inline-size: 13rem;
+    inline-size: 14rem;
+    max-inline-size: calc(100vw - var(--space-5));
     margin: 0;
     padding: var(--space-1);
     border: 1px solid var(--color-glass-border);

@@ -27,15 +27,26 @@ export type RasterExportResult = {
 
 export type ExportResult = TextExportResult | RasterExportResult
 
-const FILE_STEM = 'nodable-tree'
+const FALLBACK_STEM = 'nodable-tree'
+
+export function fileStem(name: string): string {
+  const slug = name
+    .normalize('NFKD')
+    .replace(/[^\p{Letter}\p{Number}]+/gu, '-')
+    .replace(/^-+|-+$/g, '')
+    .toLowerCase()
+
+  return slug === '' ? FALLBACK_STEM : slug
+}
 
 function textResult(
   format: Exclude<ExportFormat, 'png'>,
   mimeType: string,
   extension: string,
   content: string,
+  stem: string,
 ): TextExportResult {
-  return { kind: 'text', format, fileName: `${FILE_STEM}.${extension}`, mimeType, content }
+  return { kind: 'text', format, fileName: `${stem}.${extension}`, mimeType, content }
 }
 
 export function exportSession(
@@ -44,20 +55,22 @@ export function exportSession(
   options: LayoutOptions = DEFAULT_LAYOUT_OPTIONS,
 ): ExportResult {
   const snapshot = getTree(session)
+  const stem = fileStem(session.name)
 
   switch (format) {
     case 'svg':
-      return textResult('svg', 'image/svg+xml', 'svg', toSvg(layoutTree(snapshot, options)))
+      return textResult('svg', 'image/svg+xml', 'svg', toSvg(layoutTree(snapshot, options)), stem)
     case 'text':
-      return textResult('text', 'text/plain', 'txt', toText(snapshot.root))
+      return textResult('text', 'text/plain', 'txt', toText(snapshot.root), stem)
     case 'latex':
-      return textResult('latex', 'text/x-tex', 'tex', toLatex(snapshot.root))
+      return textResult('latex', 'text/x-tex', 'tex', toLatex(snapshot.root), stem)
     case 'json':
       return textResult(
         'json',
         'application/json',
         'json',
         serializeWorkspace(createWorkspace(session.input, [session])),
+        stem,
       )
     case 'png': {
       const layout = layoutTree(snapshot, options)
@@ -65,7 +78,7 @@ export function exportSession(
       return {
         kind: 'raster',
         format: 'png',
-        fileName: `${FILE_STEM}.png`,
+        fileName: `${stem}.png`,
         mimeType: 'image/png',
         svg: toSvg(layout),
         width: layout.width,

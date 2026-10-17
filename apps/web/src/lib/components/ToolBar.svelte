@@ -4,6 +4,7 @@
   import { workspace } from '../state/workspace.svelte'
   import { THEMES, type Theme, theme } from '../theme/theme.svelte'
   import FileMenu from './FileMenu.svelte'
+  import FlagIcon from './FlagIcon.svelte'
   import FormulaMenu from './FormulaMenu.svelte'
   import Icon, { type IconName } from './Icon.svelte'
 
@@ -52,18 +53,18 @@
     </button>
     <button
       type="button"
-      class="key wide"
+      class="key"
       title={locale.t('language.label')}
       aria-label={locale.t('language.label')}
       onclick={() => {
         locale.select(nextOf<Locale>(LOCALES, locale.current))
       }}
     >
-      <Icon name="language" />
-      <span class="code">{locale.current}</span>
+      <FlagIcon locale={locale.current} />
     </button>
-    <FileMenu />
   </div>
+
+  <FileMenu />
 
   <button
     type="button"
@@ -114,15 +115,6 @@
   .key:hover:not(:disabled) {
     background: var(--color-surface-raised);
     color: var(--color-text);
-  }
-
-  .wide {
-    padding-inline: var(--space-3);
-  }
-
-  .code {
-    font-size: 0.75rem;
-    font-weight: 600;
   }
 
   .picker {

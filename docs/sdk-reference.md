@@ -188,6 +188,9 @@ type RasterExportResult = {
 | `latex` | A `forest` environment for the LaTeX `forest` package                    |
 | `text`  | An indented tree drawn with box characters                               |
 
+The file name comes from the name of the session, reduced to a slug, and falls back to
+`nodable-tree` when the session has no name.
+
 `toSvg(layout)`, `toLatex(root)` and `toText(root)` are exported separately for callers that already
 have a layout or only need the markup.
 

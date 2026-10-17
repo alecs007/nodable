@@ -8,9 +8,10 @@
   type Props = {
     entry: LayoutNode
     options: LayoutOptions
+    hasLabel?: boolean | undefined
   }
 
-  const { entry, options }: Props = $props()
+  const { entry, options, hasLabel = true }: Props = $props()
 
   const WIDTH = 220
   const HEIGHT = 92
@@ -40,10 +41,11 @@
       ? entry.center.y - options.nodeHeight / 2 - 14 - HEIGHT
       : entry.center.y + options.nodeHeight / 2 + 12,
   )
+  const isLabelled = $derived(hasLabel && kind !== 'slot' && kind !== 'group')
   const title = $derived(
-    kind === 'slot' || kind === 'group'
-      ? locale.t(KIND_KEYS[kind])
-      : `${locale.t(KIND_KEYS[kind])} ${nodeLabel(entry.node)}`,
+    isLabelled
+      ? `${locale.t(KIND_KEYS[kind])} ${nodeLabel(entry.node)}`
+      : locale.t(KIND_KEYS[kind]),
   )
 </script>
 

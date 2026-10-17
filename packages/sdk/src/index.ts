@@ -70,6 +70,7 @@ export {
   type RasterExportResult,
   type TextExportResult,
   exportSession,
+  fileStem,
 } from './export/export-session'
 export { GROUP_LABEL, SLOT_LABEL, nodeLabel } from './export/labels'
 export { toLatex } from './export/to-latex'
