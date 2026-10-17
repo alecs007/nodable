@@ -196,14 +196,14 @@
   .list {
     position: absolute;
     inset-block-end: calc(100% + var(--space-2));
-    inset-inline-end: 0;
+    inset-inline-start: 50%;
     z-index: 2;
     display: grid;
     grid-template-columns: minmax(0, 1fr);
     gap: 2px;
     inline-size: 14rem;
     max-inline-size: calc(100vw - var(--space-5));
-    margin: 0;
+    margin: 0 0 0 -7rem;
     padding: var(--space-1);
     border: 1px solid var(--color-glass-border);
     border-radius: var(--radius-2);
@@ -265,6 +265,7 @@
       inline-size: auto;
       max-inline-size: none;
       max-block-size: 50vh;
+      margin: 0;
     }
   }
 
