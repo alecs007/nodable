@@ -1,12 +1,14 @@
-<p align="center">
+<p align="center" style="text-align: center">
   <img src="assets/logo/logo.svg" alt="Nodable" width="88">
 </p>
 
-<h1 align="center">Nodable</h1>
+<h1 align="center" style="text-align: center">Nodable</h1>
 
-<p align="center">Syntax trees for propositional logic formulas, in the browser.</p>
+<p align="center" style="text-align: center">
+  Syntax trees for propositional logic formulas, in the browser.
+</p>
 
-<p align="center">
+<p align="center" style="text-align: center">
   <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-2f7bbf"></a>
   <a href="https://svelte.dev"><img alt="Svelte 5" src="https://img.shields.io/badge/Svelte-5-ff3e00?logo=svelte&logoColor=white"></a>
   <a href="https://www.typescriptlang.org"><img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-strict-3178c6?logo=typescript&logoColor=white"></a>
