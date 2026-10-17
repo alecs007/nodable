@@ -1,4 +1,4 @@
-import { type TreeNode } from '@nodable/engine'
+import { type NodeId, type TreeNode } from '@nodable/engine'
 import { type LayoutNode, type TreeLayout } from '../layout/layout-tree'
 import { nodeLabel } from './labels'
 
@@ -9,10 +9,22 @@ const STYLE = `
   .nodable-box-slot { fill: none; stroke-dasharray: 4 4; stroke: #8595a6 }
   .nodable-box-leaf { fill: #eef4fb }
   .nodable-label { font: 500 18px system-ui, sans-serif; fill: #1f2933; text-anchor: middle }
-  .nodable-divider { stroke: #8595a6; stroke-width: 1; stroke-dasharray: 4 4 }
-  .nodable-choice { font: 500 11px system-ui, sans-serif; fill: #5b6b7c; text-anchor: middle }
+  .nodable-title { font: 600 18px ui-monospace, consolas, monospace; fill: #1f2933; text-anchor: middle }
+  .nodable-caption { font: 500 13px system-ui, sans-serif; fill: #5b6b7c; text-anchor: middle }
+  .nodable-frame { fill: none; stroke: #c9d2dc; stroke-width: 1; stroke-dasharray: 4 4; rx: 16 }
   .nodable-cursor { fill: #c1452b }
 `.trim()
+
+const TITLE_HEIGHT = 44
+const CAPTION_HEIGHT = 26
+const PANEL_GAP = 40
+const MARGIN = 24
+
+export type SvgPanel = {
+  readonly layout: TreeLayout
+  readonly caption: string
+  readonly unlabelled: readonly NodeId[]
+}
 
 function escapeText(value: string): string {
   return value
@@ -35,32 +47,17 @@ function boxClass(node: TreeNode): string {
   }
 }
 
-function renderNode(entry: LayoutNode, layout: TreeLayout): readonly string[] {
-  const { nodeWidth, nodeHeight } = layout.options
+function renderNode(entry: LayoutNode, panel: SvgPanel): readonly string[] {
+  const { nodeWidth, nodeHeight } = panel.layout.options
   const x = entry.center.x - nodeWidth / 2
   const y = entry.center.y - nodeHeight / 2
   const box = `<rect class="${boxClass(entry.node)}" x="${String(x)}" y="${String(y)}" width="${String(nodeWidth)}" height="${String(nodeHeight)}" />`
+  const isLabelled =
+    entry.node.kind !== 'slot' &&
+    entry.node.kind !== 'group' &&
+    !panel.unlabelled.includes(entry.id)
 
-  if (entry.node.kind === 'group') {
-    const double = entry.center.x - 17
-    const single = entry.center.x + 17
-    const upper = entry.center.y - 6
-    const lower = entry.center.y + 8
-
-    return [
-      box,
-      `<line class="nodable-divider" x1="${String(entry.center.x)}" y1="${String(y + 9)}" x2="${String(entry.center.x)}" y2="${String(y + nodeHeight - 9)}" />`,
-      `<path class="nodable-link" d="M ${String(double)} ${String(upper)} L ${String(double - 7)} ${String(lower)} M ${String(double)} ${String(upper)} L ${String(double + 7)} ${String(lower)}" />`,
-      `<circle class="nodable-dot" cx="${String(double)}" cy="${String(upper)}" r="2.4" />`,
-      `<circle class="nodable-dot" cx="${String(double - 7)}" cy="${String(lower)}" r="2.4" />`,
-      `<circle class="nodable-dot" cx="${String(double + 7)}" cy="${String(lower)}" r="2.4" />`,
-      `<path class="nodable-link" d="M ${String(single)} ${String(upper)} L ${String(single)} ${String(lower)}" />`,
-      `<circle class="nodable-dot" cx="${String(single)}" cy="${String(upper)}" r="2.4" />`,
-      `<circle class="nodable-dot" cx="${String(single)}" cy="${String(lower)}" r="2.4" />`,
-    ]
-  }
-
-  if (entry.node.kind === 'slot') {
+  if (!isLabelled) {
     return [box]
   }
 
@@ -81,20 +78,80 @@ function renderCursor(layout: TreeLayout): readonly string[] {
   return [`<path class="nodable-cursor" d="${arrow}" />`]
 }
 
-export function toSvg(layout: TreeLayout): string {
+function renderPanel(panel: SvgPanel, offsetX: number, offsetY: number): readonly string[] {
+  const { layout } = panel
+  const hasCaption = panel.caption !== ''
+  const top = hasCaption ? CAPTION_HEIGHT : 0
+  const caption = hasCaption
+    ? [
+        `<rect class="nodable-frame" x="0" y="0" width="${String(layout.width)}" height="${String(layout.height + top)}" />`,
+        `<text class="nodable-caption" x="${String(layout.width / 2)}" y="18">${escapeText(panel.caption)}</text>`,
+      ]
+    : []
+
   const edges = layout.edges.map(
     (edge) =>
       `<line class="nodable-edge" x1="${String(edge.from.x)}" y1="${String(edge.from.y)}" x2="${String(edge.to.x)}" y2="${String(edge.to.y)}" />`,
   )
-  const nodes = layout.nodes.flatMap((entry) => renderNode(entry, layout))
 
   return [
-    `<svg xmlns="http://www.w3.org/2000/svg" width="${String(layout.width)}" height="${String(layout.height)}" viewBox="0 0 ${String(layout.width)} ${String(layout.height)}">`,
+    `<g transform="translate(${String(offsetX)}, ${String(offsetY)})">`,
+    ...caption,
+    `<g transform="translate(0, ${String(top)})">`,
+    ...edges,
+    ...layout.nodes.flatMap((entry) => renderNode(entry, panel)),
+    ...renderCursor(layout),
+    '</g>',
+    '</g>',
+  ]
+}
+
+function panelHeight(panel: SvgPanel): number {
+  return panel.layout.height + (panel.caption === '' ? 0 : CAPTION_HEIGHT)
+}
+
+export type SvgDrawing = {
+  readonly markup: string
+  readonly width: number
+  readonly height: number
+}
+
+export function drawSvg(panels: readonly SvgPanel[], title = ''): SvgDrawing {
+  const widths = panels.map((panel) => panel.layout.width)
+  const board = widths.reduce((total, width) => total + width, 0) + PANEL_GAP * (panels.length - 1)
+  const tallest = Math.max(...panels.map(panelHeight))
+  const top = title === '' ? MARGIN : MARGIN + TITLE_HEIGHT
+  const width = board + MARGIN * 2
+  const height = top + tallest + MARGIN
+
+  const heading =
+    title === ''
+      ? []
+      : [
+          `<text class="nodable-title" x="${String(width / 2)}" y="${String(MARGIN + 22)}">${escapeText(title)}</text>`,
+        ]
+
+  let cursor = MARGIN
+
+  const drawn = panels.flatMap((panel) => {
+    const markup = renderPanel(panel, cursor, top + (tallest - panelHeight(panel)) / 2)
+    cursor += panel.layout.width + PANEL_GAP
+
+    return markup
+  })
+
+  const markup = [
+    `<svg xmlns="http://www.w3.org/2000/svg" width="${String(width)}" height="${String(height)}" viewBox="0 0 ${String(width)} ${String(height)}">`,
     `<style>${STYLE}</style>`,
     `<rect class="nodable-surface" width="100%" height="100%" />`,
-    ...edges,
-    ...nodes,
-    ...renderCursor(layout),
+    ...heading,
+    ...drawn,
     '</svg>',
   ].join('\n')
+
+  return { markup, width, height }
+}
+
+export function toSvg(panels: readonly SvgPanel[], title = ''): string {
+  return drawSvg(panels, title).markup
 }

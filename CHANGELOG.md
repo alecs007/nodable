@@ -27,6 +27,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   dropdowns, and a single column layout on small screens.
 - Web: named formulas, deleting a formula from the picker, and a work area that fits the tree to
   the window and pans and zooms with the pointer or two fingers.
+- Web: exported drawings that match the workspace, with the formula as a heading and both shapes
+  side by side while a group is undecided.
 - Web: downloads named after the formula, round language flags, and a separate files button.
 - Web: debounced automatic saving to IndexedDB, workspace import and export as JSON, a clear saved
   data action, and downloads for SVG, PNG, LaTeX and plain text.

@@ -11,7 +11,13 @@
     | 'system'
     | 'language'
     | 'clear'
-    | 'save'
+    | 'transfer'
+    | 'image'
+    | 'code'
+    | 'text'
+    | 'copy'
+    | 'upload'
+    | 'download'
     | 'trash'
 
   type Circle = { readonly cx: number; readonly cy: number; readonly r: number }
@@ -65,8 +71,20 @@
       paths: ['M4.5 7h15', 'M10 11v6', 'M14 11v6', 'M6.5 7l1 12.5h9L17.5 7', 'M9.5 7V4.5h5V7'],
       circles: [],
     },
-    save: {
-      paths: ['M12 3.5v11', 'M8 11l4 4 4-4', 'M4.5 16.5v2a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2v-2'],
+    image: {
+      paths: ['M3.5 5.5h17v13h-17z', 'M4 16l4.5-4.5 3.5 3.5 3-3 5 5'],
+      circles: [{ cx: 9, cy: 9.5, r: 1.4 }],
+    },
+    code: { paths: ['M9 7.5 4.5 12 9 16.5', 'M15 7.5 19.5 12 15 16.5'], circles: [] },
+    text: { paths: ['M5 7.5h14', 'M5 12h14', 'M5 16.5h9'], circles: [] },
+    copy: {
+      paths: ['M9 9h10.5v10.5H9z', 'M15 6.5V4.5H4.5V15h2'],
+      circles: [],
+    },
+    upload: { paths: ['M12 19.5v-15', 'M7 9.5l5-5 5 5'], circles: [] },
+    download: { paths: ['M12 4.5v15', 'M7 14.5l5 5 5-5'], circles: [] },
+    transfer: {
+      paths: ['M8 20.5V4.5', 'M4 8.5 8 4.5l4 4', 'M16 3.5v16', 'M12 15.5l4 4 4-4'],
       circles: [],
     },
   }

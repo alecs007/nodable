@@ -65,6 +65,7 @@ export {
   layoutTree,
 } from './layout/layout-tree'
 export {
+  type ExportCaptions,
   type ExportFormat,
   type ExportResult,
   type RasterExportResult,
@@ -74,7 +75,7 @@ export {
 } from './export/export-session'
 export { GROUP_LABEL, SLOT_LABEL, nodeLabel } from './export/labels'
 export { toLatex } from './export/to-latex'
-export { toSvg } from './export/to-svg'
+export { type SvgDrawing, type SvgPanel, drawSvg, toSvg } from './export/to-svg'
 export { toText } from './export/to-text'
 export { type Result, fail, ok } from './workspace/result'
 export {

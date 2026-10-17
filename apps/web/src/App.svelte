@@ -62,7 +62,7 @@
   })
 </script>
 
-<div class="stage" class:ready={persistence.isReady}>
+<div class="stage" class:ready={persistence.isReady} style:--dock-space="{bottomInset}px">
   <main class="workspace">
     <Viewport
       resetKey="{workspace.activeId}:{String(variants.length)}"

@@ -20,17 +20,21 @@ exports[`exportSession > plain text > writes an indented tree 1`] = `
 `;
 
 exports[`exportSession > svg > writes a standalone document 1`] = `
-"<svg xmlns="http://www.w3.org/2000/svg" width="324" height="324" viewBox="0 0 324 324">
+"<svg xmlns="http://www.w3.org/2000/svg" width="372" height="416" viewBox="0 0 372 416">
 <style>.nodable-surface { fill: #ffffff }
   .nodable-edge { stroke: #5b6b7c; stroke-width: 1.5; fill: none }
   .nodable-box { fill: #ffffff; stroke: #1f2933; stroke-width: 1.5; rx: 8 }
   .nodable-box-slot { fill: none; stroke-dasharray: 4 4; stroke: #8595a6 }
   .nodable-box-leaf { fill: #eef4fb }
   .nodable-label { font: 500 18px system-ui, sans-serif; fill: #1f2933; text-anchor: middle }
-  .nodable-divider { stroke: #8595a6; stroke-width: 1; stroke-dasharray: 4 4 }
-  .nodable-choice { font: 500 11px system-ui, sans-serif; fill: #5b6b7c; text-anchor: middle }
+  .nodable-title { font: 600 18px ui-monospace, consolas, monospace; fill: #1f2933; text-anchor: middle }
+  .nodable-caption { font: 500 13px system-ui, sans-serif; fill: #5b6b7c; text-anchor: middle }
+  .nodable-frame { fill: none; stroke: #c9d2dc; stroke-width: 1; stroke-dasharray: 4 4; rx: 16 }
   .nodable-cursor { fill: #c1452b }</style>
 <rect class="nodable-surface" width="100%" height="100%" />
+<text class="nodable-title" x="186" y="46">((¬p) ∨ q)</text>
+<g transform="translate(24, 68)">
+<g transform="translate(0, 0)">
 <line class="nodable-edge" x1="151" y1="84" x2="123" y2="140" />
 <line class="nodable-edge" x1="112" y1="184" x2="112" y2="240" />
 <line class="nodable-edge" x1="173" y1="84" x2="201" y2="140" />
@@ -42,5 +46,7 @@ exports[`exportSession > svg > writes a standalone document 1`] = `
 <text class="nodable-label" x="112" y="268">p</text>
 <rect class="nodable-box nodable-box-leaf" x="176" y="140" width="72" height="44" />
 <text class="nodable-label" x="212" y="168">q</text>
+</g>
+</g>
 </svg>"
 `;

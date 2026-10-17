@@ -26,6 +26,7 @@ export type WorkspaceState = {
   removeActive: () => void
   remove: (id: SessionId) => void
   rename: (name: string) => void
+  reset: () => void
   showStep: (index: number) => void
   showLatestStep: () => void
   asWorkspace: () => Workspace
@@ -102,6 +103,14 @@ function createWorkspaceState(): WorkspaceState {
       if (id === activeId) {
         activeId = remaining[0]?.id ?? first.id
       }
+    },
+    reset() {
+      const fresh = createSession()
+
+      pinnedStep = undefined
+      name = 'Workspace'
+      sessions = [fresh]
+      activeId = fresh.id
     },
     rename(next: string) {
       replace(renameSession(active, next))

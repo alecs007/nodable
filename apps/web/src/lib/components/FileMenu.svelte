@@ -12,11 +12,13 @@
   import { locale } from '../state/locale.svelte'
   import { persistence } from '../state/persistence.svelte'
   import { workspace } from '../state/workspace.svelte'
-  import Icon from './Icon.svelte'
+  import Icon, { type IconName } from './Icon.svelte'
 
   type Entry = {
     readonly id: string
+    readonly icon: IconName
     readonly labelKey: MessageKey
+    readonly isDisabled?: boolean
     readonly run: () => void | Promise<void>
   }
 
@@ -29,8 +31,17 @@
     open = false
   }
 
+  function captions(): { readonly variants: readonly string[] } {
+    return {
+      variants: [
+        locale.t('outcome.variant', { index: '1' }),
+        locale.t('outcome.variant', { index: '2' }),
+      ],
+    }
+  }
+
   function download(format: ExportFormat): () => Promise<void> {
-    return () => saveExport(exportSession(workspace.active, format))
+    return () => saveExport(exportSession(workspace.active, format, undefined, captions()))
   }
 
   async function importWorkspace(): Promise<void> {
@@ -57,27 +68,38 @@
     })
   }
 
-  const entries: readonly Entry[] = [
-    { id: 'svg', labelKey: 'file.svg', run: download('svg') },
-    { id: 'png', labelKey: 'file.png', run: download('png') },
-    { id: 'latex', labelKey: 'file.latex', run: download('latex') },
-    { id: 'text', labelKey: 'file.text', run: download('text') },
+  const entries: readonly Entry[] = $derived([
+    { id: 'svg', icon: 'image', labelKey: 'file.svg', run: download('svg') },
+    { id: 'png', icon: 'image', labelKey: 'file.png', run: download('png') },
+    { id: 'latex', icon: 'code', labelKey: 'file.latex', run: download('latex') },
+    { id: 'text', icon: 'text', labelKey: 'file.text', run: download('text') },
     {
       id: 'copy',
+      icon: 'copy',
       labelKey: 'file.copy',
       run: () => copyExport(exportSession(workspace.active, 'text')),
     },
     {
       id: 'remove',
+      icon: 'trash',
       labelKey: 'workspace.remove',
+      isDisabled: workspace.sessions.length < 2,
       run: () => {
         workspace.removeActive()
       },
     },
-    { id: 'export', labelKey: 'file.export', run: exportWorkspace },
-    { id: 'import', labelKey: 'file.import', run: importWorkspace },
-    { id: 'clear', labelKey: 'file.clear', run: () => persistence.clear() },
-  ]
+    { id: 'export', icon: 'upload', labelKey: 'file.export', run: exportWorkspace },
+    { id: 'import', icon: 'download', labelKey: 'file.import', run: importWorkspace },
+    {
+      id: 'clear',
+      icon: 'clear',
+      labelKey: 'file.clear',
+      run: async () => {
+        workspace.reset()
+        await persistence.clear()
+      },
+    },
+  ])
 
   function onWindowPointerDown(event: PointerEvent): void {
     if (open && container !== undefined && !container.contains(event.target as Node)) {
@@ -108,7 +130,7 @@
       open = !open
     }}
   >
-    <Icon name="save" />
+    <Icon name="transfer" />
     <span>{locale.t('file.label')}</span>
   </button>
 
@@ -125,12 +147,14 @@
             type="button"
             class="entry"
             role="menuitem"
+            disabled={entry.isDisabled === true}
             onclick={() => {
               close()
               void entry.run()
             }}
           >
-            {locale.t(entry.labelKey)}
+            <Icon name={entry.icon} />
+            <span>{locale.t(entry.labelKey)}</span>
           </button>
         </li>
       {/each}
@@ -193,6 +217,9 @@
   }
 
   .entry {
+    display: flex;
+    gap: var(--space-3);
+    align-items: center;
     inline-size: 100%;
     padding: var(--space-2) var(--space-3);
     border: none;
@@ -206,7 +233,22 @@
     cursor: pointer;
   }
 
-  .entry:hover {
+  .entry:hover:not(:disabled) {
     background: var(--color-surface-sunken);
+  }
+
+  .entry:disabled {
+    opacity: 0.45;
+    cursor: default;
+  }
+  @media (width <= 48rem) {
+    .list {
+      position: fixed;
+      inset-block-end: calc(var(--dock-space, 7rem) + var(--space-2));
+      inset-inline: var(--space-3);
+      inline-size: auto;
+      max-inline-size: none;
+      max-block-size: 50vh;
+    }
   }
 </style>

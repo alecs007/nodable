@@ -78,8 +78,20 @@ describe('exportSession', () => {
       expect(content('svg', '(p ∧ q)')).not.toContain('<text class="nodable-label">&')
     })
 
-    it('shows the choice between a double and a single node on a pending group', () => {
-      expect(content('svg', '(p')).toContain('nodable-divider')
+    it('draws both shapes side by side while a group is undecided', () => {
+      const drawing = exportSession(createSession('('), 'svg', undefined, {
+        variants: ['Variant 1', 'Variant 2'],
+      })
+
+      const markup = drawing.kind === 'text' ? drawing.content : ''
+
+      expect(markup).toContain('Variant 1')
+      expect(markup).toContain('Variant 2')
+    })
+
+    it('puts the formula at the top of the drawing', () => {
+      expect(content('svg')).toContain('nodable-title')
+      expect(content('svg')).toContain('((¬p) ∨ q)')
     })
   })
 

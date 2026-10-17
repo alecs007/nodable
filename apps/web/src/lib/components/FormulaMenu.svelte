@@ -271,6 +271,8 @@
     font-size: 0.875rem;
     text-align: start;
     white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     cursor: pointer;
   }
 

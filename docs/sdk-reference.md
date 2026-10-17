@@ -191,8 +191,10 @@ type RasterExportResult = {
 The file name comes from the name of the session, reduced to a slug, and falls back to
 `nodable-tree` when the session has no name.
 
-`toSvg(layout)`, `toLatex(root)` and `toText(root)` are exported separately for callers that already
-have a layout or only need the markup.
+`toSvg(panels, title)` and `drawSvg(panels, title)` build that document from one or more laid out
+panels; `drawSvg` also reports its pixel size. `toLatex(root)` and `toText(root)` are exported for
+callers that only need the markup. A fourth argument to `exportSession` carries the captions of the
+variant panels, so no interface text lives in the SDK.
 
 ### `nodeLabel(node: TreeNode): string`
 

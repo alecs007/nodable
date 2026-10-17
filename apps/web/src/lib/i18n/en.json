@@ -52,7 +52,7 @@
   "workspace.remove": "Remove formula",
   "workspace.name": "Formula name",
   "workspace.nameplaceholder": "Untitled",
-  "file.label": "Files",
+  "file.label": "Transfer",
   "file.svg": "SVG image",
   "file.png": "PNG image",
   "file.latex": "LaTeX",
