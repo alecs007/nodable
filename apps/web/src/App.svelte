@@ -212,6 +212,10 @@
       flex-wrap: wrap;
     }
 
+    .dock :global(.row.secondary) {
+      flex-wrap: nowrap;
+    }
+
     .dock :global(.replay) {
       flex: 0 0 100%;
     }

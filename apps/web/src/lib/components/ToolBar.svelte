@@ -149,13 +149,48 @@
       justify-content: space-between;
     }
 
+    .secondary {
+      gap: var(--space-2);
+    }
+
     .picker {
       flex: 0 0 50%;
     }
 
+    .key {
+      min-inline-size: 2rem;
+      block-size: 2rem;
+      padding-inline: var(--space-1);
+    }
+
     .create {
-      flex: 1;
+      flex: 0 1 auto;
+      min-inline-size: 0;
+      block-size: 2.25rem;
+      padding-inline: var(--space-3);
       justify-content: center;
+    }
+
+    .create span {
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+  }
+
+  @media (width <= 22rem) {
+    .secondary {
+      gap: var(--space-1);
+    }
+
+    .key {
+      min-inline-size: 1.75rem;
+      padding-inline: 0;
+    }
+
+    .create {
+      gap: var(--space-1);
+      padding-inline: var(--space-2);
     }
   }
 </style>

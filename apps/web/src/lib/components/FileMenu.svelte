@@ -243,6 +243,21 @@
     cursor: default;
   }
   @media (width <= 48rem) {
+    .menu {
+      min-inline-size: 0;
+    }
+
+    .files {
+      block-size: 2.25rem;
+      min-inline-size: 0;
+      padding-inline: var(--space-3);
+    }
+
+    .files span {
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
     .list {
       position: fixed;
       inset-block-end: calc(var(--dock-space, 7rem) + var(--space-2));
@@ -250,6 +265,13 @@
       inline-size: auto;
       max-inline-size: none;
       max-block-size: 50vh;
+    }
+  }
+
+  @media (width <= 22rem) {
+    .files {
+      gap: var(--space-1);
+      padding-inline: var(--space-1);
     }
   }
 </style>
