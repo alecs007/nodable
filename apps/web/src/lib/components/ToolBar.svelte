@@ -21,8 +21,8 @@
   const themeLabel = $derived(`${locale.t('theme.label')}: ${locale.t(THEME_KEYS[theme.current])}`)
 </script>
 
-<div class="row primary">
-  {#if workspace.sessions.length > 1}
+{#if workspace.sessions.length > 1}
+  <div class="row primary">
     <div class="picker">
       <FormulaMenu
         sessions={workspace.sessions}
@@ -35,8 +35,8 @@
         }}
       />
     </div>
-  {/if}
-</div>
+  </div>
+{/if}
 
 <div class="row secondary">
   <div class="cluster">

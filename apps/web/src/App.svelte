@@ -172,7 +172,7 @@
     inset-block-end: var(--space-4);
     inset-inline-start: 50%;
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     gap: var(--space-3);
     align-items: center;
     justify-content: center;
@@ -182,7 +182,12 @@
   }
 
   .dock :global(.row) {
-    flex: 0 1 auto;
+    flex: 0 0 auto;
+    flex-wrap: nowrap;
+  }
+
+  .dock :global(.replay) {
+    flex: 0 1 12rem;
   }
 
   @media (width <= 48rem) {
@@ -194,11 +199,17 @@
 
     .dock {
       inset-block-end: var(--space-2);
+      flex-wrap: wrap;
       gap: var(--space-2);
       inline-size: calc(100% - var(--space-4));
       max-inline-size: none;
       padding: var(--space-2);
       border-radius: var(--radius-3);
+    }
+
+    .dock :global(.row) {
+      flex: 1 1 100%;
+      flex-wrap: wrap;
     }
 
     .dock :global(.replay) {
