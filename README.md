@@ -1,37 +1,55 @@
 <p align="center">
-  <img src="assets/logo/logo.svg" alt="Nodable logo" width="160">
+  <img src="assets/logo/logo.svg" alt="Nodable logo" width="96">
 </p>
 
-# Nodable
+<h1 align="center">Nodable</h1>
 
-Build syntax trees of propositional logic formulas in the browser, step by step, following the
-conventions taught in the Computational Logic course.
+<p align="center">
+  Build the syntax tree of a propositional logic formula, one token at a time.
+</p>
 
-[![CI](https://github.com/[OWNER]/nodable/actions/workflows/ci.yml/badge.svg)](https://github.com/[OWNER]/nodable/actions/workflows/ci.yml)
-[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Latest release](https://img.shields.io/github/v/release/[OWNER]/nodable?sort=semver)](https://github.com/[OWNER]/nodable/releases)
+<p align="center">
+  <a href="https://github.com/[OWNER]/nodable/actions/workflows/ci.yml"><img src="https://github.com/[OWNER]/nodable/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License: MIT"></a>
+  <a href="https://github.com/[OWNER]/nodable/releases"><img src="https://img.shields.io/github/v/release/[OWNER]/nodable?sort=semver" alt="Latest release"></a>
+</p>
 
-![Nodable overview](assets/screenshots/overview.png)
+![The tree of a complete formula](assets/screenshots/overview.png)
+
+Type a formula and the tree is rebuilt on every keystroke, following the placement rules taught in
+the Computational Logic course. Everything runs in the browser: no account, no server, no tracking.
 
 ## Features
 
-- Live tree construction: the tree is rebuilt on every keystroke.
-- Course placement rules, with a cursor arrow showing where the next token applies.
-- Dotted placeholder slots, and a preview of the two possible outcomes while a group is undecided.
-- Clear diagnostics with stable codes and inline underlining of the offending range.
-- Step replay: move through every intermediate state of the build.
-- A symmetric layout that keeps every tree balanced, fitted to the window, with pan and zoom.
-- Workspaces with several formulas and a combined view.
-- Export to SVG, PNG, JSON, LaTeX and plain text.
-- Light, dark and system themes; English and Romanian.
-- Fully client-side. No accounts, no server, no tracking.
+- **The method, not just the result.** An arrow marks where the next token goes, dotted boxes show
+  what is still missing, and a slider replays the build step by step.
+- **Both shapes while the arity is open.** Right after an open parenthesis a group can still become
+  a single or a double node, so both are drawn side by side until the next token decides.
+- **Clear errors.** The first mistake is reported in plain words and the last valid tree is kept.
+- **Your work, kept and shared.** Several named formulas per workspace, saved locally, exported as
+  SVG, PNG, LaTeX or plain text.
+- **English and Romanian**, light and dark.
 
-## Quick Start
+## The two shapes
 
-Prerequisites:
+![Both possible shapes of an undecided group](assets/screenshots/variants.png)
 
-- Node.js, the version in [.nvmrc](.nvmrc)
-- pnpm, enabled through Corepack
+While the arity of a group is undecided, Nodable draws both candidate trees. Everything already
+built is shown in each of them, so the choice is the only difference.
+
+## Reading a node
+
+![A selected node and its description](assets/screenshots/node.png)
+
+Click a node to see what it is. The main connective of the formula is named as such.
+
+## Light and dark
+
+![The same tree in the dark theme](assets/screenshots/dark.png)
+
+## Quick start
+
+Prerequisites: Node.js as pinned in [.nvmrc](.nvmrc), and pnpm through Corepack.
 
 ```bash
 corepack enable
@@ -39,77 +57,55 @@ pnpm install
 pnpm dev
 ```
 
-The development server prints the local URL. To produce a production build:
+`pnpm build` produces the static site in `apps/web/dist`.
 
-```bash
-pnpm build
-```
+## Writing formulas
 
-## Usage
+Formulas are fully parenthesized: every connective and every negation is wrapped in its own
+parentheses, as in `((¬p) ∨ q)`. A single variable such as `p` is a formula on its own.
 
-Type a formula into the input bar. The tree below updates on every keystroke, and the cursor arrow
-marks the position where the next token will be placed.
+| Connective  | Type | Or          |
+| ----------- | ---- | ----------- |
+| Negation    | `¬`  | `!` `~`     |
+| Conjunction | `∧`  | `&` `/\`    |
+| Disjunction | `∨`  | `\|` `\/`   |
+| Implication | `→`  | `->` `=>`   |
+| Equivalence | `↔`  | `<->` `<=>` |
 
-Formulas are fully parenthesized: every binary connective and every negation is wrapped in its own
-parentheses, for example `(p ∧ q)`, `(¬p)` and `((¬p) ∨ (p → q))`. A single variable such as `p` is
-also a valid formula.
+Aliases become symbols as you type. A variable is a letter followed by digits, such as `p`, `q1` or
+`P2`; names are case sensitive and spaces are ignored.
 
-### Input aliases
+| Shortcut       | Action                    |
+| -------------- | ------------------------- |
+| `Enter`        | Start another formula     |
+| `Escape`       | Clear the formula         |
+| Wheel or pinch | Zoom                      |
+| Drag           | Move around the workspace |
 
-| Connective  | Canonical | Aliases      |
-| ----------- | --------- | ------------ |
-| Negation    | `¬`       | `!`, `~`     |
-| Conjunction | `∧`       | `&`, `/\`    |
-| Disjunction | `∨`       | `\|`, `\/`   |
-| Implication | `→`       | `->`, `=>`   |
-| Equivalence | `↔`       | `<->`, `<=>` |
-
-Aliases are replaced with canonical symbols as you type. A variable is a letter optionally followed
-by digits, such as `p`, `q`, `r1` or `P2`; names are case sensitive. Whitespace is ignored.
-
-### Keyboard shortcuts
-
-| Shortcut           | Action                           |
-| ------------------ | -------------------------------- |
-| `Enter`            | Add the formula to the workspace |
-| `Escape`           | Clear the input bar              |
-| `Arrow Left/Right` | Move through build steps         |
-| `Tab`              | Move focus to the next control   |
-
-## Notation
-
-The tokenizer accepts the symbols above, the builder applies one placement rule per token, and the
-validator reports diagnostics with codes `NDB001` through `NDB007`. See
-[docs/notation.md](docs/notation.md) for the complete rules and worked examples.
+The full rules, with every diagnostic code, are in [docs/notation.md](docs/notation.md).
 
 ## Architecture
 
 ```
-apps/web        user interface (Svelte)
-   |
-   v
-packages/sdk    public API: sessions, exports, workspaces
-   |
-   v
-packages/engine pure logic core: tokenizer, builder, validator, tree model
+apps/web        interface (Svelte)
+   ↓
+packages/sdk    sessions, layout, exports
+   ↓
+packages/engine tokenizer, builder, validator
 ```
 
 Dependencies point downward only. The engine is pure and deterministic, the SDK is the only module
 the interface imports from. See [docs/architecture.md](docs/architecture.md).
 
-## Development
-
-See [docs/development.md](docs/development.md) for scripts, testing and the release process.
-
 ## Contributing
 
-Contributions are welcome. Please read [CONTRIBUTING.md](CONTRIBUTING.md) first.
+Setup, scripts and the release process are in [docs/development.md](docs/development.md); the
+conventions are in [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## License
 
-Released under the [MIT License](LICENSE).
+[MIT](LICENSE).
 
 ## Acknowledgements
 
-The tree-construction method, notation and placement rules follow the Computational Logic university
-course.
+The notation and the construction method follow the Computational Logic university course.
