@@ -15,7 +15,7 @@ are released from `main` and included in the next release.
 Please do not open a public issue for a security problem.
 
 Report it privately through GitHub's
-[security advisory form](https://github.com/[OWNER]/nodable/security/advisories/new), or by email to
+[security advisory form](https://github.com/alecs007/nodable/security/advisories/new), or by email to
 [SECURITY CONTACT].
 
 Include the affected version, a description of the issue, and the steps needed to reproduce it. You

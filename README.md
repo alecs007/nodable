@@ -1,16 +1,16 @@
-<div align="center">
+<p align="center">
+  <img src="assets/logo/logo.svg" alt="Nodable" width="88">
+</p>
 
-<img src="assets/logo/logo.svg" alt="" width="88">
+<h1 align="center">Nodable</h1>
 
-# Nodable
+<p align="center">Syntax trees for propositional logic formulas, in the browser.</p>
 
-Syntax trees for propositional logic formulas, in the browser.
-
-[![CI](https://github.com/[OWNER]/nodable/actions/workflows/ci.yml/badge.svg)](https://github.com/[OWNER]/nodable/actions/workflows/ci.yml)
-[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Latest release](https://img.shields.io/github/v/release/[OWNER]/nodable?sort=semver)](https://github.com/[OWNER]/nodable/releases)
-
-</div>
+<p align="center">
+  <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-2f7bbf"></a>
+  <a href="https://svelte.dev"><img alt="Svelte 5" src="https://img.shields.io/badge/Svelte-5-ff3e00?logo=svelte&logoColor=white"></a>
+  <a href="https://www.typescriptlang.org"><img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-strict-3178c6?logo=typescript&logoColor=white"></a>
+</p>
 
 ![The tree of a complete formula](assets/screenshots/overview.png)
 
@@ -20,10 +20,10 @@ Computational Logic course. Everything runs in the browser: no account, no serve
 ## Features
 
 - An arrow marks where the next token goes, and dotted boxes show what is still missing.
-- A slider replays the construction from the first token to the last.
 - Errors are reported in plain words, and the last valid tree is kept.
+- A slider replays the construction from the first token to the last.
 - Several named formulas per workspace, saved locally.
-- Export to SVG, PNG, LaTeX or plain text.
+- Export to SVG, PNG, LaTeX, plain text or JSON.
 - English and Romanian, light and dark.
 
 ## Undecided groups
@@ -33,11 +33,12 @@ Computational Logic course. Everything runs in the browser: no account, no serve
 After an open parenthesis, a group can still become a single or a double node. Nodable draws both
 trees until the next token decides which one it is.
 
-## Node details
+## Exports
 
-![A selected node and its description](assets/screenshots/node.png)
+![The export menu](assets/screenshots/exports.png)
 
-Select a node to read what it is. The main connective of the formula is marked as such.
+An image export reproduces what is on screen, both variants included, with the formula at the top,
+and the file is named after the formula. JSON holds the whole workspace and can be imported back.
 
 ## Dark theme
 
@@ -67,16 +68,6 @@ in `((¬p) ∨ q)`. A single variable such as `p` is also a formula.
 | Disjunction | `∨`    | `\|` `\/`     |
 | Implication | `→`    | `->` `=>`     |
 | Equivalence | `↔`    | `<->` `<=>`   |
-
-A variable is a letter followed by digits, such as `p`, `q1` or `P2`. Names are case sensitive and
-spaces are ignored.
-
-| Input          | Action                    |
-| -------------- | ------------------------- |
-| `Enter`        | Start another formula     |
-| `Escape`       | Clear the formula         |
-| Wheel or pinch | Zoom                      |
-| Drag           | Move around the workspace |
 
 The complete rules and the diagnostic codes are in [docs/notation.md](docs/notation.md).
 
