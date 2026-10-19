@@ -76,8 +76,7 @@ Returns one step, or `undefined` when the index is out of range.
 
 ### `getStepTree(session: Session, index: number): TreeSnapshot | undefined`
 
-Returns the snapshot of one step, for replaying the build. The current offsets are kept, so a node
-the user moved stays where they put it while stepping through.
+Returns the snapshot of one step, for replaying the build.
 
 ### `getDiagnostics(session: Session): readonly Diagnostic[]`
 
@@ -97,6 +96,9 @@ Stores a layout offset for one node, in pixels, relative to its computed positio
 
 Removes every offset, putting all nodes back where the layout places them.
 
+The web app keeps every tree symmetric and never moves a node, so its sessions carry no offsets.
+These two functions are here for callers that want to place nodes themselves.
+
 ## Layout
 
 Layout is pure geometry and lives in the SDK, so the web app and the SVG exporter place nodes the
@@ -115,12 +117,14 @@ type TreeLayout = {
 }
 ```
 
-Nodes come back in document order, each with its center point and depth. Positions are anchored on
-the layout computed without offsets, so moving one node leaves every other node where it was, and
-the reported size never shrinks below the untouched layout. Edges connect a parent
-center to a child center. The cursor carries the point the arrow should mark and whether it sits
-above the root, which means the formula is complete. `width` and `height` are the size of the whole
-drawing including padding.
+Nodes come back in document order, each with its center point and depth. Edges connect a parent
+center to a child center, clipped to the edge of each box. The cursor carries the point the arrow
+should mark and whether it sits above the root, which means the formula is complete. `width` and
+`height` are the size of the whole drawing including padding.
+
+Positions are anchored on the layout computed without offsets, so an offset moves one node and
+leaves every other node where it was, and the reported size never shrinks below the untouched
+layout.
 
 `LayoutOptions` sets `nodeWidth`, `nodeHeight`, `horizontalGap`, `verticalGap` and `padding`;
 `DEFAULT_LAYOUT_OPTIONS` holds the values used by the interface and the exporters.
@@ -140,18 +144,36 @@ type FormulaVariant = {
 }
 ```
 
-A group whose first operand is already filled can only become a double node, so it is settled into
-one in every variant returned. The innermost group, the one whose first operand is still an empty
-slot, is the only one that can still go either way: it produces the double and the single shape.
-With nothing undecided the list holds the single settled tree, and with no pending group at all it
-is empty. lists the groups whose symbol is not known yet, so the interface can draw them
-without one.
+A group whose first operand is already filled can only become a double node, so every returned
+variant settles it into one. Only the innermost group, the one whose first operand is still an
+empty slot, can go either way, and it is what produces the two shapes.
+
+So the list holds two variants while a group is undecided, one variant when every open group
+already has its first operand, and nothing at all when no group is open. In the single variant the
+cursor moves onto the group itself, because that is where the negation is written. `pending` names
+the open groups, whose symbol is not known yet, so the caller draws those boxes empty.
 
 ## Exporters
 
-### `exportSession(session: Session, format: ExportFormat, options?: LayoutOptions): ExportResult`
+### `exportSession`
 
-`ExportFormat` is `'svg' | 'png' | 'json' | 'latex' | 'text'`.
+```ts
+exportSession(
+  session: Session,
+  format: ExportFormat,
+  options?: LayoutOptions,
+  captions?: ExportCaptions,
+): ExportResult
+```
+
+`ExportFormat` is `'svg' | 'png' | 'json' | 'latex' | 'text'`. `captions` carries the titles of the
+variant panels, so no interface text lives in the SDK:
+
+```ts
+type ExportCaptions = {
+  readonly variants: readonly string[]
+}
+```
 
 Text-based formats return the content directly:
 
@@ -191,10 +213,10 @@ type RasterExportResult = {
 The file name comes from the name of the session, reduced to a slug, and falls back to
 `nodable-tree` when the session has no name.
 
-`toSvg(panels, title)` and `drawSvg(panels, title)` build that document from one or more laid out
-panels; `drawSvg` also reports its pixel size. `toLatex(root)` and `toText(root)` are exported for
-callers that only need the markup. A fourth argument to `exportSession` carries the captions of the
-variant panels, so no interface text lives in the SDK.
+An image export reproduces what the workspace shows: the formula as a heading, and one panel per
+variant while a group is undecided. `toSvg(panels, title)` and `drawSvg(panels, title)` build that
+document from one or more laid out panels, and `drawSvg` also reports its pixel size.
+`toLatex(root)` and `toText(root)` are exported for callers that only need the markup.
 
 ### `nodeLabel(node: TreeNode): string`
 

@@ -7,28 +7,29 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+First working version of Nodable.
+
 ### Added
 
-- pnpm workspace with the `@nodable/engine`, `@nodable/sdk` and `@nodable/web` packages.
-- Shared TypeScript, ESLint, Prettier, Vitest and Playwright configuration.
-- Continuous integration and GitHub Pages deployment workflows.
-- Community documentation: readme, contributing guide, code of conduct, security policy, issue and
-  pull request templates.
-- Engine: immutable tree model, tokenizer with ASCII alias normalization and case-sensitive
-  variable names, builder implementing the course placement rules with per-token build steps, and a validator producing diagnostics
-  `NDB001` to `NDB007` and allowed-next hints.
-- SDK: sessions, tree layout, exporters for SVG, PNG, JSON, LaTeX and plain text, workspace
-  serialization, and a storage adapter interface.
-- Web: application shell with the formula bar, connective toolbar, hints and diagnostics, light,
-  dark and system themes, and English and Romanian translations.
-- Web: tree canvas with the cursor arrow, dotted slots, the A and B choice, and short transitions.
-- Web: build-step replay.
-- Web: fullscreen tree workspace with floating glass control islands, an icon toolbar, custom
-  dropdowns, and a single column layout on small screens.
-- Web: named formulas, deleting a formula from the picker, and a work area that fits the tree to
-  the window and pans and zooms with the pointer or two fingers.
-- Web: exported drawings that match the workspace, with the formula as a heading and both shapes
-  side by side while a group is undecided.
-- Web: downloads named after the formula, round language flags, and a separate files button.
-- Web: debounced automatic saving to IndexedDB, workspace import and export as JSON, a clear saved
-  data action, and downloads for SVG, PNG, LaTeX and plain text.
+- **Engine.** Tokenizer with ASCII alias normalization and case-sensitive variable names, a builder
+  that applies the placement rules of the course and records every intermediate step, and a
+  validator producing the diagnostics `NDB001` to `NDB007` and the set of tokens allowed next.
+- **SDK.** Sessions, tree layout, workspaces with JSON serialization, a storage adapter interface,
+  and exporters for SVG, PNG, JSON, LaTeX and plain text.
+- **Tree.** The tree is rebuilt on every keystroke, with an arrow on the position the next token
+  fills, dotted boxes for what is still missing, and the formula marked complete when the cursor
+  passes the root.
+- **Undecided groups.** After an open parenthesis both possible shapes of the group are drawn side
+  by side until the next token decides between them.
+- **Step replay.** A slider renders any earlier state of the construction.
+- **Workspace.** Several named formulas, a picker to switch between them, and removal of the
+  active one.
+- **Work area.** The tree is fitted to the window and can be panned and zoomed with the pointer or
+  two fingers, within bounds that keep it on screen.
+- **Exports.** Image exports reproduce what the workspace shows, including both shapes of an
+  undecided group, and downloads are named after the formula. The whole workspace can be written
+  to JSON and read back.
+- **Persistence.** Debounced automatic saving to IndexedDB, with the formulas and the active one
+  restored on the next visit, and an action that clears the saved data.
+- **Interface.** A full-screen work area with floating control islands, light and dark themes, and
+  English and Romanian, each remembered between visits.

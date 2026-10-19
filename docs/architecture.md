@@ -24,7 +24,7 @@ The engine holds the course rules and nothing else.
 | Area         | Responsibility                                                                   |
 | ------------ | -------------------------------------------------------------------------------- |
 | `tokenizer/` | Turn raw input text into tokens and normalize ASCII aliases to canonical symbols |
-| `builder/`   | Apply the placement rules one token at a time and record every intermediate step |
+| `builder/`   | Apply the placement rules to each token and record every intermediate step       |
 | `validator/` | Produce diagnostics and the set of tokens allowed next                           |
 | `model/`     | Types and helpers for nodes, slots and cursor position                           |
 
@@ -67,10 +67,8 @@ sequenceDiagram
 
   U->>W: types a character
   W->>S: updateInput(session, text)
-  S->>E: tokenize(text)
-  E-->>S: tokens and diagnostics
-  S->>E: build(tokens)
-  E-->>S: build steps, final tree, allowed next tokens
+  S->>E: analyzeFormula(text)
+  E-->>S: tokens, build steps, tree, cursor, diagnostics, allowed next
   S-->>W: new session
   W-->>U: re-rendered tree, cursor, hints
 ```
