@@ -248,14 +248,14 @@
     }
 
     .files {
+      justify-content: center;
+      inline-size: 2.25rem;
       block-size: 2.25rem;
-      min-inline-size: 0;
-      padding-inline: var(--space-3);
+      padding-inline: 0;
     }
 
     .files span {
-      overflow: hidden;
-      text-overflow: ellipsis;
+      display: none;
     }
 
     .list {
@@ -266,13 +266,6 @@
       max-inline-size: none;
       max-block-size: 50vh;
       margin: 0;
-    }
-  }
-
-  @media (width <= 22rem) {
-    .files {
-      gap: var(--space-1);
-      padding-inline: var(--space-1);
     }
   }
 </style>
