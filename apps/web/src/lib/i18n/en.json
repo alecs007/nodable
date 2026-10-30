@@ -66,5 +66,6 @@
   "theme.dark": "Dark",
   "language.label": "Language",
   "language.en": "English",
-  "language.ro": "Romanian"
+  "language.ro": "Romanian",
+  "source.label": "Source code on GitHub"
 }

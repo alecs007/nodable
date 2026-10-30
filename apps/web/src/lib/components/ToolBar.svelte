@@ -8,6 +8,8 @@
   import FormulaMenu from './FormulaMenu.svelte'
   import Icon, { type IconName } from './Icon.svelte'
 
+  const REPOSITORY_URL = 'https://github.com/alecs007/nodable'
+
   const THEME_ICONS: Record<Theme, IconName> = { light: 'light', dark: 'dark' }
 
   const THEME_KEYS: Record<Theme, MessageKey> = { light: 'theme.light', dark: 'theme.dark' }
@@ -62,6 +64,16 @@
     >
       <FlagIcon locale={locale.current} />
     </button>
+    <a
+      class="key"
+      href={REPOSITORY_URL}
+      target="_blank"
+      rel="noopener noreferrer"
+      title={locale.t('source.label')}
+      aria-label={locale.t('source.label')}
+    >
+      <Icon name="github" />
+    </a>
   </div>
 
   <FileMenu />
