@@ -8,7 +8,10 @@ export {
   type DiagnosticCode,
   type DiagnosticMessageKey,
   type DiagnosticSeverity,
+  type Evaluation,
+  type EvaluationStep,
   type GroupNode,
+  type Interpretation,
   type LeafNode,
   type NodeId,
   type NodeKind,
@@ -17,6 +20,7 @@ export {
   type Token,
   type TokenKind,
   type TreeNode,
+  type TruthValue,
   type UnaryNode,
   CLOSE_PAREN,
   CONJUNCTION,
@@ -32,6 +36,7 @@ export {
   isNodeComplete,
   leavesOf,
   normalizeFormula,
+  valueOfVariable,
 } from '@nodable/engine'
 
 export { type NodeOffsets, type Point, ORIGIN, addPoints, isOrigin } from './session/point'
@@ -39,14 +44,18 @@ export {
   type Session,
   type SessionId,
   type TreeSnapshot,
+  assignVariable,
+  clearInterpretation,
   createSession,
   createSessionId,
+  evaluateSession,
   getAllowedNext,
   getDiagnostics,
   getStep,
   getStepTree,
   getSteps,
   getTree,
+  getVariables,
   moveNode,
   normalizeInput,
   renameSession,
@@ -74,6 +83,7 @@ export {
   fileStem,
 } from './export/export-session'
 export { GROUP_LABEL, SLOT_LABEL, nodeLabel } from './export/labels'
+export { formulaOf } from './export/to-formula'
 export { toLatex } from './export/to-latex'
 export { type SvgDrawing, type SvgPanel, drawSvg, toSvg } from './export/to-svg'
 export { toText } from './export/to-text'

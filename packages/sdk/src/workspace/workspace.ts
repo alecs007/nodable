@@ -1,4 +1,4 @@
-import { type Diagnostic, createDiagnostic } from '@nodable/engine'
+import { type Diagnostic, type Interpretation, createDiagnostic } from '@nodable/engine'
 import { type NodeOffsets, type Point } from '../session/point'
 import { type Session, type SessionId, createSession, restoreSession } from '../session/session'
 import { type Result, fail, ok } from './result'
@@ -17,6 +17,7 @@ type SerializedSession = {
   readonly name: string
   readonly input: string
   readonly offsets: NodeOffsets
+  readonly interpretation: Interpretation
 }
 
 type SerializedWorkspace = {
@@ -66,6 +67,7 @@ export function serializeWorkspace(workspace: Workspace): string {
       name: session.name,
       input: session.input,
       offsets: session.offsets,
+      interpretation: session.interpretation,
     })),
   }
 
@@ -102,6 +104,18 @@ function readOffsets(value: unknown): NodeOffsets {
   return offsets
 }
 
+function readInterpretation(value: unknown): Interpretation {
+  if (!isRecord(value)) {
+    return {}
+  }
+
+  return Object.fromEntries(
+    Object.entries(value).filter(
+      (entry): entry is [string, boolean] => typeof entry[1] === 'boolean',
+    ),
+  )
+}
+
 function readSession(value: unknown): Session | undefined {
   if (!isRecord(value) || typeof value['id'] !== 'string' || typeof value['input'] !== 'string') {
     return undefined
@@ -109,7 +123,13 @@ function readSession(value: unknown): Session | undefined {
 
   const name = typeof value['name'] === 'string' ? value['name'] : ''
 
-  return restoreSession(value['id'], value['input'], readOffsets(value['offsets']), name)
+  return restoreSession(
+    value['id'],
+    value['input'],
+    readOffsets(value['offsets']),
+    name,
+    readInterpretation(value['interpretation']),
+  )
 }
 
 function parseJson(data: string): unknown {

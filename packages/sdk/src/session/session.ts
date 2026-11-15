@@ -3,12 +3,17 @@ import {
   type BuildStep,
   type Cursor,
   type Diagnostic,
+  type Evaluation,
+  type Interpretation,
   type NodeId,
   type TokenKind,
   type TreeNode,
+  type TruthValue,
   analyzeFormula,
+  evaluateTree,
   isComplete,
   normalizeFormula,
+  variablesOf,
 } from '@nodable/engine'
 import { type NodeOffsets, type Point, isOrigin } from './point'
 
@@ -20,6 +25,7 @@ export type Session = {
   readonly input: string
   readonly analysis: Analysis
   readonly offsets: NodeOffsets
+  readonly interpretation: Interpretation
 }
 
 export type TreeSnapshot = {
@@ -34,7 +40,14 @@ export function createSessionId(): SessionId {
 }
 
 export function createSession(input = '', name = ''): Session {
-  return { id: createSessionId(), name, input, analysis: analyzeFormula(input), offsets: {} }
+  return {
+    id: createSessionId(),
+    name,
+    input,
+    analysis: analyzeFormula(input),
+    offsets: {},
+    interpretation: {},
+  }
 }
 
 export function restoreSession(
@@ -42,8 +55,9 @@ export function restoreSession(
   input: string,
   offsets: NodeOffsets,
   name = '',
+  interpretation: Interpretation = {},
 ): Session {
-  return { id, name, input, analysis: analyzeFormula(input), offsets }
+  return { id, name, input, analysis: analyzeFormula(input), offsets, interpretation }
 }
 
 export function renameSession(session: Session, name: string): Session {
@@ -107,4 +121,27 @@ export function moveNode(session: Session, nodeId: NodeId, offset: Point): Sessi
 
 export function resetOffsets(session: Session): Session {
   return { ...session, offsets: {} }
+}
+
+export function getVariables(session: Session): readonly string[] {
+  return variablesOf(session.analysis.tree)
+}
+
+export function assignVariable(
+  session: Session,
+  name: string,
+  value: TruthValue | undefined,
+): Session {
+  const kept = Object.entries(session.interpretation).filter(([variable]) => variable !== name)
+  const entries = value === undefined ? kept : [...kept, [name, value] as const]
+
+  return { ...session, interpretation: Object.fromEntries(entries) }
+}
+
+export function clearInterpretation(session: Session): Session {
+  return { ...session, interpretation: {} }
+}
+
+export function evaluateSession(session: Session): Evaluation {
+  return evaluateTree(session.analysis.tree, session.interpretation)
 }
