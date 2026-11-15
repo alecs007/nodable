@@ -9,12 +9,16 @@
     entry: LayoutNode
     options: LayoutOptions
     hasLabel?: boolean | undefined
+    computation?: string | undefined
   }
 
-  const { entry, options, hasLabel = true }: Props = $props()
+  const { entry, options, hasLabel = true, computation }: Props = $props()
 
   const WIDTH = 220
-  const HEIGHT = 92
+  const BASE_HEIGHT = 92
+  const COMPUTATION_HEIGHT = 26
+
+  const HEIGHT = $derived(BASE_HEIGHT + (computation === undefined ? 0 : COMPUTATION_HEIGHT))
 
   const KIND_KEYS: Record<NodeKind, MessageKey> = {
     slot: 'node.slot',
@@ -56,6 +60,9 @@
     {#if isDominant}
       <p class="info main">{locale.t('node.dominant')}</p>
     {/if}
+    {#if computation !== undefined}
+      <p class="computation">{computation}</p>
+    {/if}
   </div>
 </foreignObject>
 
@@ -80,6 +87,14 @@
 
   .main {
     color: var(--color-accent);
+    font-weight: 600;
+  }
+
+  .computation {
+    margin: var(--space-2) 0 0;
+    color: var(--color-text);
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
     font-weight: 600;
   }
 

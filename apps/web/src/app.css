@@ -20,6 +20,10 @@
   --color-warning-soft: #faeed7;
   --color-cursor: #b03a22;
   --color-focus: #11528f;
+  --color-true: #1a6a3c;
+  --color-true-soft: #dcf2e4;
+  --color-false: #a3263a;
+  --color-false-soft: #fbe2e6;
 }
 
 :root[data-theme='dark'] {
@@ -43,6 +47,10 @@
   --color-warning-soft: #352810;
   --color-cursor: #ff8a6b;
   --color-focus: #8ccaff;
+  --color-true: #7fdca2;
+  --color-true-soft: #15301f;
+  --color-false: #ff9fae;
+  --color-false-soft: #3a1820;
 }
 
 :root {
@@ -104,6 +112,15 @@ body {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+.sr-only {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 
 *::selection {

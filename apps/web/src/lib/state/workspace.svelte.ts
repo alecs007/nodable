@@ -2,7 +2,10 @@ import {
   type Session,
   type SessionId,
   type TreeSnapshot,
+  type TruthValue,
   type Workspace,
+  assignVariable,
+  clearInterpretation,
   createSession,
   createWorkspace,
   getStepTree,
@@ -12,6 +15,8 @@ import {
   updateInput,
 } from '@nodable/sdk'
 
+export type WorkspaceView = 'build' | 'interpret'
+
 export type WorkspaceState = {
   readonly sessions: readonly Session[]
   readonly activeId: SessionId
@@ -20,6 +25,7 @@ export type WorkspaceState = {
   readonly stepIndex: number
   readonly lastStepIndex: number
   readonly isReplaying: boolean
+  readonly isInterpreting: boolean
   setInput: (input: string) => void
   select: (id: SessionId) => void
   addFormula: () => void
@@ -29,6 +35,10 @@ export type WorkspaceState = {
   reset: () => void
   showStep: (index: number) => void
   showLatestStep: () => void
+  interpret: () => void
+  edit: () => void
+  assign: (name: string, value: TruthValue | undefined) => void
+  clearValues: () => void
   asWorkspace: () => Workspace
   restore: (workspace: Workspace) => void
 }
@@ -40,11 +50,13 @@ function createWorkspaceState(): WorkspaceState {
   let activeId = $state<SessionId>(first.id)
   let pinnedStep = $state<number | undefined>(undefined)
   let name = $state('Workspace')
+  let view = $state<WorkspaceView>('build')
 
   const active = $derived(sessions.find((session) => session.id === activeId) ?? first)
   const lastStepIndex = $derived(active.analysis.steps.length - 1)
   const stepIndex = $derived(Math.min(pinnedStep ?? lastStepIndex, lastStepIndex))
   const snapshot = $derived(getStepTree(active, stepIndex) ?? getTree(active))
+  const isInterpreting = $derived(view === 'interpret' && active.analysis.isComplete)
 
   function replace(next: Session): void {
     sessions = sessions.map((session) => (session.id === next.id ? next : session))
@@ -72,18 +84,23 @@ function createWorkspaceState(): WorkspaceState {
     get isReplaying() {
       return pinnedStep !== undefined && pinnedStep < lastStepIndex
     },
+    get isInterpreting() {
+      return isInterpreting
+    },
     setInput(input: string) {
       pinnedStep = undefined
       replace(updateInput(active, normalizeFormula(input)))
     },
     select(id: SessionId) {
       pinnedStep = undefined
+      view = 'build'
       activeId = id
     },
     addFormula() {
       const created = createSession()
 
       pinnedStep = undefined
+      view = 'build'
       sessions = [...sessions, created]
       activeId = created.id
     },
@@ -101,6 +118,7 @@ function createWorkspaceState(): WorkspaceState {
       sessions = remaining
 
       if (id === activeId) {
+        view = 'build'
         activeId = remaining[0]?.id ?? first.id
       }
     },
@@ -108,6 +126,7 @@ function createWorkspaceState(): WorkspaceState {
       const fresh = createSession()
 
       pinnedStep = undefined
+      view = 'build'
       name = 'Workspace'
       sessions = [fresh]
       activeId = fresh.id
@@ -121,6 +140,19 @@ function createWorkspaceState(): WorkspaceState {
     showLatestStep() {
       pinnedStep = undefined
     },
+    interpret() {
+      pinnedStep = undefined
+      view = 'interpret'
+    },
+    edit() {
+      view = 'build'
+    },
+    assign(variable: string, value: TruthValue | undefined) {
+      replace(assignVariable(active, variable, value))
+    },
+    clearValues() {
+      replace(clearInterpretation(active))
+    },
     asWorkspace() {
       return createWorkspace(name, sessions, activeId)
     },
@@ -130,6 +162,7 @@ function createWorkspaceState(): WorkspaceState {
       }
 
       pinnedStep = undefined
+      view = 'build'
       name = workspace.name
       sessions = workspace.sessions
       activeId =

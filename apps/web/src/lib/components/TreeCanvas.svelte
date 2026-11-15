@@ -1,7 +1,16 @@
 <script lang="ts">
-  import { type NodeId, type TreeLayout, type TreeSnapshot, layoutTree, toText } from '@nodable/sdk'
+  import {
+    type Evaluation,
+    type EvaluationStep,
+    type NodeId,
+    type TreeLayout,
+    type TreeSnapshot,
+    layoutTree,
+    toText,
+  } from '@nodable/sdk'
   import { prefersReducedMotion } from 'svelte/motion'
   import { fade } from 'svelte/transition'
+  import { computationOf, letterOf } from '../interpretation/computation'
   import { locale } from '../state/locale.svelte'
   import NodeCard from './NodeCard.svelte'
   import TreeNodeShape from './TreeNodeShape.svelte'
@@ -9,9 +18,29 @@
   type Props = {
     snapshot: TreeSnapshot
     unlabelled?: readonly NodeId[]
+    evaluation?: Evaluation | undefined
   }
 
-  const { snapshot, unlabelled = [] }: Props = $props()
+  const { snapshot, unlabelled = [], evaluation }: Props = $props()
+
+  const isEvaluated = $derived(evaluation !== undefined)
+  const stepsById = $derived(
+    new Map<NodeId, EvaluationStep>(evaluation?.steps.map((step) => [step.node.id, step]) ?? []),
+  )
+  const letters = $derived({
+    true: locale.t('truth.trueletter'),
+    false: locale.t('truth.falseletter'),
+  })
+
+  function computationFor(id: NodeId): string | undefined {
+    const step = stepsById.get(id)
+
+    if (step === undefined) {
+      return undefined
+    }
+
+    return `${computationOf(step, letters)} = ${letterOf(step.value, letters)}`
+  }
 
   const layout: TreeLayout = $derived(layoutTree(snapshot))
   const duration = $derived(prefersReducedMotion.current ? 0 : 200)
@@ -93,6 +122,8 @@
           isComplete={snapshot.isComplete && entry.depth === 0}
           isSelected={entry.id === selectedId}
           hasLabel={!unlabelled.includes(entry.id)}
+          {isEvaluated}
+          value={stepsById.get(entry.id)?.value}
         />
       </g>
     </g>
@@ -107,6 +138,7 @@
       entry={selected}
       options={layout.options}
       hasLabel={!unlabelled.includes(selected.id)}
+      computation={computationFor(selected.id)}
     />
   {/if}
 </svg>

@@ -10,6 +10,7 @@
     type TokenKind,
     normalizeFormula,
   } from '@nodable/sdk'
+  import type { Snippet } from 'svelte'
   import type { MessageKey } from '../i18n/messages'
   import { locale } from '../state/locale.svelte'
   import Icon from './Icon.svelte'
@@ -26,9 +27,10 @@
     allowedNext: readonly TokenKind[]
     onchange: (value: string) => void
     onsubmit?: () => void
+    action?: Snippet | undefined
   }
 
-  const { value, hasError, allowedNext, onchange, onsubmit }: Props = $props()
+  const { value, hasError, allowedNext, onchange, onsubmit, action }: Props = $props()
 
   const keys: readonly SymbolKey[] = [
     { symbol: OPEN_PAREN, labelKey: 'toolbar.openparen', kind: 'open-paren' },
@@ -116,21 +118,28 @@
     </button>
   </div>
 
-  <div class="keys" role="group" aria-label={locale.t('toolbar.label')}>
-    {#each keys as key (key.symbol)}
-      <button
-        type="button"
-        class="key"
-        class:suggested={allowedNext.includes(key.kind)}
-        title={locale.t(key.labelKey)}
-        aria-label={locale.t(key.labelKey)}
-        onclick={() => {
-          insert(key.symbol)
-        }}
-      >
-        {key.symbol}
-      </button>
-    {/each}
+  <div class="row">
+    <div class="keys" role="group" aria-label={locale.t('toolbar.label')}>
+      {#each keys as key (key.symbol)}
+        <button
+          type="button"
+          class="key"
+          class:suggested={allowedNext.includes(key.kind)}
+          title={locale.t(key.labelKey)}
+          aria-label={locale.t(key.labelKey)}
+          onclick={() => {
+            insert(key.symbol)
+          }}
+        >
+          {key.symbol}
+        </button>
+      {/each}
+    </div>
+    {#if action !== undefined}
+      <div class="action">
+        {@render action()}
+      </div>
+    {/if}
   </div>
 </div>
 
@@ -196,11 +205,30 @@
     color: var(--color-text);
   }
 
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    align-items: center;
+    justify-content: space-between;
+    padding-inline: var(--space-1);
+  }
+
   .keys {
     display: flex;
     flex-wrap: wrap;
     gap: var(--space-1);
-    padding-inline: var(--space-1);
+  }
+
+  .action {
+    display: flex;
+    margin-inline-start: auto;
+  }
+
+  @media (width <= 32rem) {
+    .action {
+      flex: 1 1 100%;
+    }
   }
 
   .key {

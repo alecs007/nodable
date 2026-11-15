@@ -1,6 +1,13 @@
 <script lang="ts">
-  import { type LayoutNode, type LayoutOptions, type NodeKind, nodeLabel } from '@nodable/sdk'
+  import {
+    type LayoutNode,
+    type LayoutOptions,
+    type NodeKind,
+    type TruthValue,
+    nodeLabel,
+  } from '@nodable/sdk'
   import type { MessageKey } from '../i18n/messages'
+  import { letterOf } from '../interpretation/computation'
   import { locale } from '../state/locale.svelte'
 
   type Props = {
@@ -10,6 +17,8 @@
     isComplete: boolean
     isSelected?: boolean | undefined
     hasLabel?: boolean | undefined
+    isEvaluated?: boolean | undefined
+    value?: TruthValue | undefined
   }
 
   const {
@@ -19,6 +28,8 @@
     isComplete,
     isSelected = false,
     hasLabel = true,
+    isEvaluated = false,
+    value,
   }: Props = $props()
 
   const KIND_KEYS: Record<NodeKind, MessageKey> = {
@@ -34,7 +45,16 @@
   const label = $derived(nodeLabel(entry.node))
   const kindName = $derived(locale.t(KIND_KEYS[entry.node.kind]))
   const isLabelled = $derived(hasLabel && entry.node.kind !== 'slot' && entry.node.kind !== 'group')
-  const description = $derived(isLabelled ? `${kindName} ${label}` : kindName)
+  const named = $derived(isLabelled ? `${kindName} ${label}` : kindName)
+  const truthName = $derived(
+    value === undefined ? undefined : locale.t(value ? 'truth.true' : 'truth.false'),
+  )
+  const description = $derived(
+    isEvaluated && truthName !== undefined ? `${named}: ${truthName}` : named,
+  )
+  const letter = $derived(
+    letterOf(value, { true: locale.t('truth.trueletter'), false: locale.t('truth.falseletter') }),
+  )
 </script>
 
 <g class="shape" role="img" aria-label={description} aria-current={isCursor ? 'true' : undefined}>
@@ -56,7 +76,9 @@
     class:pending={entry.node.kind === 'group'}
     class:cursor={isCursor}
     class:selected={isSelected}
-    class:done={isComplete}
+    class:done={isComplete && !isEvaluated}
+    class:true={isEvaluated && value === true}
+    class:false={isEvaluated && value === false}
     x={left}
     y={top}
     width={options.nodeWidth}
@@ -66,6 +88,18 @@
 
   {#if isLabelled}
     <text class="label" x="0" y="0">{label}</text>
+  {/if}
+
+  {#if isEvaluated}
+    <g
+      class="badge"
+      class:true={value === true}
+      class:false={value === false}
+      transform="translate({-left - 4}, {top + 4})"
+    >
+      <circle r="11" />
+      <text x="0" y="0">{letter}</text>
+    </g>
   {/if}
 </g>
 
@@ -112,6 +146,49 @@
 
   .box.done {
     stroke: var(--color-accent);
+  }
+
+  .box.true {
+    fill: var(--color-true-soft);
+    stroke: var(--color-true);
+  }
+
+  .box.false {
+    fill: var(--color-false-soft);
+    stroke: var(--color-false);
+  }
+
+  .badge circle {
+    fill: var(--color-surface-raised);
+    stroke: var(--color-border-strong);
+    stroke-width: 1.5;
+    stroke-dasharray: 3 3;
+  }
+
+  .badge text {
+    dominant-baseline: central;
+    fill: var(--color-text-muted);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-anchor: middle;
+  }
+
+  .badge.true circle {
+    fill: var(--color-true);
+    stroke: var(--color-true);
+    stroke-dasharray: none;
+  }
+
+  .badge.false circle {
+    fill: var(--color-false);
+    stroke: var(--color-false);
+    stroke-dasharray: none;
+  }
+
+  .badge.true text,
+  .badge.false text {
+    fill: var(--color-surface-raised);
   }
 
   .label {

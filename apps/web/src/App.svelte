@@ -1,9 +1,11 @@
 <script lang="ts">
   import './app.css'
-  import { pendingVariants } from '@nodable/sdk'
+  import { type TruthValue, evaluateSession, getVariables, pendingVariants } from '@nodable/sdk'
   import BrandMark from './lib/components/BrandMark.svelte'
   import HintBar from './lib/components/HintBar.svelte'
+  import Icon from './lib/components/Icon.svelte'
   import InputBar from './lib/components/InputBar.svelte'
+  import InterpretationPanel from './lib/components/InterpretationPanel.svelte'
   import NameField from './lib/components/NameField.svelte'
   import StepSlider from './lib/components/StepSlider.svelte'
   import ToolBar from './lib/components/ToolBar.svelte'
@@ -21,6 +23,7 @@
 
   const session = $derived(workspace.active)
   const variants = $derived(pendingVariants(workspace.snapshot))
+  const evaluation = $derived(workspace.isInterpreting ? evaluateSession(session) : undefined)
   const hasError = $derived(
     session.analysis.diagnostics.some((diagnostic) => diagnostic.severity === 'error'),
   )
@@ -62,10 +65,23 @@
   })
 </script>
 
+{#snippet interpretAction()}
+  <button
+    type="button"
+    class="interpret"
+    onclick={() => {
+      workspace.interpret()
+    }}
+  >
+    <Icon name="interpret" />
+    <span>{locale.t('interpret.open')}</span>
+  </button>
+{/snippet}
+
 <div class="stage" class:ready={persistence.isReady} style:--dock-space="{bottomInset}px">
   <main class="workspace">
     <Viewport
-      resetKey="{workspace.activeId}:{String(variants.length)}"
+      resetKey="{workspace.activeId}:{String(variants.length)}:{String(workspace.isInterpreting)}"
       safeTop={topInset}
       safeBottom={bottomInset}
     >
@@ -75,6 +91,7 @@
         <TreeCanvas
           snapshot={variants[0]?.snapshot ?? workspace.snapshot}
           unlabelled={variants[0]?.pending ?? []}
+          {evaluation}
         />
       {/if}
     </Viewport>
@@ -90,27 +107,46 @@
         }}
       />
     </div>
-    <HintBar
-      diagnostics={session.analysis.diagnostics}
-      allowedNext={session.analysis.allowedNext}
-      isComplete={session.analysis.isComplete}
-      isEmpty={session.input.length === 0}
-    />
-    <InputBar
-      value={session.input}
-      {hasError}
-      allowedNext={session.analysis.allowedNext}
-      onchange={(value: string) => {
-        workspace.setInput(value)
-      }}
-      onsubmit={() => {
-        workspace.addFormula()
-      }}
-    />
+    {#if workspace.isInterpreting && evaluation !== undefined}
+      <InterpretationPanel
+        root={session.analysis.tree}
+        variables={getVariables(session)}
+        interpretation={session.interpretation}
+        {evaluation}
+        onassign={(name: string, value: TruthValue) => {
+          workspace.assign(name, value)
+        }}
+        onreset={() => {
+          workspace.clearValues()
+        }}
+        onedit={() => {
+          workspace.edit()
+        }}
+      />
+    {:else}
+      <HintBar
+        diagnostics={session.analysis.diagnostics}
+        allowedNext={session.analysis.allowedNext}
+        isComplete={session.analysis.isComplete}
+        isEmpty={session.input.length === 0}
+      />
+      <InputBar
+        value={session.input}
+        {hasError}
+        allowedNext={session.analysis.allowedNext}
+        onchange={(value: string) => {
+          workspace.setInput(value)
+        }}
+        onsubmit={() => {
+          workspace.addFormula()
+        }}
+        action={session.analysis.isComplete ? interpretAction : undefined}
+      />
+    {/if}
   </header>
 
   <nav bind:this={dock} class="dock island" aria-label={locale.t('view.label')}>
-    {#if workspace.lastStepIndex > 0}
+    {#if workspace.lastStepIndex > 0 && !workspace.isInterpreting}
       <StepSlider
         steps={session.analysis.steps}
         index={workspace.stepIndex}
@@ -166,6 +202,44 @@
     align-items: center;
     justify-content: space-between;
     padding-inline: var(--space-2);
+  }
+
+  .interpret {
+    display: flex;
+    flex: 0 0 auto;
+    gap: var(--space-2);
+    align-items: center;
+    block-size: 2.25rem;
+    padding-inline: var(--space-4) var(--space-5);
+    border: none;
+    border-radius: var(--radius-pill);
+    background: var(--color-accent);
+    color: var(--color-accent-contrast);
+    font-family: var(--font-sans);
+    font-size: 0.875rem;
+    font-weight: 600;
+    white-space: nowrap;
+    cursor: pointer;
+    animation: arrive var(--duration-medium) var(--ease);
+    transition: opacity var(--duration-short) var(--ease);
+  }
+
+  .interpret:hover {
+    opacity: 0.88;
+  }
+
+  @media (width <= 32rem) {
+    .interpret {
+      justify-content: center;
+      inline-size: 100%;
+    }
+  }
+
+  @keyframes arrive {
+    from {
+      opacity: 0;
+      transform: translateX(6px);
+    }
   }
 
   .dock {
