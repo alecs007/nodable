@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import {
   type Workspace,
   addSession,
+  assignVariable,
   createSession,
   createWorkspace,
   deserializeWorkspace,
@@ -13,7 +14,8 @@ import {
 } from '../../src/index'
 
 function sample(): Workspace {
-  const first = moveNode(createSession('((¬p) ∨ q)', 'First'), 'root.0', { x: 12, y: -6 })
+  const moved = moveNode(createSession('((¬p) ∨ q)', 'First'), 'root.0', { x: 12, y: -6 })
+  const first = assignVariable(moved, 'p', false)
   const second = createSession('(r → s)')
 
   return createWorkspace('Seminar 3', [first, second])
@@ -73,8 +75,15 @@ describe('serializeWorkspace', () => {
           name: 'First',
           input: '((¬p) ∨ q)',
           offsets: { 'root.0': { x: 12, y: -6 } },
+          interpretation: { p: false },
         },
-        { id: expect.any(String) as unknown, name: '', input: '(r → s)', offsets: {} },
+        {
+          id: expect.any(String) as unknown,
+          name: '',
+          input: '(r → s)',
+          offsets: {},
+          interpretation: {},
+        },
       ],
     })
   })
@@ -110,6 +119,26 @@ describe('deserializeWorkspace', () => {
     )
 
     expect(result.ok && result.value.activeId).toBe('a')
+  })
+
+  it('keeps the interpretation of every session', () => {
+    const result = deserializeWorkspace(serializeWorkspace(sample()))
+
+    expect(result.ok && result.value.sessions[0]?.interpretation).toEqual({ p: false })
+  })
+
+  it('keeps only the truth values of a stored interpretation', () => {
+    const result = deserializeWorkspace(
+      '{"sessions":[{"id":"a","input":"(p ∧ q)","interpretation":{"p":true,"q":"yes"}}]}',
+    )
+
+    expect(result.ok && result.value.sessions[0]?.interpretation).toEqual({ p: true })
+  })
+
+  it('reads a session stored without an interpretation', () => {
+    const result = deserializeWorkspace('{"sessions":[{"id":"a","input":"p"}]}')
+
+    expect(result.ok && result.value.sessions[0]?.interpretation).toEqual({})
   })
 
   it('keeps the name of every session', () => {

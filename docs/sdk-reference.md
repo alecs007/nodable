@@ -12,8 +12,8 @@ import { createSession, getTree, layoutTree, updateInput } from '@nodable/sdk'
 
 ## Sessions
 
-A session is one formula: its input text, the analysis the engine produced from it, and the layout
-offsets of its nodes.
+A session is one formula: its input text, the analysis the engine produced from it, the layout
+offsets of its nodes and the truth values chosen for its variables.
 
 ```ts
 type Session = {
@@ -22,6 +22,7 @@ type Session = {
   readonly input: string
   readonly analysis: Analysis
   readonly offsets: NodeOffsets
+  readonly interpretation: Interpretation
 }
 ```
 
@@ -38,10 +39,10 @@ const session = createSession('((¬p) ∨ q)')
 
 Returns a session with a new name. The formula and the identifier are untouched.
 
-### `restoreSession(id: SessionId, input: string, offsets: NodeOffsets, name?: string): Session`
+### `restoreSession(id, input, offsets, name?, interpretation?): Session`
 
 Rebuilds a session that was stored earlier. The analysis is recomputed from the input, so only the
-identifier, the input and the offsets need to be persisted.
+identifier, the input, the offsets and the interpretation need to be persisted.
 
 ### `updateInput(session: Session, input: string): Session`
 
@@ -98,6 +99,60 @@ Removes every offset, putting all nodes back where the layout places them.
 
 The web app keeps every tree symmetric and never moves a node, so its sessions carry no offsets.
 These two functions are here for callers that want to place nodes themselves.
+
+## Interpretations
+
+An interpretation gives each variable a truth value. It belongs to the session, is kept when the
+formula changes and is saved with the workspace.
+
+```ts
+type TruthValue = boolean
+type Interpretation = Readonly<Record<string, TruthValue>>
+```
+
+### `getVariables(session: Session): readonly string[]`
+
+The variables of the formula, each listed once, in the order they first appear.
+
+### `assignVariable(session: Session, name: string, value: TruthValue | undefined): Session`
+
+Sets the truth value of one variable. `undefined` removes the value.
+
+### `clearInterpretation(session: Session): Session`
+
+Removes every value.
+
+### `evaluateSession(session: Session): Evaluation`
+
+Evaluates the tree of the formula under the interpretation of the session.
+
+```ts
+type Evaluation = {
+  readonly value: TruthValue | undefined
+  readonly steps: readonly EvaluationStep[]
+  readonly values: Readonly<Record<NodeId, TruthValue>>
+}
+
+type EvaluationStep = {
+  readonly node: TreeNode
+  readonly operands: readonly (TruthValue | undefined)[]
+  readonly value: TruthValue | undefined
+}
+```
+
+`steps` holds one entry per node, children before their parent, so the last step is the root.
+`operands` are the values of the children the node was computed from. A node whose value depends on
+a variable without a value, or that is still a slot or an undecided group, has no value and is
+missing from `values`. `value` is the value of the whole formula.
+
+### `valueOfVariable(interpretation: Interpretation, name: string): TruthValue | undefined`
+
+Reads one value. Names that only exist on the object prototype, such as `constructor`, have none.
+
+### `formulaOf(node: TreeNode): string`
+
+Writes a node as a fully parenthesized formula with canonical spacing, for example
+`((¬p) ∨ (q → r))`, which is how the interface names each subformula of an evaluation.
 
 ## Layout
 
@@ -251,16 +306,17 @@ Each returns a new workspace. `replaceSession` matches on the session identifier
 
 ### `serializeWorkspace(workspace: Workspace): string`
 
-Writes the workspace as indented JSON. Only the identifier, the name, the input and the offsets of
-each session are stored, together with the identifier of the active one; the analysis is rebuilt on
+Writes the workspace as indented JSON. Only the identifier, the name, the input, the offsets and the
+interpretation of each session are stored, together with the identifier of the active one; the analysis is rebuilt on
 load.
 
 ### `deserializeWorkspace(data: string): Result<Workspace, Diagnostic>`
 
 Reads a workspace back. Malformed JSON, a missing `sessions` array or a session without an
 identifier or an input all return `NDB008`. An active identifier that names no stored session falls
-back to the first one. Offsets that are not points are dropped rather than
-failing the whole load.
+back to the first one. Offsets that are not points and interpretation entries that are not booleans
+are dropped rather than failing the whole load, and a session stored without an interpretation
+starts with none.
 
 ```ts
 const result = deserializeWorkspace(data)
@@ -309,6 +365,6 @@ type Result<TValue, TError> =
 
 For convenience the SDK re-exports the engine types the interface needs, so the app never imports
 `@nodable/engine` directly: `Analysis`, `BuildStep`, `Cursor`, `Diagnostic`, `DiagnosticCode`,
-`DiagnosticMessageKey`, `DiagnosticSeverity`, `NodeId`, `NodeKind`, `Token`, `TokenKind`,
-`TreeNode` and its variants, the canonical symbols, `childrenOf`, `collectNodes`, `isNodeComplete`,
-`leavesOf` and `normalizeFormula`.
+`DiagnosticMessageKey`, `DiagnosticSeverity`, `Evaluation`, `EvaluationStep`, `Interpretation`,
+`NodeId`, `NodeKind`, `Token`, `TokenKind`, `TreeNode` and its variants, `TruthValue`, the canonical symbols, `childrenOf`, `collectNodes`, `isNodeComplete`,
+`leavesOf`, `normalizeFormula` and `valueOfVariable`.

@@ -22,6 +22,10 @@ First working version of Nodable.
 - **Undecided groups.** After an open parenthesis both possible shapes of the group are drawn side
   by side until the next token decides between them.
 - **Step replay.** A slider renders any earlier state of the construction.
+- **Interpretation.** A complete formula opens a separate view where each variable is set to true
+  or false. The tree shows the value of every node as soon as it is decided, a step-by-step list
+  writes out each subformula with the values it was computed from, and the chosen values are saved
+  with the formula.
 - **Workspace.** Several named formulas, a picker to switch between them, and removal of the
   active one.
 - **Work area.** The tree is fitted to the window and can be panned and zoomed with the pointer or

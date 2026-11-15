@@ -24,6 +24,8 @@ Computational Logic course. Everything runs in the browser: no account, no serve
 - An arrow marks where the next token goes, and dotted boxes show what is still missing.
 - Errors are reported in plain words, and the last valid tree is kept.
 - A slider replays the construction from the first token to the last.
+- A finished formula can be interpreted: give each variable a truth value and see the value of every
+  node, step by step.
 - Several named formulas per workspace, saved locally.
 - Export to SVG, PNG, LaTeX, plain text or JSON.
 - English and Romanian, light and dark.

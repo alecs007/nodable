@@ -20,6 +20,8 @@
     | 'download'
     | 'trash'
     | 'github'
+    | 'interpret'
+    | 'edit'
 
   type Circle = { readonly cx: number; readonly cy: number; readonly r: number }
 
@@ -86,6 +88,14 @@
     download: { paths: ['M12 4.5v15', 'M7 14.5l5 5 5-5'], circles: [] },
     transfer: {
       paths: ['M8 20.5V4.5', 'M4 8.5 8 4.5l4 4', 'M16 3.5v16', 'M12 15.5l4 4 4-4'],
+      circles: [],
+    },
+    interpret: {
+      paths: ['M4 5h16v14H4z', 'M4 10h16', 'M10 5v14', 'M13 14.5l1.5 1.5 3-3'],
+      circles: [],
+    },
+    edit: {
+      paths: ['M4.5 19.5h4l10-10-4-4-10 10z', 'M13 7l4 4'],
       circles: [],
     },
     github: {
