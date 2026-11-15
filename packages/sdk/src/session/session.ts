@@ -1,6 +1,7 @@
 import {
   type Analysis,
   type BuildStep,
+  type Classification,
   type Cursor,
   type Diagnostic,
   type Evaluation,
@@ -10,6 +11,7 @@ import {
   type TreeNode,
   type TruthValue,
   analyzeFormula,
+  classifyTree,
   evaluateTree,
   isComplete,
   normalizeFormula,
@@ -138,10 +140,18 @@ export function assignVariable(
   return { ...session, interpretation: Object.fromEntries(entries) }
 }
 
+export function setInterpretation(session: Session, interpretation: Interpretation): Session {
+  return { ...session, interpretation: { ...interpretation } }
+}
+
 export function clearInterpretation(session: Session): Session {
   return { ...session, interpretation: {} }
 }
 
 export function evaluateSession(session: Session): Evaluation {
   return evaluateTree(session.analysis.tree, session.interpretation)
+}
+
+export function classifySession(session: Session): Classification | undefined {
+  return classifyTree(session.analysis.tree)
 }

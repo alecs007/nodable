@@ -1,11 +1,13 @@
 import { describe, expect, it } from 'vitest'
 import {
   assignVariable,
+  classifySession,
   clearInterpretation,
   createSession,
   evaluateSession,
   getVariables,
   restoreSession,
+  setInterpretation,
   updateInput,
 } from '../../src/index'
 
@@ -79,5 +81,25 @@ describe('evaluateSession', () => {
     expect(evaluateSession(assignVariable(createSession('(p ∧ q)'), 'p', true)).value).toBe(
       undefined,
     )
+  })
+})
+
+describe('setInterpretation', () => {
+  it('replaces every value at once', () => {
+    const session = setInterpretation(assignVariable(createSession('(p ∧ q)'), 'p', true), {
+      q: false,
+    })
+
+    expect(session.interpretation).toEqual({ q: false })
+  })
+})
+
+describe('classifySession', () => {
+  it('classifies the formula of the session', () => {
+    expect(classifySession(createSession('(p ∨ (¬p))'))?.kind).toBe('valid')
+  })
+
+  it('has no classification while the formula is unfinished', () => {
+    expect(classifySession(createSession('(p ∨'))).toBeUndefined()
   })
 })
