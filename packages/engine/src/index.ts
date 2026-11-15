@@ -91,3 +91,9 @@ export {
   valueOfVariable,
   variablesOf,
 } from './semantics/evaluate'
+export {
+  type Classification,
+  type Satisfiability,
+  MAX_CLASSIFIED_VARIABLES,
+  classifyTree,
+} from './semantics/classify'
