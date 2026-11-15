@@ -16,7 +16,7 @@
   "dependencies": {
     "@nodable/sdk": "workspace:*",
     "idb": "^8.0.4",
-    "svelte": "^5.57.2"
+    "svelte": "^5.57.3"
   },
   "devDependencies": {
     "@playwright/test": "^1.64.1",
