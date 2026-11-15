@@ -79,8 +79,8 @@ pnpm test:e2e
 `.github/workflows/ci.yml` runs on every push and pull request: install with a frozen lockfile,
 lint, format check, typecheck, unit tests, build, then end-to-end tests.
 
-`.github/workflows/deploy.yml` publishes `apps/web` to GitHub Pages on every push to `main`. The
-build reads `BASE_PATH` so the app works from a project subpath.
+The site is hosted on Vercel, which builds and publishes `main` on every push and posts a preview
+for every pull request. The build reads `BASE_PATH` when the app has to live under a subpath.
 
 ## Release process
 
