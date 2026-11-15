@@ -81,3 +81,13 @@ export { applyToken } from './builder/apply-token'
 export { buildTree } from './builder/build-tree'
 export { allowedNextTokens } from './validator/allowed-next'
 export { type Analysis, analyzeFormula } from './validator/analyze'
+export {
+  type Evaluation,
+  type EvaluationStep,
+  type Interpretation,
+  type TruthValue,
+  applyConnective,
+  evaluateTree,
+  valueOfVariable,
+  variablesOf,
+} from './semantics/evaluate'
