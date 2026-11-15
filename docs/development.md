@@ -82,6 +82,10 @@ lint, format check, typecheck, unit tests, build, then end-to-end tests.
 The site is hosted on Vercel, which builds and publishes `main` on every push and posts a preview
 for every pull request. The build reads `BASE_PATH` when the app has to live under a subpath.
 
+`.github/workflows/dependabot-auto-merge.yml` turns on auto-merge for Dependabot npm updates that
+are not major versions, so they merge once CI passes. Major versions and GitHub Actions updates wait
+for a manual merge.
+
 ## Release process
 
 1. Make sure `main` is green and `pnpm check` passes locally.
