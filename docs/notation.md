@@ -124,6 +124,25 @@ An incomplete formula while typing is normal: it is shown with dotted slots and 
 an error. On the first error the builder stops applying tokens, keeps the last valid tree, and marks
 the offending range in the input.
 
+## Interpretation
+
+Once a formula is complete it can be interpreted: every variable receives a truth value, true or
+false, and the value of the formula is computed from its tree, from the leaves up to the root.
+
+| Node      | Value                                         |
+| --------- | --------------------------------------------- |
+| variable  | the value given to it                         |
+| `(¬φ)`    | true when `φ` is false                        |
+| `(φ ∧ ψ)` | true when both `φ` and `ψ` are true           |
+| `(φ ∨ ψ)` | true when at least one of `φ` and `ψ` is true |
+| `(φ → ψ)` | false only when `φ` is true and `ψ` is false  |
+| `(φ ↔ ψ)` | true when `φ` and `ψ` have the same value     |
+
+Every occurrence of a variable takes the same value. A node gets a value only once the values of all
+its children are known, so while some variables are still open the interface shows which parts of
+the tree are already decided. The interface writes the values as `T` and `F` in English and as `A`
+and `F` in Romanian.
+
 ## Hints
 
 After every step the engine computes the set of tokens allowed next. The interface uses it to

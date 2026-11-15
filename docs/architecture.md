@@ -26,6 +26,7 @@ The engine holds the course rules and nothing else.
 | `tokenizer/` | Turn raw input text into tokens and normalize ASCII aliases to canonical symbols |
 | `builder/`   | Apply the placement rules to each token and record every intermediate step       |
 | `validator/` | Produce diagnostics and the set of tokens allowed next                           |
+| `semantics/` | Evaluate a tree under an interpretation, from the leaves up to the root          |
 | `model/`     | Types and helpers for nodes, slots and cursor position                           |
 
 ## packages/sdk
@@ -33,7 +34,8 @@ The engine holds the course rules and nothing else.
 The SDK is the only module the interface imports from. It wraps the engine in a small, stable API
 and owns the concepts the interface works with.
 
-- **Sessions**: one formula, its build steps, its diagnostics and its per-node layout offsets.
+- **Sessions**: one formula, its build steps, its diagnostics, its per-node layout offsets and the
+  truth values chosen for its variables.
 - **Layout**: the geometry of the tree, computed with `d3-hierarchy`.
 - **Exporters**: SVG, PNG, JSON, LaTeX and plain text.
 - **Workspaces**: several sessions, serialized and deserialized as JSON.
