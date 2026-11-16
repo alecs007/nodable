@@ -26,7 +26,7 @@ The engine holds the course rules and nothing else.
 | `tokenizer/` | Turn raw input text into tokens and normalize ASCII aliases to canonical symbols |
 | `builder/`   | Apply the placement rules to each token and record every intermediate step       |
 | `validator/` | Produce diagnostics and the set of tokens allowed next                           |
-| `semantics/` | Evaluate a tree under an interpretation, from the leaves up to the root          |
+| `semantics/` | Evaluate a tree under an interpretation and classify it as valid or satisfiable  |
 | `model/`     | Types and helpers for nodes, slots and cursor position                           |
 
 ## packages/sdk

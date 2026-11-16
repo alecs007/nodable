@@ -26,6 +26,8 @@ First working version of Nodable.
   or false. The tree shows the value of every node as soon as it is decided, a step-by-step list
   writes out each subformula with the values it was computed from, and the chosen values are saved
   with the formula.
+- **Classification.** A complete formula is marked valid, satisfiable but not valid, or
+  unsatisfiable, and the interpretation view offers a model and a counter-model to load.
 - **Workspace.** Several named formulas, a picker to switch between them, and removal of the
   active one.
 - **Work area.** The tree is fitted to the window and can be panned and zoomed with the pointer or

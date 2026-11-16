@@ -1,3 +1,11 @@
+@font-face {
+  font-family: 'Nodable Arrows';
+  src:
+    local('Noto Sans Math Regular'), local('NotoSansMath-Regular'), local('STIX Two Math'),
+    local('STIXTwoMath-Regular'), local('Cambria Math'), local('Segoe UI Symbol');
+  unicode-range: U+2190-21FF;
+}
+
 :root,
 :root[data-theme='light'] {
   color-scheme: light;
@@ -67,8 +75,11 @@
   --radius-4: 26px;
   --radius-pill: 999px;
 
-  --font-sans: system-ui, -apple-system, 'Segoe UI', roboto, 'Helvetica Neue', arial, sans-serif;
-  --font-mono: 'Cascadia Code', 'JetBrains Mono', 'Fira Code', consolas, monospace;
+  --font-sans:
+    'Nodable Arrows', system-ui, -apple-system, 'Segoe UI', roboto, 'Helvetica Neue', arial,
+    sans-serif;
+  --font-mono:
+    'Nodable Arrows', 'Cascadia Code', 'JetBrains Mono', 'Fira Code', consolas, monospace;
 
   --duration-short: 160ms;
   --duration-medium: 240ms;

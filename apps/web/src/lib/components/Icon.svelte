@@ -22,6 +22,8 @@
     | 'github'
     | 'interpret'
     | 'edit'
+    | 'steps'
+    | 'examples'
 
   type Circle = { readonly cx: number; readonly cy: number; readonly r: number }
 
@@ -94,6 +96,15 @@
       paths: ['M4 5h16v14H4z', 'M4 10h16', 'M10 5v14', 'M13 14.5l1.5 1.5 3-3'],
       circles: [],
     },
+    steps: {
+      paths: ['M9.5 6.5h10', 'M9.5 12h10', 'M9.5 17.5h10'],
+      circles: [
+        { cx: 5, cy: 6.5, r: 1.2 },
+        { cx: 5, cy: 12, r: 1.2 },
+        { cx: 5, cy: 17.5, r: 1.2 },
+      ],
+    },
+    examples: { paths: ['M3.5 12.5l3 3 6-7', 'M15 9l6 6', 'M21 9l-6 6'], circles: [] },
     edit: {
       paths: ['M4.5 19.5h4l10-10-4-4-10 10z', 'M13 7l4 4'],
       circles: [],

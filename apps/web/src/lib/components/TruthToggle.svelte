@@ -138,4 +138,17 @@
     background: var(--color-false-soft);
     color: var(--color-false);
   }
+
+  @media (width <= 30rem) {
+    .variable {
+      gap: var(--space-1);
+      padding-inline-start: var(--space-2);
+    }
+
+    .choice {
+      inline-size: 1.625rem;
+      block-size: 1.625rem;
+      font-size: 0.8125rem;
+    }
+  }
 </style>

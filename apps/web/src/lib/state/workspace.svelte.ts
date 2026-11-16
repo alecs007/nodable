@@ -1,4 +1,5 @@
 import {
+  type Interpretation,
   type Session,
   type SessionId,
   type TreeSnapshot,
@@ -8,6 +9,7 @@ import {
   clearInterpretation,
   createSession,
   createWorkspace,
+  setInterpretation,
   getStepTree,
   getTree,
   normalizeFormula,
@@ -39,6 +41,7 @@ export type WorkspaceState = {
   edit: () => void
   assign: (name: string, value: TruthValue | undefined) => void
   clearValues: () => void
+  useValues: (interpretation: Interpretation) => void
   asWorkspace: () => Workspace
   restore: (workspace: Workspace) => void
 }
@@ -152,6 +155,9 @@ function createWorkspaceState(): WorkspaceState {
     },
     clearValues() {
       replace(clearInterpretation(active))
+    },
+    useValues(interpretation: Interpretation) {
+      replace(setInterpretation(active, interpretation))
     },
     asWorkspace() {
       return createWorkspace(name, sessions, activeId)
