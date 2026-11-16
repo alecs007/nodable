@@ -24,6 +24,7 @@
   import { fade } from 'svelte/transition'
   import { LOCALES, translate } from './lib/i18n/messages'
   import { locale } from './lib/state/locale.svelte'
+  import { type Size, morph, sizeOf } from './lib/motion/morph'
   import { overlay } from './lib/state/overlay.svelte'
   import { persistence } from './lib/state/persistence.svelte'
   import { workspace } from './lib/state/workspace.svelte'
@@ -39,6 +40,9 @@
     session.analysis.isComplete ? classifySession(session) : undefined,
   )
   const sceneFade = $derived(prefersReducedMotion.current ? 0 : 220)
+  const switchKey = $derived(`${workspace.activeId}:${String(workspace.isInterpreting)}`)
+  const INSET_GAP = 24
+  const MORPH_FOR = 240
   const evaluation = $derived(workspace.isInterpreting ? evaluateSession(session) : undefined)
   const hasError = $derived(
     session.analysis.diagnostics.some((diagnostic) => diagnostic.severity === 'error'),
@@ -52,8 +56,9 @@
     }
 
     const observer = new ResizeObserver(() => {
-      topInset = top.offsetHeight + 24
-      bottomInset = bottom.offsetHeight + 24
+      if (morphing === 0) {
+        measureInsets()
+      }
     })
 
     observer.observe(top)
@@ -62,6 +67,70 @@
     return () => {
       observer.disconnect()
     }
+  })
+
+  let morphing = 0
+  let shownKey: string | undefined
+  let composerBefore: Size | undefined
+  let dockBefore: Size | undefined
+
+  function measureInsets(): void {
+    if (composer !== undefined && dock !== undefined) {
+      topInset = composer.offsetHeight + INSET_GAP
+      bottomInset = dock.offsetHeight + INSET_GAP
+    }
+  }
+
+  function settle(): void {
+    morphing = Math.max(0, morphing - 1)
+
+    if (morphing === 0) {
+      measureInsets()
+    }
+  }
+
+  $effect.pre(() => {
+    if (switchKey !== shownKey) {
+      composerBefore = sizeOf(composer)
+      dockBefore = sizeOf(dock)
+    }
+  })
+
+  $effect(() => {
+    const key = switchKey
+
+    if (key === shownKey) {
+      return
+    }
+
+    const isFirst = shownKey === undefined
+
+    shownKey = key
+
+    const top = composer
+    const bottom = dock
+    const topFrom = composerBefore
+    const bottomFrom = dockBefore
+
+    composerBefore = undefined
+    dockBefore = undefined
+
+    if (
+      top === undefined ||
+      bottom === undefined ||
+      topFrom === undefined ||
+      bottomFrom === undefined ||
+      isFirst ||
+      sceneFade === 0
+    ) {
+      return
+    }
+
+    morphing += 2
+    topInset = top.offsetHeight + INSET_GAP
+    bottomInset = bottom.offsetHeight + INSET_GAP
+    morph(top, topFrom, MORPH_FOR, true, settle)
+    morph(bottom, bottomFrom, MORPH_FOR, false, settle)
   })
 
   $effect(() => {
@@ -107,7 +176,11 @@
 >
   <main class="workspace">
     {#key workspace.activeId}
-      <div class="scene" out:fade={{ duration: sceneFade }}>
+      <div
+        class="scene"
+        in:fade={{ duration: sceneFade, delay: sceneFade / 2 }}
+        out:fade={{ duration: sceneFade }}
+      >
         <Viewport
           resetKey="{workspace.activeId}:{String(variants.length)}:{String(
             workspace.isInterpreting,
