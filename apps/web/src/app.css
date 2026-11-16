@@ -4,6 +4,9 @@
     local('Noto Sans Math Regular'), local('NotoSansMath-Regular'), local('STIX Two Math'),
     local('STIXTwoMath-Regular'), local('Cambria Math'), local('Segoe UI Symbol');
   unicode-range: U+2190-21FF;
+  ascent-override: 80%;
+  descent-override: 20%;
+  line-gap-override: 0%;
 }
 
 :root,
@@ -99,7 +102,6 @@ body {
   padding: 0;
   block-size: 100%;
   overflow: hidden;
-  scrollbar-gutter: stable;
 }
 
 body {
