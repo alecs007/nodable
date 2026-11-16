@@ -9,11 +9,12 @@
     title: string
     tone?: string | undefined
     isTall?: boolean
+    isCentered?: boolean
     onclose: () => void
     children: Snippet<[() => void]>
   }
 
-  const { title, tone, isTall = false, onclose, children }: Props = $props()
+  const { title, tone, isTall = false, isCentered = false, onclose, children }: Props = $props()
 
   const DURATION = 360
   const CLOSE_SHARE = 0.25
@@ -125,7 +126,13 @@
   function onPointerDown(event: PointerEvent): void {
     const target = event.target as Element
 
-    if (!isSheet.current || !event.isPrimary || event.button !== 0 || target.closest('button')) {
+    if (
+      isCentered ||
+      !isSheet.current ||
+      !event.isPrimary ||
+      event.button !== 0 ||
+      target.closest('button')
+    ) {
       return
     }
 
@@ -178,6 +185,7 @@
 <dialog
   bind:this={dialog}
   class="modal"
+  class:centered={isCentered}
   class:dragging={isDragging}
   aria-labelledby="{id}-title"
   style:--motion="{duration}ms"
@@ -353,14 +361,19 @@
   }
 
   @media (width <= 40rem) {
-    .modal {
+    .modal:not(.centered) {
       place-items: end stretch;
       padding: 0;
       padding-block: var(--space-6) var(--keyboard, 0px);
       transition: padding var(--duration-medium) var(--ease);
     }
 
-    .sheet {
+    .modal.centered {
+      padding-block-end: calc(var(--space-4) + var(--keyboard, 0px));
+      transition: padding var(--duration-medium) var(--ease);
+    }
+
+    .modal:not(.centered) .sheet {
       inline-size: 100%;
       min-block-size: min(50dvh, 100%);
       max-block-size: min(80dvh, 100%);
@@ -370,11 +383,11 @@
       transform: translateY(100%);
     }
 
-    .sheet.tall {
+    .modal:not(.centered) .sheet.tall {
       block-size: min(80dvh, 100%);
     }
 
-    .sheet.shown {
+    .modal:not(.centered) .sheet.shown {
       transform: translateY(var(--offset));
     }
 
@@ -383,7 +396,8 @@
       transition: none;
     }
 
-    .head {
+    .modal:not(.centered) .head {
+      grid-template-columns: minmax(0, 1fr);
       padding-block-start: var(--space-5);
       cursor: grab;
       touch-action: none;
@@ -394,19 +408,15 @@
       cursor: grabbing;
     }
 
-    .grabber {
+    .modal:not(.centered) .grabber {
       display: block;
     }
 
-    .head {
-      grid-template-columns: minmax(0, 1fr);
-    }
-
-    .close {
+    .modal:not(.centered) .close {
       display: none;
     }
 
-    .body {
+    .modal:not(.centered) .body {
       padding-block-end: calc(var(--space-4) + env(safe-area-inset-bottom));
     }
   }

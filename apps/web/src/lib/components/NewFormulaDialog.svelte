@@ -26,6 +26,7 @@
 {#if overlay.isCreating}
   <Modal
     title={locale.t('workspace.add')}
+    isCentered
     onclose={() => {
       overlay.stopCreating()
       name = ''

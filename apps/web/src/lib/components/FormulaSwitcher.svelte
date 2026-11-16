@@ -919,6 +919,9 @@
             <Icon name="folder" />{locale.t('folders.newfolder')}
           </button>
         </div>
+        {#if draftIn === ROOT}
+          {@render draftRow(ROOT, dismiss)}
+        {/if}
       </div>
 
       <div class="tree" class:dragging={drag !== undefined && !drag.isReturning}>
@@ -1065,9 +1068,6 @@
           class:flash={flashId === ROOT}
           data-drop={ROOT}
         >
-          {#if draftIn === ROOT}
-            {@render draftRow(ROOT, dismiss)}
-          {/if}
           {#if drag?.from !== undefined && !drag.isReturning}
             <p class="dropzone" transition:slide={{ duration }}>{locale.t('folders.dropout')}</p>
           {/if}
@@ -1185,7 +1185,7 @@
     background: transparent;
     color: var(--color-text);
     font-family: var(--font-sans);
-    font-size: 0.9375rem;
+    font-size: 1rem;
     line-height: normal;
     outline: none;
     appearance: none;
@@ -1650,7 +1650,7 @@
   }
 
   .draft {
-    padding: var(--space-1);
+    padding-block-start: var(--space-1);
   }
 
   .rename {
@@ -1670,7 +1670,7 @@
     background: var(--color-surface-raised);
     color: var(--color-text);
     font-family: var(--font-sans);
-    font-size: 0.9375rem;
+    font-size: 1rem;
     line-height: normal;
     outline: none;
     appearance: none;

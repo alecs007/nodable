@@ -40,7 +40,7 @@
     background: var(--color-surface-raised);
     color: var(--color-text);
     font-family: var(--font-sans);
-    font-size: 0.9375rem;
+    font-size: 1rem;
     line-height: normal;
     appearance: none;
     transition:
