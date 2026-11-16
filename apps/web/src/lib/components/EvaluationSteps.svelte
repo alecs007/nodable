@@ -16,80 +16,26 @@
   })
 </script>
 
-<details class="steps">
-  <summary>
-    <span>{locale.t('interpret.steps')}</span>
-    <span class="count">{steps.length}</span>
-  </summary>
-  <ol class="list">
-    {#each steps as step, index (step.node.id)}
-      <li class="step" class:final={index === steps.length - 1}>
-        <span class="index">{index + 1}</span>
-        <code class="formula">{formulaOf(step.node)}</code>
-        <span class="result">
-          <code class="calc">{computationOf(step, letters)}</code>
-          <span class="equals" aria-hidden="true">=</span>
-          <TruthMark value={step.value} />
-        </span>
-      </li>
-    {/each}
-  </ol>
-</details>
+<ol class="list" aria-label={locale.t('interpret.steps')}>
+  {#each steps as step, index (step.node.id)}
+    <li class="step" class:final={index === steps.length - 1}>
+      <span class="index">{index + 1}</span>
+      <code class="formula">{formulaOf(step.node)}</code>
+      <span class="result">
+        <code class="calc">{computationOf(step, letters)}</code>
+        <span class="equals" aria-hidden="true">=</span>
+        <TruthMark value={step.value} />
+      </span>
+    </li>
+  {/each}
+</ol>
 
 <style>
-  .steps {
-    border-block-start: 1px solid var(--color-border);
-  }
-
-  summary {
-    display: flex;
-    gap: var(--space-2);
-    align-items: center;
-    padding: var(--space-2);
-    color: var(--color-text-muted);
-    font-size: 0.875rem;
-    font-weight: 600;
-    cursor: pointer;
-    list-style: none;
-    user-select: none;
-  }
-
-  summary::-webkit-details-marker {
-    display: none;
-  }
-
-  summary::before {
-    content: '';
-    inline-size: 0.4rem;
-    block-size: 0.4rem;
-    border-block-end: 1.5px solid currentcolor;
-    border-inline-end: 1.5px solid currentcolor;
-    transform: rotate(-45deg);
-    transition: transform var(--duration-short) var(--ease);
-  }
-
-  .steps[open] summary::before {
-    transform: rotate(45deg);
-  }
-
-  summary:hover {
-    color: var(--color-text);
-  }
-
-  .count {
-    padding-inline: var(--space-2);
-    border-radius: var(--radius-pill);
-    background: var(--color-surface-sunken);
-    font-size: 0.75rem;
-  }
-
   .list {
     display: grid;
     gap: 2px;
-    max-block-size: min(16rem, 30vh);
     margin: 0;
-    padding: 0 0 var(--space-1);
-    overflow-y: auto;
+    padding: 0;
     list-style: none;
   }
 

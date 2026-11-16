@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest'
 import {
   type TruthLetters,
   computationOf,
+  describeInterpretation,
   isCompound,
   letterOf,
 } from '../../src/lib/interpretation/computation'
@@ -43,5 +44,13 @@ describe('isCompound', () => {
         .filter(isCompound)
         .map((step) => step.node.id),
     ).toEqual(['root.0', 'root'])
+  })
+})
+
+describe('describeInterpretation', () => {
+  it('writes each variable with its value, in the given order', () => {
+    expect(describeInterpretation({ q: false, p: true }, ['p', 'q', 'r'], LETTERS)).toBe(
+      'p = A, q = F, r = ?',
+    )
   })
 })

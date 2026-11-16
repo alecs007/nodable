@@ -27,11 +27,11 @@ test('offers an interpretation only once the formula is complete', async ({ page
 test('evaluates the formula once every variable has a value', async ({ page }) => {
   await interpret(page, '((¬p) ∨ q)')
 
-  await expect(page.getByText('Choose a value for every variable (2 left)')).toBeVisible()
+  await expect(page.getByText('Choose a value for every variable (2 left)')).toBeAttached()
 
   await assign(page, 'p', 'True')
 
-  await expect(page.getByText('Choose a value for every variable (1 left)')).toBeVisible()
+  await expect(page.getByText('Choose a value for every variable (1 left)')).toBeAttached()
   await expect(page.getByRole('img', { name: 'single node ¬: False' })).toBeVisible()
 
   await assign(page, 'q', 'False')
@@ -48,7 +48,7 @@ test('lists every step of the evaluation', async ({ page }) => {
   await interpret(page, '((¬p) ∨ q)')
   await assign(page, 'p', 'False')
   await assign(page, 'q', 'False')
-  await page.getByText('Step-by-step evaluation').click()
+  await page.getByRole('button', { name: 'Step-by-step evaluation' }).click()
 
   const steps = page.getByRole('listitem')
 
@@ -71,4 +71,32 @@ test('returns to editing the formula', async ({ page }) => {
   await page.getByRole('button', { name: 'Edit formula' }).click()
 
   await expect(page.getByRole('textbox', { name: 'Formula', exact: true })).toHaveValue('(p → q)')
+})
+
+test('classifies a complete formula', async ({ page }) => {
+  const field = page.getByRole('textbox', { name: 'Formula', exact: true })
+
+  await field.fill('((P → Q) ∨ (Q → P))')
+  await expect(page.getByText('Satisfiable, valid')).toBeVisible()
+
+  await field.fill('(((P ∨ Q) ∧ (¬P)) ∧ (¬Q))')
+  await expect(page.getByText('Unsatisfiable, not valid')).toBeVisible()
+
+  await field.fill('(P → (Q ∧ R))')
+  await expect(page.getByText('Satisfiable, not valid')).toBeVisible()
+})
+
+test('loads a counter-model into the interpretation', async ({ page }) => {
+  await interpret(page, '(P → (Q ∧ R))')
+
+  await page.getByRole('button', { name: 'Classification' }).click()
+
+  await expect(page.getByText(/True under 5 of 8 interpretations/)).toBeVisible()
+
+  await page.getByRole('button', { name: /Counter-model/ }).click()
+
+  await expect(page.getByText('The formula is false under this interpretation')).toBeVisible()
+  await expect(
+    page.getByRole('radiogroup', { name: 'R' }).getByRole('radio', { name: 'False' }),
+  ).toBeChecked()
 })

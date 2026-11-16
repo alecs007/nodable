@@ -1,6 +1,13 @@
 <script lang="ts">
   import './app.css'
-  import { type TruthValue, evaluateSession, getVariables, pendingVariants } from '@nodable/sdk'
+  import {
+    type Interpretation,
+    type TruthValue,
+    classifySession,
+    evaluateSession,
+    getVariables,
+    pendingVariants,
+  } from '@nodable/sdk'
   import BrandMark from './lib/components/BrandMark.svelte'
   import HintBar from './lib/components/HintBar.svelte'
   import Icon from './lib/components/Icon.svelte'
@@ -23,6 +30,9 @@
 
   const session = $derived(workspace.active)
   const variants = $derived(pendingVariants(workspace.snapshot))
+  const classification = $derived(
+    session.analysis.isComplete ? classifySession(session) : undefined,
+  )
   const evaluation = $derived(workspace.isInterpreting ? evaluateSession(session) : undefined)
   const hasError = $derived(
     session.analysis.diagnostics.some((diagnostic) => diagnostic.severity === 'error'),
@@ -78,7 +88,12 @@
   </button>
 {/snippet}
 
-<div class="stage" class:ready={persistence.isReady} style:--dock-space="{bottomInset}px">
+<div
+  class="stage"
+  class:ready={persistence.isReady}
+  style:--dock-space="{bottomInset}px"
+  style:--composer-space="{topInset}px"
+>
   <main class="workspace">
     <Viewport
       resetKey="{workspace.activeId}:{String(variants.length)}:{String(workspace.isInterpreting)}"
@@ -113,11 +128,15 @@
         variables={getVariables(session)}
         interpretation={session.interpretation}
         {evaluation}
+        {classification}
         onassign={(name: string, value: TruthValue) => {
           workspace.assign(name, value)
         }}
         onreset={() => {
           workspace.clearValues()
+        }}
+        onuse={(values: Interpretation) => {
+          workspace.useValues(values)
         }}
         onedit={() => {
           workspace.edit()
@@ -129,6 +148,7 @@
         allowedNext={session.analysis.allowedNext}
         isComplete={session.analysis.isComplete}
         isEmpty={session.input.length === 0}
+        {classification}
       />
       <InputBar
         value={session.input}
@@ -190,6 +210,7 @@
     inset-block-start: var(--space-4);
     inset-inline-start: 50%;
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: var(--space-1);
     inline-size: min(calc(100% - var(--space-5)), 42rem);
     padding: var(--space-3);

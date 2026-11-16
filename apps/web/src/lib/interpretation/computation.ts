@@ -1,4 +1,10 @@
-import { type EvaluationStep, type TruthValue, NEGATION } from '@nodable/sdk'
+import {
+  type EvaluationStep,
+  type Interpretation,
+  type TruthValue,
+  NEGATION,
+  valueOfVariable,
+} from '@nodable/sdk'
 
 export type TruthLetters = {
   readonly true: string
@@ -33,4 +39,14 @@ export function computationOf(step: EvaluationStep, letters: TruthLetters): stri
 
 export function isCompound(step: EvaluationStep): boolean {
   return step.node.kind === 'unary' || step.node.kind === 'binary'
+}
+
+export function describeInterpretation(
+  interpretation: Interpretation,
+  variables: readonly string[],
+  letters: TruthLetters,
+): string {
+  return variables
+    .map((name) => `${name} = ${letterOf(valueOfVariable(interpretation, name), letters)}`)
+    .join(', ')
 }
