@@ -287,4 +287,21 @@
     background: var(--color-accent-soft);
     color: var(--color-accent);
   }
+
+  @media (width <= 48rem) {
+    .trigger {
+      inline-size: 100%;
+      max-inline-size: none;
+    }
+
+    .current {
+      flex: 1 1 auto;
+      text-align: start;
+    }
+
+    .list {
+      inline-size: 100%;
+      max-inline-size: none;
+    }
+  }
 </style>

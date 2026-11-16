@@ -57,7 +57,7 @@ test('names the downloaded file after the formula', async ({ page }) => {
 
   const download = page.waitForEvent('download')
   await page.getByRole('button', { name: 'Transfer' }).click()
-  await page.getByRole('menuitem', { name: 'Plain text' }).click()
+  await page.getByRole('button', { name: /Plain text/ }).click()
 
   expect((await download).suggestedFilename()).toBe('seminar-one.txt')
 })
@@ -69,7 +69,7 @@ test('deletes the active formula', async ({ page }) => {
   await field.fill('(r → s)')
 
   await page.getByRole('button', { name: 'Transfer' }).click()
-  await page.getByRole('menuitem', { name: 'Remove formula' }).click()
+  await page.getByRole('button', { name: /Remove formula/ }).click()
 
   await expect(field).toHaveValue('(p ∧ q)')
 })
