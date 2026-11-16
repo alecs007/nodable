@@ -28,7 +28,7 @@ Computational Logic course. Everything runs in the browser: no account, no serve
   node, step by step.
 - A finished formula is classified as valid, satisfiable or unsatisfiable, with a model and a
   counter-model to try.
-- Several named formulas per workspace, saved locally.
+- Several named formulas per workspace, searchable and sorted into folders, saved locally.
 - Export to SVG, PNG, LaTeX, plain text or JSON.
 - English and Romanian, light and dark.
 
@@ -55,12 +55,24 @@ A complete formula is checked under every interpretation and marked valid, satis
 valid, or unsatisfiable. In the interpretation view, Classification shows how many interpretations
 make the formula true, with a model and a counter-model that load into the variables when clicked.
 
+## Formulas and folders
+
+![The formula list with a folder, a search field and the actions of a formula](assets/screenshots/formulas.png)
+
+The formula button in the dock opens the list of the workspace. It searches names and formulas,
+and a search typed in ASCII such as `->` also finds `→`. Formulas are sorted into colored folders by
+dragging them, with the mouse or after a short press on a touch screen, or through the Move action.
+Each formula can also be renamed, duplicated and deleted. Deleting a folder deletes its formulas
+too, so it asks for a second tap first.
+
 ## Exports
 
-![The export menu](assets/screenshots/exports.png)
+![The transfer modal](assets/screenshots/exports.png)
 
-An image export reproduces what is on screen, both variants included, with the formula at the top,
-and the file is named after the formula. JSON holds the whole workspace and can be imported back.
+Transfer opens the export options for the active formula and the workspace. An image export
+reproduces what is on screen, both variants included, with the formula at the top, and the file is
+named after the formula. Each option shows a spinner while the file is prepared and a check once it
+is saved. JSON holds the whole workspace, folders included, and can be imported back.
 
 ## Dark theme
 

@@ -28,13 +28,14 @@ First working version of Nodable.
   with the formula.
 - **Classification.** A complete formula is marked valid, satisfiable but not valid, or
   unsatisfiable, and the interpretation view offers a model and a counter-model to load.
-- **Workspace.** Several named formulas, a picker to switch between them, and removal of the
-  active one.
+- **Workspace.** Several named formulas in a searchable list, sorted into colored folders by
+  dragging or through a menu, where each formula can be renamed, duplicated, moved or deleted.
 - **Work area.** The tree is fitted to the window and can be panned and zoomed with the pointer or
   two fingers, within bounds that keep it on screen.
 - **Exports.** Image exports reproduce what the workspace shows, including both shapes of an
-  undecided group, and downloads are named after the formula. The whole workspace can be written
-  to JSON and read back.
+  undecided group, and downloads are named after the formula, with a spinner while the file is
+  prepared and a check once it is saved. The whole workspace, folders included, can be written to
+  JSON and read back.
 - **Persistence.** Debounced automatic saving to IndexedDB, with the formulas and the active one
   restored on the next visit, and an action that clears the saved data.
 - **Interface.** A full-screen work area with floating control islands, light and dark themes, and
