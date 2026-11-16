@@ -19,6 +19,8 @@
 Type a formula and the tree is rebuilt on every keystroke, following the placement rules of the
 Computational Logic course. Everything runs in the browser: no account, no server, no tracking.
 
+Try it at [nodable-tree.vercel.app](https://nodable-tree.vercel.app).
+
 ## Features
 
 - An arrow marks where the next token goes, and dotted boxes show what is still missing.
@@ -110,9 +112,9 @@ The complete rules and the diagnostic codes are in [docs/notation.md](docs/notat
 ```
 apps/web        interface (Svelte)
    ↓
-packages/sdk    sessions, layout, exports
+packages/sdk    sessions, workspaces, layout, exports
    ↓
-packages/engine tokenizer, builder, validator
+packages/engine tokenizer, builder, validator, semantics
 ```
 
 Dependencies point downward only. The engine is pure and deterministic; the interface imports from
