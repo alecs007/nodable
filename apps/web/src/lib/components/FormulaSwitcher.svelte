@@ -47,7 +47,7 @@
   const EDGE = 56
   const FLASH_FOR = 700
   const DROP_REACH = [0, -12, 12] as const
-  const EDGE_REACH = 10
+  const OVERLAP = 14
   const EDGE_AFTER = 16
 
   const COLOR_KEYS: Record<FolderColor, MessageKey> = {
@@ -352,7 +352,7 @@
       return under
     }
 
-    for (const y of [row.top - EDGE_REACH, row.bottom + EDGE_REACH]) {
+    for (const y of [row.top + OVERLAP, row.bottom - OVERLAP]) {
       const near = targetFor(source, dropAt(pointer.x, y))
 
       if (near !== undefined && near !== ROOT) {
