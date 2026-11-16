@@ -226,7 +226,6 @@
 <button
   type="button"
   class="files"
-  class:on={open}
   aria-haspopup="dialog"
   title={locale.t('file.label')}
   aria-label={locale.t('file.label')}
@@ -251,7 +250,7 @@
           {#if group.titleKey !== undefined}
             <h3 class="group-title">{locale.t(group.titleKey)}</h3>
           {/if}
-          <div class="options" class:danger={group.id === 'danger'}>
+          <div class="options {group.id}" class:danger={group.id === 'danger'}>
             {#each entries.filter((entry) => entry.group === group.id) as entry (entry.id)}
               {@const status = statuses.get(entry.id)}
               {@const detail = detailOf(entry)}
@@ -314,10 +313,11 @@
       border-color var(--duration-short) var(--ease);
   }
 
-  .files:hover,
-  .files.on {
-    border-color: var(--color-accent);
-    color: var(--color-accent);
+  @media (hover: hover) {
+    .files:hover {
+      border-color: var(--color-accent);
+      color: var(--color-accent);
+    }
   }
 
   .group {
@@ -519,6 +519,29 @@
   @media (width <= 40rem) {
     .options {
       grid-template-columns: minmax(0, 1fr);
+    }
+
+    .options.formula {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .option {
+      gap: var(--space-2);
+      min-block-size: 2.75rem;
+      padding: var(--space-1) var(--space-2);
+    }
+
+    .glyph {
+      inline-size: 2rem;
+      block-size: 2rem;
+    }
+
+    .label {
+      font-size: 0.875rem;
+    }
+
+    .detail {
+      font-size: 0.75rem;
     }
   }
 </style>

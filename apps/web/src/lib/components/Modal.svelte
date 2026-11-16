@@ -8,11 +8,12 @@
   type Props = {
     title: string
     tone?: string | undefined
+    isTall?: boolean
     onclose: () => void
     children: Snippet<[() => void]>
   }
 
-  const { title, tone, onclose, children }: Props = $props()
+  const { title, tone, isTall = false, onclose, children }: Props = $props()
 
   const DURATION = 360
   const CLOSE_SHARE = 0.25
@@ -26,7 +27,9 @@
   let isShown = $state(false)
   let isDragging = $state(false)
   let offset = $state(0)
+  let keyboard = $state(0)
   let isClosing = false
+  let returnsFocus = false
   let startY = 0
   let lastY = 0
   let lastTime = 0
@@ -51,6 +54,15 @@
       return
     }
 
+    const opener = document.activeElement
+
+    returnsFocus = opener instanceof HTMLElement && opener.matches(':focus-visible')
+
+    if (opener instanceof HTMLInputElement || opener instanceof HTMLTextAreaElement) {
+      returnsFocus = false
+      opener.blur()
+    }
+
     element.showModal()
     sheet?.focus({ preventScroll: true })
 
@@ -65,6 +77,35 @@
     }
   })
 
+  $effect(() => {
+    const visible = window.visualViewport
+
+    if (visible === null) {
+      return
+    }
+
+    const area = visible
+
+    function measure(): void {
+      keyboard = Math.max(0, Math.round(window.innerHeight - area.height - area.offsetTop))
+    }
+
+    measure()
+    area.addEventListener('resize', measure)
+    area.addEventListener('scroll', measure)
+
+    return () => {
+      area.removeEventListener('resize', measure)
+      area.removeEventListener('scroll', measure)
+    }
+  })
+
+  function settleFocus(): void {
+    if (!returnsFocus && document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur()
+    }
+  }
+
   function dismiss(): void {
     if (isClosing) {
       return
@@ -76,6 +117,7 @@
 
     window.setTimeout(() => {
       dialog?.close()
+      settleFocus()
       onclose()
     }, duration)
   }
@@ -141,6 +183,7 @@
   style:--motion="{duration}ms"
   style:--offset="{offset}px"
   style:--fade={fade}
+  style:--keyboard="{keyboard}px"
   oncancel={(event: Event) => {
     event.preventDefault()
     dismiss()
@@ -153,7 +196,7 @@
   }}
 >
   <div class="backdrop" aria-hidden="true" onclick={dismiss}></div>
-  <div bind:this={sheet} class="sheet" class:shown={isShown} tabindex="-1">
+  <div bind:this={sheet} class="sheet" class:shown={isShown} class:tall={isTall} tabindex="-1">
     <div
       class="head"
       role="presentation"
@@ -184,6 +227,7 @@
     position: fixed;
     inset: 0;
     display: grid;
+    grid-template: minmax(0, 1fr) / minmax(0, 1fr);
     place-items: center;
     inline-size: 100%;
     max-inline-size: none;
@@ -235,6 +279,10 @@
   .sheet.shown {
     opacity: 1;
     transform: none;
+  }
+
+  .sheet.tall {
+    block-size: min(40rem, 100%);
   }
 
   .head {
@@ -308,17 +356,22 @@
     .modal {
       place-items: end stretch;
       padding: 0;
-      padding-block-start: var(--space-6);
+      padding-block: var(--space-6) var(--keyboard, 0px);
+      transition: padding var(--duration-medium) var(--ease);
     }
 
     .sheet {
       inline-size: 100%;
       min-block-size: min(50dvh, 100%);
-      max-block-size: 100%;
+      max-block-size: min(80dvh, 100%);
       border-block-end: none;
       border-radius: var(--radius-4) var(--radius-4) 0 0;
       opacity: 1;
       transform: translateY(100%);
+    }
+
+    .sheet.tall {
+      block-size: min(80dvh, 100%);
     }
 
     .sheet.shown {

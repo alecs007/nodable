@@ -145,7 +145,6 @@
       <button
         type="button"
         class="action classify"
-        class:on={open === 'classification'}
         aria-haspopup="dialog"
         title={locale.t(NAME_KEYS[classification.kind])}
         onclick={() => {
@@ -160,7 +159,6 @@
       <button
         type="button"
         class="action"
-        class:on={open === 'steps'}
         aria-haspopup="dialog"
         onclick={() => {
           open = 'steps'
@@ -338,10 +336,11 @@
     display: none;
   }
 
-  .action:hover,
-  .action.on {
-    border-color: var(--color-accent);
-    color: var(--color-accent);
+  @media (hover: hover) {
+    .action:hover {
+      border-color: var(--color-accent);
+      color: var(--color-accent);
+    }
   }
 
   .variables {
