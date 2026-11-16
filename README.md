@@ -49,7 +49,7 @@ evaluation lists each subformula with the values it was computed from.
 
 ## Classification
 
-![The classification card with a model and a counter-model](assets/screenshots/classification.png)
+![The classification modal with a model and a counter-model](assets/screenshots/classification.png)
 
 A complete formula is checked under every interpretation and marked valid, satisfiable but not
 valid, or unsatisfiable. In the interpretation view, Classification shows how many interpretations

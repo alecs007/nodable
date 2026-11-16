@@ -9,13 +9,12 @@
     formulaOf,
     valueOfVariable,
   } from '@nodable/sdk'
-  import { prefersReducedMotion } from 'svelte/motion'
-  import { fly } from 'svelte/transition'
   import type { MessageKey } from '../i18n/messages'
   import { isCompound } from '../interpretation/computation'
   import { locale } from '../state/locale.svelte'
   import EvaluationSteps from './EvaluationSteps.svelte'
   import Icon from './Icon.svelte'
+  import Modal from './Modal.svelte'
   import TruthMark from './TruthMark.svelte'
   import TruthToggle from './TruthToggle.svelte'
 
@@ -64,7 +63,6 @@
   }
 
   let open = $state<Card | undefined>(undefined)
-  let panel: HTMLElement | undefined = $state()
   let formulaBox: HTMLElement | undefined = $state()
   let isClipped = $state(false)
 
@@ -96,7 +94,6 @@
     }
   })
 
-  const duration = $derived(prefersReducedMotion.current ? 0 : 160)
   const remaining = $derived(
     variables.filter((name) => valueOfVariable(interpretation, name) === undefined).length,
   )
@@ -129,31 +126,12 @@
     return found
   })
 
-  function toggle(card: Card): void {
-    open = open === card ? undefined : card
-  }
-
   function close(): void {
     open = undefined
   }
-
-  function onWindowPointerDown(event: PointerEvent): void {
-    if (open !== undefined && panel !== undefined && !panel.contains(event.target as Node)) {
-      close()
-    }
-  }
 </script>
 
-<svelte:window
-  onpointerdown={onWindowPointerDown}
-  onkeydown={(event: KeyboardEvent) => {
-    if (event.key === 'Escape') {
-      close()
-    }
-  }}
-/>
-
-<section bind:this={panel} class="panel" aria-label={locale.t('interpret.label')}>
+<section class="panel" aria-label={locale.t('interpret.label')}>
   <p class="expression" title={verdict}>
     <code bind:this={formulaBox} class="formula" class:clipped={isClipped} title={formula}
       >{formula}</code
@@ -168,10 +146,10 @@
         type="button"
         class="action classify"
         class:on={open === 'classification'}
-        aria-expanded={open === 'classification'}
+        aria-haspopup="dialog"
         title={locale.t(NAME_KEYS[classification.kind])}
         onclick={() => {
-          toggle('classification')
+          open = 'classification'
         }}
       >
         <Icon name="examples" />
@@ -183,9 +161,9 @@
         type="button"
         class="action"
         class:on={open === 'steps'}
-        aria-expanded={open === 'steps'}
+        aria-haspopup="dialog"
         onclick={() => {
-          toggle('steps')
+          open = 'steps'
         }}
       >
         <Icon name="steps" />
@@ -226,76 +204,50 @@
   <p class="sr-only" aria-live="polite">{verdict}</p>
 
   {#if open === 'classification' && classification !== undefined}
-    <div
-      class="card"
-      role="dialog"
-      aria-label={locale.t('class.label')}
-      transition:fly={{ y: -6, duration }}
+    <Modal
+      title={locale.t(NAME_KEYS[classification.kind])}
+      tone={classification.kind}
+      onclose={close}
     >
-      <div class="card-head">
-        <p class="card-title {classification.kind}">{locale.t(NAME_KEYS[classification.kind])}</p>
-        <button
-          type="button"
-          class="tool small"
-          aria-label={locale.t('interpret.close')}
-          onclick={close}
-        >
-          <Icon name="clear" />
-        </button>
-      </div>
-      <p class="card-text">
-        {locale.t(INFO_KEYS[classification.kind])}. {locale.t('class.count', {
-          models: String(classification.models),
-          total: String(classification.interpretations),
-        })}.
-      </p>
-      <p class="card-text">{locale.t('class.exampleshint')}</p>
-      <div class="witnesses">
-        {#each witnesses as witness (witness.id)}
-          <button
-            type="button"
-            class="witness"
-            title={locale.t('class.use')}
-            onclick={() => {
-              onuse(witness.values)
-              close()
-            }}
-          >
-            <span class="tag">{locale.t(witness.labelKey)}</span>
-            <span class="pairs">
-              {#each variables as name (name)}
-                <span class="pair">
-                  <code>{name}</code>
-                  <TruthMark value={valueOfVariable(witness.values, name)} />
-                </span>
-              {/each}
-            </span>
-          </button>
-        {/each}
-      </div>
-    </div>
+      {#snippet children(dismiss: () => void)}
+        <p class="card-text">
+          {locale.t(INFO_KEYS[classification.kind])}. {locale.t('class.count', {
+            models: String(classification.models),
+            total: String(classification.interpretations),
+          })}.
+        </p>
+        <p class="card-text">{locale.t('class.exampleshint')}</p>
+        <div class="witnesses">
+          {#each witnesses as witness (witness.id)}
+            <button
+              type="button"
+              class="witness"
+              title={locale.t('class.use')}
+              onclick={() => {
+                onuse(witness.values)
+                dismiss()
+              }}
+            >
+              <span class="tag">{locale.t(witness.labelKey)}</span>
+              <span class="pairs">
+                {#each variables as name (name)}
+                  <span class="pair">
+                    <code>{name}</code>
+                    <TruthMark value={valueOfVariable(witness.values, name)} />
+                  </span>
+                {/each}
+              </span>
+            </button>
+          {/each}
+        </div>
+      {/snippet}
+    </Modal>
   {/if}
 
   {#if open === 'steps'}
-    <div
-      class="card"
-      role="dialog"
-      aria-label={locale.t('interpret.steps')}
-      transition:fly={{ y: -6, duration }}
-    >
-      <div class="card-head">
-        <p class="card-title">{locale.t('interpret.steps')}</p>
-        <button
-          type="button"
-          class="tool small"
-          aria-label={locale.t('interpret.close')}
-          onclick={close}
-        >
-          <Icon name="clear" />
-        </button>
-      </div>
+    <Modal title={locale.t('interpret.steps')} onclose={close}>
       <EvaluationSteps steps={compound} />
-    </div>
+    </Modal>
   {/if}
 </section>
 
@@ -392,26 +344,6 @@
     color: var(--color-accent);
   }
 
-  .tool {
-    display: grid;
-    place-items: center;
-    border: none;
-    border-radius: var(--radius-pill);
-    color: var(--color-text-muted);
-    cursor: pointer;
-  }
-
-  .tool:hover {
-    color: var(--color-accent);
-  }
-
-  .tool.small {
-    inline-size: 1.75rem;
-    block-size: 1.75rem;
-    border-color: transparent;
-    background: transparent;
-  }
-
   .variables {
     display: flex;
     flex-wrap: wrap;
@@ -448,49 +380,10 @@
     cursor: default;
   }
 
-  .card {
-    position: absolute;
-    inset-block-start: calc(100% + var(--space-2));
-    inset-inline: 0;
-    z-index: 2;
-    display: grid;
-    gap: var(--space-2);
-    max-block-size: min(26rem, calc(100dvh - var(--composer-space, 0px) - var(--dock-space, 0px)));
-    padding: var(--space-3);
-    border: 1px solid var(--color-glass-border);
-    overflow-y: auto;
-    border-radius: var(--radius-3);
-    background: var(--color-surface-raised);
-  }
-
-  .card-head {
-    display: flex;
-    gap: var(--space-2);
-    align-items: center;
-    justify-content: space-between;
-    padding-inline-start: var(--space-1);
-  }
-
-  .card-title {
-    margin: 0;
-    color: var(--color-text);
-    font-size: 0.9375rem;
-    font-weight: 600;
-  }
-
-  .card-title.valid {
-    color: var(--color-true);
-  }
-
-  .card-title.unsatisfiable {
-    color: var(--color-false);
-  }
-
   .card-text {
     margin: 0;
-    padding-inline: var(--space-1);
     color: var(--color-text-muted);
-    font-size: 0.875rem;
+    font-size: 0.9375rem;
   }
 
   .witnesses {

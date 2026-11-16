@@ -158,9 +158,11 @@ Every valid formula is satisfiable and every unsatisfiable formula is not valid,
 both properties.
 
 The interface shows the class next to the hint once the formula is complete. In the interpretation
-view a Classification button opens a card with the class, how many interpretations make the formula
-true, the first model and the first counter-model in truth-table order; clicking one loads it into
-the variables. The step-by-step evaluation opens the same way, so neither makes the panel taller.
+view a Classification button opens a modal with the class, how many interpretations make the
+formula true, the first model and the first counter-model in truth-table order; clicking one loads
+it into the variables. The step-by-step evaluation opens the same way, so neither makes the panel
+taller. On narrow screens the modal is a sheet that rises from the bottom and closes when dragged
+down.
 Formulas with more than 16 variables are not classified.
 
 ## Hints
