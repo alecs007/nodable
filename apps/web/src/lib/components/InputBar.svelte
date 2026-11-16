@@ -146,6 +146,7 @@
 <style>
   .bar {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: var(--space-2);
   }
 
@@ -228,12 +229,6 @@
     margin-inline-start: auto;
   }
 
-  @media (width <= 32rem) {
-    .action {
-      flex: 1 1 100%;
-    }
-  }
-
   .key {
     display: flex;
     align-items: center;
@@ -262,5 +257,42 @@
     border-color: var(--color-accent);
     background: var(--color-accent-soft);
     color: var(--color-accent);
+  }
+
+  @media (width <= 32rem) {
+    .row {
+      flex-wrap: nowrap;
+      padding-inline: 0;
+    }
+
+    .keys {
+      flex: none;
+      flex-wrap: nowrap;
+      gap: 3px;
+    }
+
+    .key {
+      flex: none;
+      inline-size: clamp(1.375rem, calc((100vw - 13rem) / 7), 2.25rem);
+      block-size: clamp(1.375rem, calc((100vw - 13rem) / 7), 2.25rem);
+      font-size: 0.9375rem;
+    }
+
+    .action {
+      flex: 1 1 auto;
+      min-inline-size: 0;
+      margin-inline-start: 0;
+    }
+  }
+
+  @media (width <= 21rem) {
+    .key {
+      inline-size: calc((100vw - 6.5rem) / 7);
+      block-size: calc((100vw - 6.5rem) / 7);
+    }
+
+    .action {
+      flex: none;
+    }
   }
 </style>

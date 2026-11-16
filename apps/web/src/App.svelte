@@ -14,12 +14,17 @@
   import InputBar from './lib/components/InputBar.svelte'
   import InterpretationPanel from './lib/components/InterpretationPanel.svelte'
   import NameField from './lib/components/NameField.svelte'
+  import NewFormulaDialog from './lib/components/NewFormulaDialog.svelte'
   import StepSlider from './lib/components/StepSlider.svelte'
   import ToolBar from './lib/components/ToolBar.svelte'
   import TreeCanvas from './lib/components/TreeCanvas.svelte'
   import Viewport from './lib/components/Viewport.svelte'
   import VariantBoard from './lib/components/VariantBoard.svelte'
+  import { prefersReducedMotion } from 'svelte/motion'
+  import { fade } from 'svelte/transition'
+  import { LOCALES, translate } from './lib/i18n/messages'
   import { locale } from './lib/state/locale.svelte'
+  import { overlay } from './lib/state/overlay.svelte'
   import { persistence } from './lib/state/persistence.svelte'
   import { workspace } from './lib/state/workspace.svelte'
 
@@ -33,6 +38,7 @@
   const classification = $derived(
     session.analysis.isComplete ? classifySession(session) : undefined,
   )
+  const sceneFade = $derived(prefersReducedMotion.current ? 0 : 220)
   const evaluation = $derived(workspace.isInterpreting ? evaluateSession(session) : undefined)
   const hasError = $derived(
     session.analysis.diagnostics.some((diagnostic) => diagnostic.severity === 'error'),
@@ -79,12 +85,17 @@
   <button
     type="button"
     class="interpret"
+    aria-label={locale.t('interpret.open')}
     onclick={() => {
       workspace.interpret()
     }}
   >
-    <Icon name="interpret" />
-    <span>{locale.t('interpret.open')}</span>
+    {#each LOCALES as code (code)}
+      <span class="face" class:ghost={code !== locale.current} aria-hidden="true">
+        <span class="interpret-icon"><Icon name="interpret" /></span>
+        <span class="interpret-label">{translate(code, 'interpret.open')}</span>
+      </span>
+    {/each}
   </button>
 {/snippet}
 
@@ -95,21 +106,27 @@
   style:--composer-space="{topInset}px"
 >
   <main class="workspace">
-    <Viewport
-      resetKey="{workspace.activeId}:{String(variants.length)}:{String(workspace.isInterpreting)}"
-      safeTop={topInset}
-      safeBottom={bottomInset}
-    >
-      {#if variants.length > 1}
-        <VariantBoard {variants} />
-      {:else}
-        <TreeCanvas
-          snapshot={variants[0]?.snapshot ?? workspace.snapshot}
-          unlabelled={variants[0]?.pending ?? []}
-          {evaluation}
-        />
-      {/if}
-    </Viewport>
+    {#key workspace.activeId}
+      <div class="scene" out:fade={{ duration: sceneFade }}>
+        <Viewport
+          resetKey="{workspace.activeId}:{String(variants.length)}:{String(
+            workspace.isInterpreting,
+          )}"
+          safeTop={topInset}
+          safeBottom={bottomInset}
+        >
+          {#if variants.length > 1}
+            <VariantBoard {variants} />
+          {:else}
+            <TreeCanvas
+              snapshot={variants[0]?.snapshot ?? workspace.snapshot}
+              unlabelled={variants[0]?.pending ?? []}
+              {evaluation}
+            />
+          {/if}
+        </Viewport>
+      </div>
+    {/key}
   </main>
 
   <header bind:this={composer} class="composer island" aria-label={locale.t('input.label')}>
@@ -158,7 +175,7 @@
           workspace.setInput(value)
         }}
         onsubmit={() => {
-          workspace.addFormula()
+          overlay.startCreating()
         }}
         action={session.analysis.isComplete ? interpretAction : undefined}
       />
@@ -179,6 +196,8 @@
   </nav>
 </div>
 
+<NewFormulaDialog />
+
 <style>
   .stage {
     position: fixed;
@@ -195,6 +214,11 @@
     position: absolute;
     inset: 0;
     overflow: hidden;
+  }
+
+  .scene {
+    position: absolute;
+    inset: 0;
   }
 
   .island {
@@ -226,12 +250,12 @@
   }
 
   .interpret {
-    display: flex;
+    display: grid;
     flex: 0 0 auto;
     gap: var(--space-2);
-    align-items: center;
+    place-items: center;
     block-size: 2.25rem;
-    padding-inline: var(--space-4) var(--space-5);
+    padding-inline: var(--space-4);
     border: none;
     border-radius: var(--radius-pill);
     background: var(--color-accent);
@@ -245,14 +269,54 @@
     transition: opacity var(--duration-short) var(--ease);
   }
 
+  .face {
+    display: flex;
+    grid-area: 1 / 1;
+    gap: inherit;
+    align-items: center;
+    min-inline-size: 0;
+  }
+
+  .face.ghost {
+    visibility: hidden;
+  }
+
+  .interpret-icon {
+    display: grid;
+    flex: none;
+    place-items: center;
+  }
+
+  .interpret-label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
   .interpret:hover {
     opacity: 0.88;
   }
 
   @media (width <= 32rem) {
     .interpret {
-      justify-content: center;
+      gap: var(--space-1);
       inline-size: 100%;
+      min-inline-size: 0;
+      block-size: 2.125rem;
+      overflow: hidden;
+      padding-inline: var(--space-2);
+      font-size: 0.8125rem;
+    }
+  }
+
+  @media (width <= 21rem) {
+    .interpret {
+      inline-size: 2.125rem;
+      padding: 0;
+      justify-content: center;
+    }
+
+    .interpret-label {
+      display: none;
     }
   }
 

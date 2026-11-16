@@ -1,5 +1,6 @@
 <script lang="ts">
   import { locale } from '../state/locale.svelte'
+  import { focusFormula } from '../state/overlay.svelte'
 
   type Props = {
     value: string
@@ -16,8 +17,15 @@
   aria-label={locale.t('workspace.name')}
   placeholder={locale.t('workspace.nameplaceholder')}
   {value}
+  enterkeyhint="next"
   oninput={(event) => {
     onchange(event.currentTarget.value)
+  }}
+  onkeydown={(event) => {
+    if (event.key === 'Enter') {
+      event.preventDefault()
+      focusFormula()
+    }
   }}
 />
 

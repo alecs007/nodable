@@ -35,6 +35,13 @@
   --color-true-soft: #dcf2e4;
   --color-false: #a3263a;
   --color-false-soft: #fbe2e6;
+
+  --folder-blue: #1d5fa8;
+  --folder-green: #1a7a46;
+  --folder-amber: #9a6200;
+  --folder-red: #b3261e;
+  --folder-purple: #6b45b5;
+  --folder-teal: #0f7378;
 }
 
 :root[data-theme='dark'] {
@@ -62,6 +69,13 @@
   --color-true-soft: #15301f;
   --color-false: #ff9fae;
   --color-false-soft: #3a1820;
+
+  --folder-blue: #7cb4f0;
+  --folder-green: #6fd19b;
+  --folder-amber: #f0b84f;
+  --folder-red: #f08a80;
+  --folder-purple: #b79cf2;
+  --folder-teal: #5fd0d4;
 }
 
 :root {

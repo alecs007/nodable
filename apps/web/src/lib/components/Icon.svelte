@@ -24,6 +24,12 @@
     | 'edit'
     | 'steps'
     | 'examples'
+    | 'folder'
+    | 'more'
+    | 'search'
+    | 'chevron'
+    | 'check'
+    | 'grip'
 
   type Circle = { readonly cx: number; readonly cy: number; readonly r: number }
 
@@ -109,6 +115,34 @@
       paths: ['M4.5 19.5h4l10-10-4-4-10 10z', 'M13 7l4 4'],
       circles: [],
     },
+    folder: {
+      paths: [
+        'M3.5 6.5a1 1 0 0 1 1-1h5l2 2.5h8a1 1 0 0 1 1 1v9.5a1 1 0 0 1-1 1h-15a1 1 0 0 1-1-1z',
+      ],
+      circles: [],
+    },
+    more: {
+      paths: [],
+      circles: [
+        { cx: 6, cy: 12, r: 1.3 },
+        { cx: 12, cy: 12, r: 1.3 },
+        { cx: 18, cy: 12, r: 1.3 },
+      ],
+    },
+    search: { paths: ['M15.5 15.5 20 20'], circles: [{ cx: 10.5, cy: 10.5, r: 6 }] },
+    chevron: { paths: ['M9.5 6l6 6-6 6'], circles: [] },
+    check: { paths: ['M5 12.5l4.5 4.5L19 7.5'], circles: [] },
+    grip: {
+      paths: [],
+      circles: [
+        { cx: 9, cy: 6, r: 1.3 },
+        { cx: 9, cy: 12, r: 1.3 },
+        { cx: 9, cy: 18, r: 1.3 },
+        { cx: 15, cy: 6, r: 1.3 },
+        { cx: 15, cy: 12, r: 1.3 },
+        { cx: 15, cy: 18, r: 1.3 },
+      ],
+    },
     github: {
       paths: [
         'M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4',
@@ -133,7 +167,7 @@
   {#each shape.paths as path (path)}
     <path d={path} />
   {/each}
-  {#each shape.circles as circle (circle.cx + circle.cy)}
+  {#each shape.circles as circle (`${String(circle.cx)},${String(circle.cy)}`)}
     <circle cx={circle.cx} cy={circle.cy} r={circle.r} />
   {/each}
 </svg>

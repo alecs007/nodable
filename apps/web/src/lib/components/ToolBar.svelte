@@ -1,11 +1,12 @@
 <script lang="ts">
   import { LOCALES, type Locale, type MessageKey } from '../i18n/messages'
   import { locale } from '../state/locale.svelte'
+  import { overlay } from '../state/overlay.svelte'
   import { workspace } from '../state/workspace.svelte'
   import { THEMES, type Theme, theme } from '../theme/theme.svelte'
   import FileMenu from './FileMenu.svelte'
   import FlagIcon from './FlagIcon.svelte'
-  import FormulaMenu from './FormulaMenu.svelte'
+  import FormulaSwitcher from './FormulaSwitcher.svelte'
   import Icon, { type IconName } from './Icon.svelte'
 
   const REPOSITORY_URL = 'https://github.com/alecs007/nodable'
@@ -23,19 +24,10 @@
   const themeLabel = $derived(`${locale.t('theme.label')}: ${locale.t(THEME_KEYS[theme.current])}`)
 </script>
 
-{#if workspace.sessions.length > 1}
+{#if workspace.sessions.length > 1 || workspace.folders.length > 0}
   <div class="row primary">
     <div class="picker">
-      <FormulaMenu
-        sessions={workspace.sessions}
-        activeId={workspace.activeId}
-        onselect={(id: string) => {
-          workspace.select(id)
-        }}
-        ondelete={(id: string) => {
-          workspace.remove(id)
-        }}
-      />
+      <FormulaSwitcher />
     </div>
   </div>
 {/if}
@@ -82,7 +74,7 @@
     type="button"
     class="create"
     onclick={() => {
-      workspace.addFormula()
+      overlay.startCreating()
     }}
   >
     <Icon name="add" />
