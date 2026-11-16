@@ -26,6 +26,8 @@ Computational Logic course. Everything runs in the browser: no account, no serve
 - A slider replays the construction from the first token to the last.
 - A finished formula can be interpreted: give each variable a truth value and see the value of every
   node, step by step.
+- A finished formula is classified as valid, satisfiable or unsatisfiable, with a model and a
+  counter-model to try.
 - Several named formulas per workspace, saved locally.
 - Export to SVG, PNG, LaTeX, plain text or JSON.
 - English and Romanian, light and dark.
@@ -36,6 +38,22 @@ Computational Logic course. Everything runs in the browser: no account, no serve
 
 After an open parenthesis, a group can still become a single or a double node. Nodable draws both
 trees until the next token decides which one it is.
+
+## Interpretation
+
+![A formula interpreted with every variable set](assets/screenshots/interpretation.png)
+
+Once the formula is complete, Interpret opens a separate view. Each variable is set to true or
+false, and every node of the tree shows its value as soon as its children have one. Step-by-step
+evaluation lists each subformula with the values it was computed from.
+
+## Classification
+
+![The classification card with a model and a counter-model](assets/screenshots/classification.png)
+
+A complete formula is checked under every interpretation and marked valid, satisfiable but not
+valid, or unsatisfiable. In the interpretation view, Classification shows how many interpretations
+make the formula true, with a model and a counter-model that load into the variables when clicked.
 
 ## Exports
 

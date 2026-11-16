@@ -143,6 +143,26 @@ its children are known, so while some variables are still open the interface sho
 the tree are already decided. The interface writes the values as `T` and `F` in English and as `A`
 and `F` in Romanian.
 
+## Classification
+
+A complete formula is also checked under every interpretation of its variables, the way a truth
+table lists them, starting with every variable true.
+
+| Label in the interface   | Meaning                                                        |
+| ------------------------ | -------------------------------------------------------------- |
+| Satisfiable, valid       | True under every interpretation (a tautology)                  |
+| Satisfiable, not valid   | True under at least one interpretation and false under another |
+| Unsatisfiable, not valid | False under every interpretation (a contradiction)             |
+
+Every valid formula is satisfiable and every unsatisfiable formula is not valid, so the label names
+both properties.
+
+The interface shows the class next to the hint once the formula is complete. In the interpretation
+view a Classification button opens a card with the class, how many interpretations make the formula
+true, the first model and the first counter-model in truth-table order; clicking one loads it into
+the variables. The step-by-step evaluation opens the same way, so neither makes the panel taller.
+Formulas with more than 16 variables are not classified.
+
 ## Hints
 
 After every step the engine computes the set of tokens allowed next. The interface uses it to

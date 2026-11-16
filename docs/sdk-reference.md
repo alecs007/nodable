@@ -118,6 +118,10 @@ The variables of the formula, each listed once, in the order they first appear.
 
 Sets the truth value of one variable. `undefined` removes the value.
 
+### `setInterpretation(session: Session, interpretation: Interpretation): Session`
+
+Replaces every value at once, for example with a model found by `classifySession`.
+
 ### `clearInterpretation(session: Session): Session`
 
 Removes every value.
@@ -144,6 +148,27 @@ type EvaluationStep = {
 `operands` are the values of the children the node was computed from. A node whose value depends on
 a variable without a value, or that is still a slot or an undecided group, has no value and is
 missing from `values`. `value` is the value of the whole formula.
+
+### `classifySession(session: Session): Classification | undefined`
+
+Checks the formula under every interpretation of its variables.
+
+```ts
+type Satisfiability = 'valid' | 'satisfiable' | 'unsatisfiable'
+
+type Classification = {
+  readonly kind: Satisfiability
+  readonly models: number
+  readonly interpretations: number
+  readonly model: Interpretation | undefined
+  readonly countermodel: Interpretation | undefined
+}
+```
+
+`models` counts the interpretations that make the formula true, out of `interpretations`.
+`model` and `countermodel` are the first interpretation, in truth-table order starting with every
+variable true, that makes the formula true and false. An unfinished formula, or one with more than
+`MAX_CLASSIFIED_VARIABLES` (16) variables, has no classification.
 
 ### `valueOfVariable(interpretation: Interpretation, name: string): TruthValue | undefined`
 
@@ -365,6 +390,6 @@ type Result<TValue, TError> =
 
 For convenience the SDK re-exports the engine types the interface needs, so the app never imports
 `@nodable/engine` directly: `Analysis`, `BuildStep`, `Cursor`, `Diagnostic`, `DiagnosticCode`,
-`DiagnosticMessageKey`, `DiagnosticSeverity`, `Evaluation`, `EvaluationStep`, `Interpretation`,
+`DiagnosticMessageKey`, `DiagnosticSeverity`, `Classification`, `Satisfiability`, `Evaluation`, `EvaluationStep`, `Interpretation`,
 `NodeId`, `NodeKind`, `Token`, `TokenKind`, `TreeNode` and its variants, `TruthValue`, the canonical symbols, `childrenOf`, `collectNodes`, `isNodeComplete`,
 `leavesOf`, `normalizeFormula` and `valueOfVariable`.
