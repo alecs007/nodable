@@ -30,7 +30,7 @@
   class:false={value === false}
   title={label}
 >
-  <span aria-hidden="true">{letter}</span>
+  <span class="letter" aria-hidden="true">{letter}</span>
   <span class="sr-only">{label}</span>
 </span>
 
@@ -49,6 +49,11 @@
     font-size: 0.8125rem;
     font-weight: 700;
     line-height: 1;
+  }
+
+  .letter {
+    display: block;
+    text-box: trim-both cap alphabetic;
   }
 
   .mark.large {

@@ -31,7 +31,7 @@
 
 <span class="badge {classification.kind}" title={info}>
   <span class="sr-only">{locale.t('class.label')}:</span>
-  {locale.t(NAME_KEYS[classification.kind])}
+  <span class="name">{locale.t(NAME_KEYS[classification.kind])}</span>
 </span>
 
 <style>
@@ -39,14 +39,20 @@
     display: inline-flex;
     align-items: center;
     flex: 0 0 auto;
-    block-size: 1.75rem;
+    block-size: 1.375rem;
     padding-inline: var(--space-3);
     border: 1px solid currentcolor;
     border-radius: var(--radius-pill);
     font-size: 0.8125rem;
     font-weight: 600;
     white-space: nowrap;
+    line-height: 1;
     cursor: default;
+  }
+
+  .name {
+    display: block;
+    text-box: trim-both cap alphabetic;
   }
 
   .valid {

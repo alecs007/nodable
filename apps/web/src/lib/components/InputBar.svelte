@@ -171,12 +171,15 @@
   .input {
     flex: 1;
     min-inline-size: 0;
-    padding: var(--space-3) var(--space-5);
+    block-size: 3rem;
+    padding: 0 var(--space-5);
     border: none;
     background: transparent;
     color: var(--color-text);
     font-family: var(--font-mono);
     font-size: 1.125rem;
+    line-height: normal;
+    appearance: none;
   }
 
   .input:focus {

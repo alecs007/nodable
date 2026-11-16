@@ -25,13 +25,16 @@
   .name {
     min-inline-size: 4rem;
     max-inline-size: 12rem;
-    padding: var(--space-1) var(--space-2);
+    block-size: 1.875rem;
+    padding: 0 var(--space-2);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-pill);
     background: var(--color-surface-raised);
     color: var(--color-text);
     font-family: var(--font-sans);
     font-size: 0.9375rem;
+    line-height: normal;
+    appearance: none;
     transition:
       background var(--duration-short) var(--ease),
       border-color var(--duration-short) var(--ease);

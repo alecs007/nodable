@@ -49,7 +49,7 @@
             onchange(option.value)
           }}
         />
-        <span aria-hidden="true">{locale.t(option.letterKey)}</span>
+        <span class="letter" aria-hidden="true">{locale.t(option.letterKey)}</span>
       </label>
     {/each}
   </span>
@@ -77,13 +77,15 @@
   }
 
   .name {
-    overflow: hidden;
+    overflow-x: clip;
     max-inline-size: 6rem;
     color: var(--color-text);
     font-family: var(--font-mono);
     font-size: 0.9375rem;
     font-weight: 600;
+    line-height: 1;
     text-overflow: ellipsis;
+    text-box: trim-both cap alphabetic;
     white-space: nowrap;
   }
 
@@ -99,9 +101,9 @@
     position: relative;
     display: grid;
     place-items: center;
-    inline-size: 2rem;
+    inline-size: 1.875rem;
     block-size: 1.875rem;
-    border-radius: var(--radius-pill);
+    border-radius: 50%;
     color: var(--color-text-muted);
     font-family: var(--font-mono);
     font-size: 0.875rem;
@@ -110,6 +112,12 @@
     transition:
       background var(--duration-short) var(--ease),
       color var(--duration-short) var(--ease);
+  }
+
+  .letter {
+    display: block;
+    line-height: 1;
+    text-box: trim-both cap alphabetic;
   }
 
   .choice:hover {
