@@ -69,6 +69,7 @@ describe('serializeWorkspace', () => {
       version: 1,
       name: 'Seminar 3',
       activeId: expect.any(String) as unknown,
+      folders: [],
       sessions: [
         {
           id: expect.any(String) as unknown,

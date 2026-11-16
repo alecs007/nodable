@@ -306,34 +306,76 @@ for a group whose arity is still pending.
 ## Workspaces
 
 ```ts
+type FolderId = string
+
+const FOLDER_COLORS = ['blue', 'green', 'amber', 'red', 'purple', 'teal'] as const
+
+type FolderColor = (typeof FOLDER_COLORS)[number]
+
+type Folder = {
+  readonly id: FolderId
+  readonly name: string
+  readonly color: FolderColor
+}
+
+type Placements = Readonly<Record<SessionId, FolderId>>
+
 type Workspace = {
   readonly version: number
   readonly name: string
   readonly activeId: SessionId
   readonly sessions: readonly Session[]
+  readonly folders: readonly Folder[]
+  readonly placements: Placements
 }
 ```
 
-### `createWorkspace(name?, sessions?, activeId?): Workspace`
+A formula with no entry in `placements` sits outside every folder.
+
+### `createWorkspace(name?, sessions?, activeId?, folders?, placements?): Workspace`
 
 Creates a workspace. Without sessions it starts with a single empty one, and without an active
-identifier the first session is the active one.
+identifier the first session is the active one. Folders and placements default to none.
 
 ### `addSession`, `removeSession`, `replaceSession`
 
 ```ts
-addSession(workspace: Workspace, session: Session): Workspace
+addSession(workspace: Workspace, session: Session, folderId?: FolderId): Workspace
 removeSession(workspace: Workspace, id: SessionId): Workspace
 replaceSession(workspace: Workspace, session: Session): Workspace
 ```
 
-Each returns a new workspace. `replaceSession` matches on the session identifier.
+Each returns a new workspace. `replaceSession` matches on the session identifier. `addSession`
+places the new session in the folder when one is given, and `removeSession` forgets its placement.
+
+### `duplicateSession(workspace: Workspace, id: SessionId): Workspace`
+
+Inserts a copy of the session right after it, with a new identifier, in the same folder, and makes
+the copy active. An unknown identifier returns the workspace unchanged.
+
+### Folders
+
+```ts
+createFolder(name: string, color?: FolderColor): Folder
+addFolder(workspace: Workspace, folder: Folder): Workspace
+renameFolder(workspace: Workspace, id: FolderId, name: string): Workspace
+recolorFolder(workspace: Workspace, id: FolderId, color: FolderColor): Workspace
+removeFolder(workspace: Workspace, id: FolderId): Workspace
+placeSession(workspace: Workspace, id: SessionId, folderId: FolderId | undefined): Workspace
+folderOf(workspace: Workspace, id: SessionId): FolderId | undefined
+```
+
+A folder is blue unless a color is given, and `addFolder` puts the new folder first.
+`removeFolder` removes the folder together with its formulas; when the active formula was among
+them the first remaining one becomes active, and when none remain the active identifier is empty.
+`placeSession` with `undefined`, or with a folder that does not exist, takes the session out of any
+folder.
 
 ### `serializeWorkspace(workspace: Workspace): string`
 
-Writes the workspace as indented JSON. Only the identifier, the name, the input, the offsets and the
-interpretation of each session are stored, together with the identifier of the active one; the analysis is rebuilt on
-load.
+Writes the workspace as indented JSON. Only the identifier, the name, the input, the offsets, the
+interpretation and the folder of each session are stored, together with the folders and the
+identifier of the active one; the analysis is rebuilt on load.
 
 ### `deserializeWorkspace(data: string): Result<Workspace, Diagnostic>`
 
@@ -341,7 +383,9 @@ Reads a workspace back. Malformed JSON, a missing `sessions` array or a session 
 identifier or an input all return `NDB008`. An active identifier that names no stored session falls
 back to the first one. Offsets that are not points and interpretation entries that are not booleans
 are dropped rather than failing the whole load, and a session stored without an interpretation
-starts with none.
+starts with none. A workspace saved before folders existed loads with none, malformed folders are
+skipped, a folder with an unknown color turns blue, and a session that names a folder that is not
+stored stays outside every folder.
 
 ```ts
 const result = deserializeWorkspace(data)

@@ -94,12 +94,25 @@ export { type SvgDrawing, type SvgPanel, drawSvg, toSvg } from './export/to-svg'
 export { toText } from './export/to-text'
 export { type Result, fail, ok } from './workspace/result'
 export {
+  type Folder,
+  type FolderColor,
+  type FolderId,
+  type Placements,
   type Workspace,
+  FOLDER_COLORS,
   WORKSPACE_VERSION,
+  addFolder,
   addSession,
+  createFolder,
   createWorkspace,
   deserializeWorkspace,
+  duplicateSession,
+  folderOf,
+  placeSession,
+  recolorFolder,
+  removeFolder,
   removeSession,
+  renameFolder,
   replaceSession,
   serializeWorkspace,
 } from './workspace/workspace'
