@@ -9,12 +9,14 @@ import {
   type NodeId,
   type TokenKind,
   type TreeNode,
+  type TruthTable,
   type TruthValue,
   analyzeFormula,
   classifyTree,
   evaluateTree,
   isComplete,
   normalizeFormula,
+  tabulateTree,
   variablesOf,
 } from '@nodable/engine'
 import { type NodeOffsets, type Point, isOrigin } from './point'
@@ -154,4 +156,8 @@ export function evaluateSession(session: Session): Evaluation {
 
 export function classifySession(session: Session): Classification | undefined {
   return classifyTree(session.analysis.tree)
+}
+
+export function tabulateSession(session: Session): TruthTable | undefined {
+  return tabulateTree(session.analysis.tree)
 }

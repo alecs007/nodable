@@ -22,6 +22,8 @@ export {
   type Token,
   type TokenKind,
   type TreeNode,
+  type TruthTable,
+  type TruthTableRow,
   type TruthValue,
   type UnaryNode,
   CLOSE_PAREN,
@@ -31,6 +33,7 @@ export {
   EQUIVALENCE,
   IMPLICATION,
   MAX_CLASSIFIED_VARIABLES,
+  MAX_TABLE_VARIABLES,
   NEGATION,
   OPEN_PAREN,
   ROOT_ID,
@@ -66,6 +69,7 @@ export {
   resetOffsets,
   restoreSession,
   setInterpretation,
+  tabulateSession,
   updateInput,
 } from './session/session'
 export { type FormulaVariant, type VariantKind, pendingVariants } from './session/variants'
@@ -81,15 +85,24 @@ export {
 export {
   type ExportCaptions,
   type ExportFormat,
+  type TableFormat,
   type ExportResult,
   type RasterExportResult,
   type TextExportResult,
   exportSession,
+  exportTruthTable,
   fileStem,
 } from './export/export-session'
 export { GROUP_LABEL, SLOT_LABEL, nodeLabel } from './export/labels'
 export { formulaOf } from './export/to-formula'
-export { toLatex } from './export/to-latex'
+export { latexFormulaOf, toLatex } from './export/to-latex'
+export {
+  type TableLetters,
+  DEFAULT_TABLE_LETTERS,
+  toTableCsv,
+  toTableLatex,
+  toTableMarkdown,
+} from './export/to-table'
 export { type SvgDrawing, type SvgPanel, drawSvg, toSvg } from './export/to-svg'
 export { toText } from './export/to-text'
 export { type Result, fail, ok } from './workspace/result'

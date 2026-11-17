@@ -1,9 +1,16 @@
 import { DEFAULT_LAYOUT_OPTIONS, type LayoutOptions, layoutTree } from '../layout/layout-tree'
-import { type Session, getTree } from '../session/session'
+import { type Session, getTree, tabulateSession } from '../session/session'
 import { pendingVariants } from '../session/variants'
 import { createWorkspace, serializeWorkspace } from '../workspace/workspace'
 import { toLatex } from './to-latex'
 import { type SvgPanel, drawSvg } from './to-svg'
+import {
+  DEFAULT_TABLE_LETTERS,
+  type TableLetters,
+  toTableCsv,
+  toTableLatex,
+  toTableMarkdown,
+} from './to-table'
 import { toText } from './to-text'
 
 export type ExportCaptions = {
@@ -14,9 +21,11 @@ const NO_CAPTIONS: ExportCaptions = { variants: [] }
 
 export type ExportFormat = 'svg' | 'png' | 'json' | 'latex' | 'text'
 
+export type TableFormat = 'table-latex' | 'table-csv' | 'table-markdown'
+
 export type TextExportResult = {
   readonly kind: 'text'
-  readonly format: Exclude<ExportFormat, 'png'>
+  readonly format: Exclude<ExportFormat, 'png'> | TableFormat
   readonly fileName: string
   readonly mimeType: string
   readonly content: string
@@ -47,7 +56,7 @@ export function fileStem(name: string): string {
 }
 
 function textResult(
-  format: Exclude<ExportFormat, 'png'>,
+  format: TextExportResult['format'],
   mimeType: string,
   extension: string,
   content: string,
@@ -119,5 +128,28 @@ export function exportSession(
         width: drawing.width,
         height: drawing.height,
       }
+  }
+}
+
+export function exportTruthTable(
+  session: Session,
+  format: TableFormat,
+  letters: TableLetters = DEFAULT_TABLE_LETTERS,
+): TextExportResult | undefined {
+  const table = tabulateSession(session)
+
+  if (table === undefined) {
+    return undefined
+  }
+
+  const stem = `${fileStem(session.name)}-table`
+
+  switch (format) {
+    case 'table-latex':
+      return textResult(format, 'text/x-tex', 'tex', toTableLatex(table, letters), stem)
+    case 'table-csv':
+      return textResult(format, 'text/csv', 'csv', toTableCsv(table, letters), stem)
+    case 'table-markdown':
+      return textResult(format, 'text/markdown', 'md', toTableMarkdown(table, letters), stem)
   }
 }

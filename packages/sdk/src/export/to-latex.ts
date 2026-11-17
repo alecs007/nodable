@@ -43,6 +43,21 @@ function renderNode(node: TreeNode, indent: string): readonly string[] {
   return [head, ...children.flatMap((child) => renderNode(child, `${indent}  `)), `${indent}]`]
 }
 
+export function latexFormulaOf(node: TreeNode): string {
+  switch (node.kind) {
+    case 'leaf':
+      return node.name
+    case 'unary':
+      return `(\\lnot ${latexFormulaOf(node.child)})`
+    case 'binary':
+      return `(${latexFormulaOf(node.left)} ${CONNECTIVE_COMMANDS[node.symbol]} ${latexFormulaOf(node.right)})`
+    case 'group':
+      return `(${latexFormulaOf(node.first)} \\square)`
+    case 'slot':
+      return '\\square'
+  }
+}
+
 export function toLatex(root: TreeNode): string {
   return ['\\begin{forest}', PREAMBLE, ...renderNode(root, ''), '\\end{forest}'].join('\n')
 }
