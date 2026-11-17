@@ -63,8 +63,7 @@ make the formula true, with a model and a counter-model that load into the varia
 
 ![The truth table of a formula with three variables](assets/screenshots/table.png)
 
-In the interpretation view, Truth table lists every interpretation, starting with every variable
-true. The variables come first, then each distinct subformula from the inside out, and the formula
+In the interpretation view, Table lists every interpretation, starting with every variable true. The variables come first, then each distinct subformula from the inside out, and the formula
 itself last. The row of the current interpretation is highlighted, and clicking a row loads it into
 the variables. The table exports to a LaTeX `tabular`, CSV or Markdown, from the table itself or
 from Transfer, for formulas with up to 8 variables.
@@ -83,7 +82,7 @@ too, so it asks for a second tap first.
 
 ![The transfer modal](assets/screenshots/exports.png)
 
-Transfer opens the export options for the active formula and the workspace. An image export
+Transfer opens the export options for the active formula, its truth table and the workspace. An image export
 reproduces what is on screen, both variants included, with the formula at the top, and the file is
 named after the formula. Each option shows a spinner while the file is prepared and a check once it
 is saved. JSON holds the whole workspace, folders included, and can be imported back.
