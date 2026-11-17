@@ -148,7 +148,7 @@
     {
       id: 'table-latex',
       group: 'table',
-      icon: 'table',
+      icon: 'code',
       labelKey: 'file.tablelatex',
       detail: hasTable ? '.tex' : locale.t('file.incomplete'),
       isDisabled: !hasTable,
@@ -166,7 +166,7 @@
     {
       id: 'table-markdown',
       group: 'table',
-      icon: 'table',
+      icon: 'text',
       labelKey: 'file.tablemarkdown',
       detail: hasTable ? '.md' : locale.t('file.incomplete'),
       isDisabled: !hasTable,

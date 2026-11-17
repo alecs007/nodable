@@ -21,6 +21,74 @@
 
   const last = $derived(table.columns.length - 1)
 
+  let body: HTMLTableSectionElement | undefined = $state()
+  let head: HTMLTableRowElement | undefined = $state()
+  let offsets = $state<readonly number[]>([])
+
+  $effect(() => {
+    const row = head
+    const pinned = table.variables.length + 1
+
+    if (row === undefined) {
+      return
+    }
+
+    function measure(): void {
+      if (row === undefined) {
+        return
+      }
+
+      const cells = [...row.children].slice(0, pinned) as HTMLElement[]
+      let left = 0
+
+      offsets = cells.map((cell) => {
+        const start = left
+
+        left += cell.offsetWidth
+
+        return start
+      })
+    }
+
+    const observer = new ResizeObserver(measure)
+
+    measure()
+    observer.observe(row)
+
+    return () => {
+      observer.disconnect()
+    }
+  })
+
+  function leftOf(column: number): string | undefined {
+    const left = offsets[column]
+
+    return left === undefined ? undefined : `${String(left)}px`
+  }
+
+  $effect(() => {
+    const rows = body
+
+    if (rows === undefined) {
+      return
+    }
+
+    function onRowClick(event: MouseEvent): void {
+      const row = (event.target as Element).closest<HTMLElement>('tr[data-row]')
+      const picked = table.rows[Number(row?.dataset['row'])]
+
+      if (picked !== undefined) {
+        onuse(picked.interpretation)
+      }
+    }
+
+    rows.addEventListener('click', onRowClick)
+
+    return () => {
+      rows.removeEventListener('click', onRowClick)
+    }
+  })
+
   function isCurrent(row: TruthTableRow): boolean {
     return table.variables.every(
       (name) => valueOfVariable(interpretation, name) === valueOfVariable(row.interpretation, name),
@@ -35,44 +103,49 @@
 <div class="scroller">
   <table class="table">
     <thead>
-      <tr>
-        <th scope="col" class="index"><span class="sr-only">#</span></th>
-        {#each table.variables as name (name)}
-          <th scope="col" class="variable">{name}</th>
+      <tr bind:this={head}>
+        <th scope="col" class="index pin" style:left={leftOf(0)}>
+          <span class="sr-only">#</span>
+        </th>
+        {#each table.variables as name, column (name)}
+          <th
+            scope="col"
+            class="variable pin"
+            class:edge={column === table.variables.length - 1}
+            style:left={leftOf(column + 1)}
+          >
+            {name}
+          </th>
         {/each}
         {#each table.columns as column, index (column.id)}
-          <th scope="col" class:split={index === 0} class:final={index === last}>
+          <th scope="col" class:final={index === last}>
             {formulaOf(column)}
           </th>
         {/each}
       </tr>
     </thead>
-    <tbody>
+    <tbody bind:this={body}>
       {#each table.rows as row, index (index)}
-        <tr class:current={isCurrent(row)}>
-          <th scope="row" class="index">
-            <button
-              type="button"
-              class="load"
-              title={locale.t('table.use')}
-              onclick={() => {
-                onuse(row.interpretation)
-              }}
-            >
+        <tr class:current={isCurrent(row)} data-row={index}>
+          <th scope="row" class="index pin" style:left={leftOf(0)}>
+            <button type="button" class="load" title={locale.t('table.use')}>
               {index + 1}
             </button>
           </th>
-          {#each table.variables as name (name)}
+          {#each table.variables as name, column (name)}
             {@const value = valueOfVariable(row.interpretation, name) === true}
-            <td class="variable" class:yes={value} class:no={!value}>{letterOf(value)}</td>
-          {/each}
-          {#each row.values as value, column (column)}
             <td
-              class:split={column === 0}
-              class:final={column === last}
+              class="variable pin"
+              class:edge={column === table.variables.length - 1}
               class:yes={value}
               class:no={!value}
+              style:left={leftOf(column + 1)}
             >
+              {letterOf(value)}
+            </td>
+          {/each}
+          {#each row.values as value, column (column)}
+            <td class:final={column === last} class:yes={value} class:no={!value}>
               {letterOf(value)}
             </td>
           {/each}
@@ -117,7 +190,7 @@
   }
 
   tbody tr {
-    position: relative;
+    cursor: pointer;
     transition: background var(--duration-short) var(--ease);
   }
 
@@ -127,7 +200,8 @@
   }
 
   @media (hover: hover) {
-    tbody tr:hover {
+    tbody tr:hover,
+    tbody tr:hover .pin {
       background: var(--color-surface-sunken);
     }
   }
@@ -154,12 +228,6 @@
     cursor: pointer;
   }
 
-  .load::after {
-    position: absolute;
-    inset: 0;
-    content: '';
-  }
-
   .load:focus-visible {
     outline: none;
   }
@@ -173,8 +241,26 @@
     font-weight: 600;
   }
 
-  .split {
-    border-inline-start: 2px solid var(--color-border-strong);
+  .pin {
+    position: sticky;
+    z-index: 1;
+  }
+
+  thead .pin {
+    z-index: 2;
+  }
+
+  tbody .pin {
+    background: var(--color-surface-raised);
+    transition: background var(--duration-short) var(--ease);
+  }
+
+  tbody tr.current .pin {
+    background: var(--color-accent-soft);
+  }
+
+  .edge {
+    box-shadow: inset -2px 0 0 var(--color-border-strong);
   }
 
   .yes {

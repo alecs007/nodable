@@ -11,7 +11,7 @@
   import { saveExport } from '../export/files'
   import type { MessageKey } from '../i18n/messages'
   import { locale } from '../state/locale.svelte'
-  import Icon from './Icon.svelte'
+  import Icon, { type IconName } from './Icon.svelte'
   import Modal from './Modal.svelte'
   import TruthTable from './TruthTable.svelte'
 
@@ -26,10 +26,16 @@
 
   const SAVED_FOR = 1800
 
-  const FORMATS: readonly { readonly format: TableFormat; readonly labelKey: MessageKey }[] = [
-    { format: 'table-latex', labelKey: 'file.latex' },
-    { format: 'table-csv', labelKey: 'table.csv' },
-    { format: 'table-markdown', labelKey: 'table.markdown' },
+  type Format = {
+    readonly format: TableFormat
+    readonly icon: IconName
+    readonly labelKey: MessageKey
+  }
+
+  const FORMATS: readonly Format[] = [
+    { format: 'table-latex', icon: 'code', labelKey: 'file.latex' },
+    { format: 'table-csv', icon: 'table', labelKey: 'table.csv' },
+    { format: 'table-markdown', icon: 'text', labelKey: 'table.markdown' },
   ]
 
   const saved = new SvelteSet<TableFormat>()
@@ -70,7 +76,7 @@
               void save(entry.format)
             }}
           >
-            <Icon name={saved.has(entry.format) ? 'check' : 'download'} />
+            <Icon name={saved.has(entry.format) ? 'check' : entry.icon} />
             {locale.t(entry.labelKey)}
           </button>
         {/each}
