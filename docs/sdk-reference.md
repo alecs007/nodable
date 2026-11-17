@@ -170,6 +170,28 @@ type Classification = {
 variable true, that makes the formula true and false. An unfinished formula, or one with more than
 `MAX_CLASSIFIED_VARIABLES` (16) variables, has no classification.
 
+### `tabulateSession(session: Session): TruthTable | undefined`
+
+Builds the truth table of the formula.
+
+```ts
+type TruthTableRow = {
+  readonly interpretation: Interpretation
+  readonly values: readonly TruthValue[]
+}
+
+type TruthTable = {
+  readonly variables: readonly string[]
+  readonly columns: readonly TreeNode[]
+  readonly rows: readonly TruthTableRow[]
+}
+```
+
+`variables` are listed in order of first appearance. `columns` holds each distinct subformula in
+the order it is computed, the whole formula last, and `values` in each row follows the same order.
+Rows come in truth-table order, starting with every variable true. An unfinished formula, or one
+with more than `MAX_TABLE_VARIABLES` (8) variables, has no table.
+
 ### `valueOfVariable(interpretation: Interpretation, name: string): TruthValue | undefined`
 
 Reads one value. Names that only exist on the object prototype, such as `constructor`, have none.
@@ -297,6 +319,29 @@ An image export reproduces what the workspace shows: the formula as a heading, a
 variant while a group is undecided. `toSvg(panels, title)` and `drawSvg(panels, title)` build that
 document from one or more laid out panels, and `drawSvg` also reports its pixel size.
 `toLatex(root)` and `toText(root)` are exported for callers that only need the markup.
+
+### `exportTruthTable(session, format, letters?): TextExportResult | undefined`
+
+```ts
+type TableFormat = 'table-latex' | 'table-csv' | 'table-markdown'
+
+type TableLetters = {
+  readonly true: string
+  readonly false: string
+}
+```
+
+Writes the truth table of the session. `letters` defaults to `T` and `F`.
+
+| Format           | Output                                                                       |
+| ---------------- | ---------------------------------------------------------------------------- |
+| `table-latex`    | A `tabular` environment with a rule between the variables and the formulas   |
+| `table-csv`      | Comma-separated values with a byte order mark, so spreadsheets read the text |
+| `table-markdown` | A Markdown table with aligned columns                                        |
+
+The file is named after the session with a `-table` suffix. A session without a table returns
+`undefined`. `toTableLatex`, `toTableCsv` and `toTableMarkdown` take a `TruthTable` directly, and
+`latexFormulaOf(node)` writes a single formula with LaTeX commands.
 
 ### `nodeLabel(node: TreeNode): string`
 

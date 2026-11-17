@@ -30,6 +30,8 @@ Try it at [nodable-tree.vercel.app](https://nodable-tree.vercel.app).
   node, step by step.
 - A finished formula is classified as valid, satisfiable or unsatisfiable, with a model and a
   counter-model to try.
+- A truth table lists every interpretation with the value of every subformula, and exports to
+  LaTeX, CSV or Markdown.
 - Several named formulas per workspace, searchable and sorted into folders, saved locally.
 - Export to SVG, PNG, LaTeX, plain text or JSON.
 - English and Romanian, light and dark.
@@ -56,6 +58,16 @@ evaluation lists each subformula with the values it was computed from.
 A complete formula is checked under every interpretation and marked valid, satisfiable but not
 valid, or unsatisfiable. In the interpretation view, Classification shows how many interpretations
 make the formula true, with a model and a counter-model that load into the variables when clicked.
+
+## Truth table
+
+![The truth table of a formula with three variables](assets/screenshots/table.png)
+
+In the interpretation view, Truth table lists every interpretation, starting with every variable
+true. The variables come first, then each distinct subformula from the inside out, and the formula
+itself last. The row of the current interpretation is highlighted, and clicking a row loads it into
+the variables. The table exports to a LaTeX `tabular`, CSV or Markdown, from the table itself or
+from Transfer, for formulas with up to 8 variables.
 
 ## Formulas and folders
 

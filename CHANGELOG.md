@@ -28,6 +28,8 @@ First working version of Nodable.
   with the formula.
 - **Classification.** A complete formula is marked valid, satisfiable but not valid, or
   unsatisfiable, and the interpretation view offers a model and a counter-model to load.
+- **Truth table.** Every interpretation with the value of every distinct subformula, the current
+  one highlighted and each row loadable into the variables, exported to LaTeX, CSV or Markdown.
 - **Workspace.** Several named formulas in a searchable list, sorted into colored folders by
   dragging or through a menu, where each formula can be renamed, duplicated, moved or deleted.
 - **Work area.** The tree is fitted to the window and can be panned and zoomed with the pointer or

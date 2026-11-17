@@ -165,6 +165,19 @@ taller. On narrow screens the modal is a sheet that rises from the bottom and cl
 down.
 Formulas with more than 16 variables are not classified.
 
+## Truth table
+
+The truth table has one row per interpretation, in the same order as the classification, starting
+with every variable true. Its columns are the variables, in the order they first appear, then each
+distinct subformula in the order it is computed, from the inside out, with the whole formula last.
+A subformula that appears more than once, such as `(¬p)` in `((¬p) ∧ (¬p))`, has a single column.
+Values are written with the letters of the interface: T and F in English, A and F in Romanian.
+
+The table opens from the interpretation view. The row that matches the current interpretation is
+highlighted, and clicking a row loads it into the variables. It can be saved as a LaTeX `tabular`,
+a CSV file or a Markdown table. Formulas with more than 8 variables have no table, since it would
+hold more than 256 rows.
+
 ## Hints
 
 After every step the engine computes the set of tokens allowed next. The interface uses it to
