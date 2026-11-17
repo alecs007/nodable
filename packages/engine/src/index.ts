@@ -96,4 +96,11 @@ export {
   type Satisfiability,
   MAX_CLASSIFIED_VARIABLES,
   classifyTree,
+  interpretationAt,
 } from './semantics/classify'
+export {
+  type TruthTable,
+  type TruthTableRow,
+  MAX_TABLE_VARIABLES,
+  tabulateTree,
+} from './semantics/table'

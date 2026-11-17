@@ -42,7 +42,7 @@ function valueOf(node: TreeNode, interpretation: Interpretation): TruthValue | u
   }
 }
 
-function interpretationAt(variables: readonly string[], row: number): Interpretation {
+export function interpretationAt(variables: readonly string[], row: number): Interpretation {
   return Object.fromEntries(
     variables.map((name, index) => {
       const bit = variables.length - 1 - index
