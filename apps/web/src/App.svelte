@@ -214,6 +214,7 @@
     </div>
     {#if workspace.isInterpreting && evaluation !== undefined}
       <InterpretationPanel
+        {session}
         root={session.analysis.tree}
         variables={getVariables(session)}
         interpretation={session.interpretation}

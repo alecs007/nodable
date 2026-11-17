@@ -1,9 +1,12 @@
 <script lang="ts">
   import {
     type ExportFormat,
+    type TableFormat,
     deserializeWorkspace,
     exportSession,
+    exportTruthTable,
     serializeWorkspace,
+    tabulateSession,
   } from '@nodable/sdk'
   import { prefersReducedMotion } from 'svelte/motion'
   import { SvelteMap } from 'svelte/reactivity'
@@ -15,7 +18,7 @@
   import Icon, { type IconName } from './Icon.svelte'
   import Modal from './Modal.svelte'
 
-  type Group = 'formula' | 'workspace' | 'danger'
+  type Group = 'formula' | 'table' | 'workspace' | 'danger'
 
   type Status = 'busy' | 'done' | 'failed'
 
@@ -36,6 +39,7 @@
 
   const GROUPS: readonly { readonly id: Group; readonly titleKey: MessageKey | undefined }[] = [
     { id: 'formula', titleKey: 'file.formula' },
+    { id: 'table', titleKey: 'file.table' },
     { id: 'workspace', titleKey: 'file.workspace' },
     { id: 'danger', titleKey: undefined },
   ]
@@ -51,6 +55,23 @@
         locale.t('outcome.variant', { index: '1' }),
         locale.t('outcome.variant', { index: '2' }),
       ],
+    }
+  }
+
+  const hasTable = $derived(tabulateSession(workspace.active) !== undefined)
+
+  function downloadTable(format: TableFormat): () => Promise<void> {
+    return async () => {
+      const result = exportTruthTable(workspace.active, format, {
+        true: locale.t('truth.trueletter'),
+        false: locale.t('truth.falseletter'),
+      })
+
+      if (result === undefined) {
+        throw new Error('The formula has no truth table')
+      }
+
+      await saveExport(result)
     }
   }
 
@@ -123,6 +144,33 @@
       detail: locale.t('file.clipboard'),
       doneKey: 'file.copied',
       run: () => copyExport(exportSession(workspace.active, 'text')),
+    },
+    {
+      id: 'table-latex',
+      group: 'table',
+      icon: 'table',
+      labelKey: 'file.tablelatex',
+      detail: hasTable ? '.tex' : locale.t('file.incomplete'),
+      isDisabled: !hasTable,
+      run: downloadTable('table-latex'),
+    },
+    {
+      id: 'table-csv',
+      group: 'table',
+      icon: 'table',
+      labelKey: 'file.tablecsv',
+      detail: hasTable ? '.csv' : locale.t('file.incomplete'),
+      isDisabled: !hasTable,
+      run: downloadTable('table-csv'),
+    },
+    {
+      id: 'table-markdown',
+      group: 'table',
+      icon: 'table',
+      labelKey: 'file.tablemarkdown',
+      detail: hasTable ? '.md' : locale.t('file.incomplete'),
+      isDisabled: !hasTable,
+      run: downloadTable('table-markdown'),
     },
     {
       id: 'export',
@@ -521,7 +569,8 @@
       grid-template-columns: minmax(0, 1fr);
     }
 
-    .options.formula {
+    .options.formula,
+    .options.table {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 

@@ -100,3 +100,32 @@ test('loads a counter-model into the interpretation', async ({ page }) => {
     page.getByRole('radiogroup', { name: 'R' }).getByRole('radio', { name: 'False' }),
   ).toBeChecked()
 })
+
+test('shows the truth table and loads a row of it', async ({ page }) => {
+  await interpret(page, '((¬p) ∨ q)')
+  await page.getByRole('button', { name: 'Truth table' }).click()
+
+  const dialog = page.getByRole('dialog', { name: 'Truth table' })
+
+  await expect(dialog.getByRole('columnheader')).toHaveText(['#', 'p', 'q', '(¬p)', '((¬p) ∨ q)'])
+  await expect(dialog.getByRole('row').nth(2)).toHaveText(/2\s*T\s*F\s*F\s*F/)
+
+  await dialog.getByRole('button', { name: '2', exact: true }).click()
+
+  await expect(dialog).toHaveCount(0)
+  await expect(
+    page.getByRole('radiogroup', { name: 'q' }).getByRole('radio', { name: 'False' }),
+  ).toBeChecked()
+  await expect(page.getByText('The formula is false under this interpretation')).toBeAttached()
+})
+
+test('exports the truth table', async ({ page }) => {
+  await page.getByRole('textbox', { name: 'Formula', exact: true }).fill('(p → q)')
+  await page.getByRole('textbox', { name: 'Formula name' }).fill('Lecture 4')
+  await page.getByRole('button', { name: 'Transfer' }).click()
+
+  const download = page.waitForEvent('download')
+  await page.getByRole('button', { name: /CSV table/ }).click()
+
+  expect((await download).suggestedFilename()).toBe('lecture-4-table.csv')
+})

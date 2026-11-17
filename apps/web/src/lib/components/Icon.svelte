@@ -30,6 +30,7 @@
     | 'chevron'
     | 'check'
     | 'grip'
+    | 'table'
 
   type Circle = { readonly cx: number; readonly cy: number; readonly r: number }
 
@@ -132,6 +133,10 @@
     search: { paths: ['M15.5 15.5 20 20'], circles: [{ cx: 10.5, cy: 10.5, r: 6 }] },
     chevron: { paths: ['M9.5 6l6 6-6 6'], circles: [] },
     check: { paths: ['M5 12.5l4.5 4.5L19 7.5'], circles: [] },
+    table: {
+      paths: ['M4 4.5h16v15H4z', 'M4 9.5h16', 'M4 14.5h16', 'M10 4.5v15'],
+      circles: [],
+    },
     grip: {
       paths: [],
       circles: [

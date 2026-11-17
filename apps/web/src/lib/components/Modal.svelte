@@ -10,11 +10,20 @@
     tone?: string | undefined
     isTall?: boolean
     isCentered?: boolean
+    isWide?: boolean
     onclose: () => void
     children: Snippet<[() => void]>
   }
 
-  const { title, tone, isTall = false, isCentered = false, onclose, children }: Props = $props()
+  const {
+    title,
+    tone,
+    isTall = false,
+    isCentered = false,
+    isWide = false,
+    onclose,
+    children,
+  }: Props = $props()
 
   const DURATION = 360
   const CLOSE_SHARE = 0.25
@@ -204,7 +213,14 @@
   }}
 >
   <div class="backdrop" aria-hidden="true" onclick={dismiss}></div>
-  <div bind:this={sheet} class="sheet" class:shown={isShown} class:tall={isTall} tabindex="-1">
+  <div
+    bind:this={sheet}
+    class="sheet"
+    class:shown={isShown}
+    class:tall={isTall}
+    class:wide={isWide}
+    tabindex="-1"
+  >
     <div
       class="head"
       role="presentation"
@@ -291,6 +307,10 @@
 
   .sheet.tall {
     block-size: min(40rem, 100%);
+  }
+
+  .sheet.wide {
+    inline-size: min(60rem, 100%);
   }
 
   .head {

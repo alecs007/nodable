@@ -4,6 +4,7 @@
     type Evaluation,
     type Interpretation,
     type Satisfiability,
+    type Session,
     type TreeNode,
     type TruthValue,
     formulaOf,
@@ -16,9 +17,11 @@
   import Icon from './Icon.svelte'
   import Modal from './Modal.svelte'
   import TruthMark from './TruthMark.svelte'
+  import TruthTableDialog from './TruthTableDialog.svelte'
   import TruthToggle from './TruthToggle.svelte'
 
   type Props = {
+    session: Session
     root: TreeNode
     variables: readonly string[]
     interpretation: Interpretation
@@ -31,6 +34,7 @@
   }
 
   const {
+    session,
     root,
     variables,
     interpretation,
@@ -42,7 +46,7 @@
     onedit,
   }: Props = $props()
 
-  type Card = 'classification' | 'steps'
+  type Card = 'classification' | 'steps' | 'table'
 
   type Witness = {
     readonly id: string
@@ -169,6 +173,18 @@
         <span class="short" aria-hidden="true">{locale.t('interpret.stepsshort')}</span>
       </button>
     {/if}
+    <button
+      type="button"
+      class="action"
+      aria-haspopup="dialog"
+      onclick={() => {
+        open = 'table'
+      }}
+    >
+      <Icon name="table" />
+      <span class="full">{locale.t('table.open')}</span>
+      <span class="short" aria-hidden="true">{locale.t('table.short')}</span>
+    </button>
     <button type="button" class="action" onclick={onedit}>
       <Icon name="edit" />
       <span class="full">{locale.t('interpret.edit')}</span>
@@ -240,6 +256,10 @@
         </div>
       {/snippet}
     </Modal>
+  {/if}
+
+  {#if open === 'table'}
+    <TruthTableDialog {session} {interpretation} {onuse} onclose={close} />
   {/if}
 
   {#if open === 'steps'}
@@ -332,8 +352,12 @@
     text-overflow: ellipsis;
   }
 
-  .action .short {
-    display: none;
+  .action .full {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
   }
 
   @media (hover: hover) {
@@ -444,6 +468,8 @@
 
   @media (width <= 30rem) {
     .toolbar {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: var(--space-1);
     }
 
@@ -454,31 +480,9 @@
       font-size: 0.75rem;
     }
 
-    .action .full {
-      position: absolute;
-      inline-size: 1px;
-      block-size: 1px;
-      overflow: hidden;
-      clip-path: inset(50%);
-    }
-
-    .action .short {
-      display: inline;
-    }
-
     .variables {
       gap: var(--space-1);
       padding: var(--space-1);
-    }
-  }
-
-  @media (width <= 22rem) {
-    .toolbar {
-      flex-wrap: wrap;
-    }
-
-    .classify {
-      flex-basis: 100%;
     }
   }
 </style>
