@@ -141,5 +141,7 @@
   "language.label": "Language",
   "language.en": "English",
   "language.ro": "Romanian",
-  "source.label": "Source code on GitHub"
+  "source.label": "Source code on GitHub",
+  "meta.title": "Nodable – Syntax trees and truth tables for propositional logic",
+  "meta.description": "Type a propositional logic formula and watch its syntax tree grow. Evaluate it, check whether it is valid or satisfiable, and export its truth table."
 }

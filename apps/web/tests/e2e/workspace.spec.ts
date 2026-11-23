@@ -29,9 +29,12 @@ test('switches the theme and keeps the choice after a reload', async ({ page }) 
 
 test('switches the language and keeps the choice after a reload', async ({ page }) => {
   await expect(page.getByRole('textbox', { name: 'Formula', exact: true })).toBeVisible()
+  await expect(page).toHaveTitle(/Syntax trees and truth tables/)
 
   await page.getByRole('button', { name: 'Language' }).click()
   await expect(page.getByRole('textbox', { name: 'Formulă', exact: true })).toBeVisible()
+  await expect(page).toHaveTitle(/Arbori sintactici și tabele de adevăr/)
+  await expect(page.locator('html')).toHaveAttribute('lang', 'ro')
 
   await page.reload()
   await expect(page.getByRole('textbox', { name: 'Formulă', exact: true })).toBeVisible()

@@ -147,6 +147,10 @@
 
   $effect(() => {
     document.documentElement.lang = locale.current
+    document.title = locale.t('meta.title')
+    document
+      .querySelector('meta[name="description"]')
+      ?.setAttribute('content', locale.t('meta.description'))
   })
 </script>
 

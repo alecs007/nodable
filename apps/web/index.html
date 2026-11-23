@@ -3,13 +3,81 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Nodable</title>
-    <meta name="description" content="Syntax trees for propositional logic formulas." />
+    <title>Nodable – Syntax trees and truth tables for propositional logic</title>
+    <meta
+      name="description"
+      content="Type a propositional logic formula and watch its syntax tree grow. Evaluate it, check whether it is valid or satisfiable, and export its truth table."
+    />
+    <meta name="author" content="Alexandru Rotar" />
+    <meta name="robots" content="index, follow" />
+    <meta name="color-scheme" content="light dark" />
     <meta name="theme-color" content="#f6f8fb" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#0e1419" media="(prefers-color-scheme: dark)" />
+    <meta name="application-name" content="Nodable" />
+    <meta name="apple-mobile-web-app-title" content="Nodable" />
+    <link rel="canonical" href="https://nodable-tree.vercel.app/" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Nodable" />
+    <meta property="og:url" content="https://nodable-tree.vercel.app/" />
+    <meta
+      property="og:title"
+      content="Nodable – Syntax trees and truth tables for propositional logic"
+    />
+    <meta
+      property="og:description"
+      content="Type a formula and watch its syntax tree grow. Evaluate it, classify it and export its truth table, right in the browser."
+    />
+    <meta property="og:image" content="https://nodable-tree.vercel.app/og-image.png" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta
+      property="og:image:alt"
+      content="The Nodable logo beside the syntax tree of a formula, each node marked true or false"
+    />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:locale:alternate" content="ro_RO" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta
+      name="twitter:title"
+      content="Nodable – Syntax trees and truth tables for propositional logic"
+    />
+    <meta
+      name="twitter:description"
+      content="Type a formula and watch its syntax tree grow. Evaluate it, classify it and export its truth table, right in the browser."
+    />
+    <meta name="twitter:image" content="https://nodable-tree.vercel.app/og-image.png" />
+    <meta
+      name="twitter:image:alt"
+      content="The Nodable logo beside the syntax tree of a formula, each node marked true or false"
+    />
+
+    <link rel="icon" href="./favicon.ico" sizes="48x48" />
     <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
-    <link rel="apple-touch-icon" href="./favicon.svg" />
+    <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
     <link rel="manifest" href="./site.webmanifest" />
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Nodable",
+        "url": "https://nodable-tree.vercel.app/",
+        "description": "Type a propositional logic formula and watch its syntax tree grow. Evaluate it, check whether it is valid or satisfiable, and export its truth table.",
+        "image": "https://nodable-tree.vercel.app/og-image.png",
+        "applicationCategory": "EducationalApplication",
+        "operatingSystem": "Any",
+        "browserRequirements": "Requires JavaScript",
+        "inLanguage": ["en", "ro"],
+        "isAccessibleForFree": true,
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" },
+        "author": { "@type": "Person", "name": "Alexandru Rotar" },
+        "sameAs": ["https://github.com/alecs007/nodable"]
+      }
+    </script>
+
     <script>
       ;(() => {
         try {
@@ -25,6 +93,14 @@
   </head>
   <body>
     <div id="app"></div>
+    <noscript>
+      <h1>Nodable</h1>
+      <p>
+        Syntax trees, interpretations, classification and truth tables for propositional logic
+        formulas. Nodable runs in the browser and needs JavaScript.
+      </p>
+      <p><a href="https://github.com/alecs007/nodable">Source code on GitHub</a></p>
+    </noscript>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

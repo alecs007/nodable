@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Nodable social image</title>
+    <style>
+      body {
+        position: relative;
+        display: grid;
+        grid-template-columns: 640px 1fr;
+        align-items: center;
+        width: 1200px;
+        height: 630px;
+        margin: 0;
+        overflow: hidden;
+        background: #f6f8fb;
+        color: #141c25;
+        font-family: 'Noto Sans', 'Adwaita Sans', system-ui, sans-serif;
+      }
+
+      .dots {
+        position: absolute;
+        inset: 0;
+        background-image: radial-gradient(#d3dbe4 1.6px, transparent 1.6px);
+        background-size: 30px 30px;
+        mask-image: linear-gradient(to right, transparent 25%, #000 70%);
+      }
+
+      .text {
+        position: relative;
+        padding-inline-start: 84px;
+      }
+
+      .logo {
+        display: block;
+        width: 112px;
+        height: 112px;
+        border-radius: 28px;
+        box-shadow:
+          0 14px 34px rgb(20 28 37 / 12%),
+          0 0 0 1px #dfe6ee;
+      }
+
+      h1 {
+        margin: 34px 0 14px;
+        font-size: 92px;
+        font-weight: 700;
+        letter-spacing: -2px;
+        line-height: 1;
+      }
+
+      p {
+        margin: 0;
+        color: #46535f;
+        font-size: 34px;
+        line-height: 1.32;
+        text-wrap: balance;
+      }
+
+      .url {
+        margin-top: 34px;
+        color: #11528f;
+        font-size: 25px;
+        font-weight: 600;
+      }
+
+      .tree {
+        position: relative;
+        width: 540px;
+        height: 468px;
+      }
+
+      .edge {
+        stroke: #7b8a99;
+        stroke-width: 3;
+      }
+
+      .node {
+        stroke-width: 3;
+      }
+
+      .node.true {
+        fill: #dcf2e4;
+        stroke: #1a6a3c;
+      }
+
+      .node.false {
+        fill: #fbe2e6;
+        stroke: #a3263a;
+      }
+
+      .label {
+        fill: #141c25;
+        font-family: 'Noto Sans Math', 'Noto Sans', sans-serif;
+        font-size: 34px;
+        font-weight: 600;
+        text-anchor: middle;
+        dominant-baseline: central;
+      }
+
+      .badge.true {
+        fill: #1a6a3c;
+      }
+
+      .badge.false {
+        fill: #a3263a;
+      }
+
+      .badge-letter {
+        fill: #ffffff;
+        font-size: 19px;
+        font-weight: 700;
+        text-anchor: middle;
+        dominant-baseline: central;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="dots"></div>
+    <div class="text">
+      <svg class="logo" viewBox="0 0 64 64" aria-hidden="true">
+        <rect width="64" height="64" rx="15" fill="#ffffff" />
+        <g
+          transform="translate(8 8) scale(2)"
+          fill="none"
+          stroke="#141c25"
+          stroke-width="1.9"
+          stroke-linecap="round"
+        >
+          <path d="M6 7.5v9" />
+          <path d="M6.9 6.9 17.1 17.1" />
+          <path d="M18 7.5v9" />
+          <circle cx="6" cy="5" r="2.1" />
+          <circle cx="6" cy="19" r="2.1" />
+          <circle cx="18" cy="5" r="2.1" />
+          <circle cx="18" cy="19" r="2.1" />
+        </g>
+      </svg>
+      <h1>Nodable</h1>
+      <p>Syntax trees and truth tables for propositional logic.</p>
+      <div class="url">nodable-tree.vercel.app</div>
+    </div>
+    <svg class="tree" viewBox="0 0 600 520" aria-hidden="true">
+      <line class="edge" x1="300" y1="122" x2="170" y2="214" />
+      <line class="edge" x1="300" y1="122" x2="440" y2="214" />
+      <line class="edge" x1="170" y1="270" x2="170" y2="374" />
+      <line class="edge" x1="440" y1="270" x2="365" y2="374" />
+      <line class="edge" x1="440" y1="270" x2="515" y2="374" />
+
+      <rect class="node true" x="252" y="66" width="96" height="58" rx="14" />
+      <text class="label" x="300" y="95">∨</text>
+      <rect class="node true" x="122" y="214" width="96" height="58" rx="14" />
+      <text class="label" x="170" y="243">¬</text>
+      <rect class="node false" x="392" y="214" width="96" height="58" rx="14" />
+      <text class="label" x="440" y="243">→</text>
+      <rect class="node false" x="122" y="374" width="96" height="58" rx="14" />
+      <text class="label" x="170" y="403">p</text>
+      <rect class="node true" x="317" y="374" width="96" height="58" rx="14" />
+      <text class="label" x="365" y="403">q</text>
+      <rect class="node false" x="467" y="374" width="96" height="58" rx="14" />
+      <text class="label" x="515" y="403">r</text>
+
+      <circle class="badge true" cx="348" cy="66" r="16" />
+      <text class="badge-letter" x="348" y="66">T</text>
+      <circle class="badge true" cx="218" cy="214" r="16" />
+      <text class="badge-letter" x="218" y="214">T</text>
+      <circle class="badge false" cx="488" cy="214" r="16" />
+      <text class="badge-letter" x="488" y="214">F</text>
+      <circle class="badge false" cx="218" cy="374" r="16" />
+      <text class="badge-letter" x="218" y="374">F</text>
+      <circle class="badge true" cx="413" cy="374" r="16" />
+      <text class="badge-letter" x="413" y="374">T</text>
+      <circle class="badge false" cx="563" cy="374" r="16" />
+      <text class="badge-letter" x="563" y="374">F</text>
+    </svg>
+  </body>
+</html>

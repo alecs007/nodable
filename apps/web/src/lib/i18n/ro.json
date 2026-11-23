@@ -141,5 +141,7 @@
   "language.label": "Limbă",
   "language.en": "Engleză",
   "language.ro": "Română",
-  "source.label": "Codul sursă pe GitHub"
+  "source.label": "Codul sursă pe GitHub",
+  "meta.title": "Nodable – Arbori sintactici și tabele de adevăr pentru logica propozițională",
+  "meta.description": "Scrie o formulă din logica propozițională și vezi cum crește arborele ei sintactic. Evalueaz-o, află dacă e validă sau satisfiabilă și exportă tabelul de adevăr."
 }
