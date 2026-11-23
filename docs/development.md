@@ -86,6 +86,19 @@ for every pull request. The build reads `BASE_PATH` when the app has to live und
 are not major versions, so they merge once CI passes. Major versions and GitHub Actions updates wait
 for a manual merge.
 
+## Search and sharing
+
+`apps/web/index.html` holds the title, the description, the canonical address, the Open Graph and
+Twitter tags and a `WebApplication` description in JSON-LD, all pointing at
+`https://nodable-tree.vercel.app/`. The app swaps the title and the description for the Romanian ones
+when the language changes. `apps/web/public` holds `robots.txt`, `sitemap.xml`, the web manifest and
+the icons in every size the browsers and phones ask for.
+
+The 1200 × 630 preview image, `apps/web/public/og-image.png`, is a screenshot of
+`assets/og/og-image.html`. After changing that page, open it at exactly 1200 × 630 pixels with a
+device scale of 1 and save a screenshot over the image. If the site moves to another address, update
+the addresses in `index.html`, `robots.txt` and `sitemap.xml` together.
+
 ## Release process
 
 1. Make sure `main` is green and `pnpm check` passes locally.

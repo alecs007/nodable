@@ -38,6 +38,8 @@ First working version of Nodable.
   undecided group, and downloads are named after the formula, with a spinner while the file is
   prepared and a check once it is saved. The whole workspace, folders included, can be written to
   JSON and read back.
+- **Search and sharing.** A descriptive title and summary in both languages, a preview image with
+  the logo for shared links, structured data, a sitemap and icons for every platform.
 - **Persistence.** Debounced automatic saving to IndexedDB, with the formulas and the active one
   restored on the next visit, and an action that clears the saved data.
 - **Interface.** A full-screen work area with floating control islands, light and dark themes, and
